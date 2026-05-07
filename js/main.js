@@ -6,6 +6,30 @@
 
 'use strict';
 
+/* ─── TELEGRAM MINI APP ─────────────────────── */
+const tg = window.Telegram?.WebApp;
+
+if (tg) {
+  // Инициализируем
+  tg.ready();
+  tg.expand(); // Раскрываем на весь экран
+
+  // Убираем тикер в Telegram (экономим место)
+  const ticker = document.querySelector('.ticker');
+  if (ticker) ticker.style.display = 'none';
+
+  // Цвет хедера под цвет навбара
+  tg.setHeaderColor('#1A1A1A');
+  tg.setBackgroundColor('#FAF8F5');
+
+  // Кнопка "Назад" в Telegram вместо браузерной
+  tg.BackButton.onClick(() => window.history.back());
+}
+
+// Утилита — открыт ли сайт в Telegram
+function isTelegram() {
+  return !!window.Telegram?.WebApp?.initData;
+}
 
 /* ─── 2. CART STATE & MANAGER ───────────────── */
 const Cart = (() => {
