@@ -1,0 +1,1817 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Li-Ning Shop</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red:      #C41E3A;
+      --red-dark: #A01830;
+      --black:    #1A1A1A;
+      --white:    #FFFFFF;
+      --cream:    #FAF8F5;
+      --gray-100: #EDE9E3;
+      --gray-300: #BBBBBB;
+      --gray-500: #888888;
+      --gray-700: #555555;
+      --gray-900: #2C2C2C;
+      --gold:     #B8860B;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body:    'Plus Jakarta Sans', sans-serif;
+      --nav-h:    56px;
+      --tab-h:    64px;
+      --radius:   12px;
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body { 
+      height: 100%; 
+      overflow: hidden; 
+      scrollbar-width: none; 
+    }
+    html::-webkit-scrollbar, body::-webkit-scrollbar { 
+      display: none; 
+    }
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--gray-900);
+      overscroll-behavior: none;
+    }
+
+    /* ── APP SHELL ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      height: var(--nav-h);
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 50;
+    }
+    .topbar-logo {
+      height: 28px;
+      filter: invert(1);
+    }
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .topbar-btn {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 50%;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      position: relative;
+      transition: background var(--transition);
+    }
+    .topbar-btn:active { background: rgba(255,255,255,0.2); }
+    .topbar-badge {
+      position: absolute;
+      top: 2px; right: 2px;
+      background: var(--red);
+      color: #fff;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      font-size: 0.55rem;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── LANG SWITCHER ── */
+    .lang-switcher {
+      display: flex;
+      gap: 2px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 2px;
+    }
+    .lang-btn {
+      padding: 3px 7px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      transition: all var(--transition);
+    }
+    .lang-btn.active {
+      background: var(--white);
+      color: var(--black);
+    }
+
+    /* ── PAGES ── */
+    .pages {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .page {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding-bottom: calc(var(--tab-h) + 1rem);
+    }
+    .page.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── BOTTOM TABS ── */
+    .tabs {
+      height: var(--tab-h);
+      background: var(--white);
+      border-top: 1px solid var(--gray-100);
+      display: flex;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 50;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+    .tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border: none;
+      background: transparent;
+      color: var(--gray-300);
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      transition: color var(--transition);
+      font-family: var(--font-body);
+      position: relative;
+    }
+    .tab.active { color: var(--red); }
+    .tab-icon { font-size: 1.3rem; line-height: 1; }
+    .tab-indicator {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 24px; height: 2px;
+      background: var(--red);
+      border-radius: 0 0 2px 2px;
+      transition: transform var(--transition);
+    }
+    .tab.active .tab-indicator { transform: translateX(-50%) scaleX(1); }
+
+    /* ══════════════════════════════
+       PAGE: HOME
+    ══════════════════════════════ */
+
+    /* Slider */
+    .slider-wrap {
+      position: relative;
+      overflow: hidden;
+      background: var(--black);
+      height: 220px;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.2rem;
+    }
+    .slide.active { opacity: 1; }
+    .slide-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 60%, transparent 100%);
+    }
+    .slide-content {
+      position: relative;
+      z-index: 2;
+      color: var(--white);
+    }
+    .slide-tag {
+      font-size: 0.62rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 0.3rem;
+    }
+    .slide-title {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .slide-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 0.4rem 0.9rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      font-family: var(--font-body);
+    }
+    .slide-dots {
+      position: absolute;
+      bottom: 0.8rem;
+      right: 1rem;
+      display: flex;
+      gap: 4px;
+      z-index: 3;
+    }
+    .slide-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transition: all var(--transition);
+    }
+    .slide-dot.active {
+      width: 14px;
+      border-radius: 3px;
+      background: #fff;
+    }
+    .slide-skeleton {
+      position: absolute;
+      inset: 0;
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .skeleton-logo {
+      height: 32px;
+      filter: invert(1);
+      opacity: 0.2;
+      animation: pulse 1.5s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Categories */
+    .section-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1rem 0.6rem;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      color: var(--gray-900);
+    }
+    .see-all-btn {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--red);
+      background: none;
+      border: none;
+      font-family: var(--font-body);
+      letter-spacing: 0.5px;
+    }
+
+    .cats-scroll {
+      display: flex;
+      gap: 0.6rem;
+      padding: 0 1rem 0.5rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .cats-scroll::-webkit-scrollbar { display: none; }
+    .cat-chip {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--white);
+      border: 1.5px solid var(--gray-100);
+      border-radius: var(--radius);
+      padding: 0.8rem 1rem;
+      min-width: 72px;
+      transition: all var(--transition);
+    }
+    .cat-chip.active, .cat-chip:active {
+      background: var(--black);
+      border-color: var(--black);
+    }
+    .cat-chip.active .cat-chip-icon,
+    .cat-chip.active .cat-chip-name { color: var(--white); }
+    .cat-chip-icon { font-size: 1.6rem; }
+    .cat-chip-name {
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--gray-700);
+    }
+
+    /* Products grid */
+    .products-wrap {
+      padding: 0 1rem;
+    }
+    .products-mini-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .mini-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-100);
+      transition: transform var(--transition), box-shadow var(--transition);
+      position: relative;
+    }
+    .mini-card:active { transform: scale(0.97); }
+    .mini-card-img {
+      aspect-ratio: 1;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .mini-card-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .mini-card-img-placeholder {
+      font-size: 3.5rem;
+    }
+    .mini-card-badge {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      background: var(--red);
+      color: #fff;
+      font-size: 0.55rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .mini-card-wish {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.4rem;
+      width: 28px; height: 28px;
+      background: rgba(255,255,255,0.9);
+      border: none;
+      border-radius: 50%;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition);
+    }
+    .mini-card-wish.wished {
+      background: var(--red);
+      color: #fff;
+    }
+    .mini-card-info {
+      padding: 0.6rem 0.7rem 0.7rem;
+    }
+    .mini-card-brand {
+      font-size: 0.58rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+    .mini-card-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.4rem;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .mini-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mini-card-price {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--gray-900);
+      letter-spacing: 0.5px;
+    }
+    .mini-card-price .old {
+      font-family: var(--font-body);
+      font-size: 0.65rem;
+      color: var(--gray-300);
+      text-decoration: line-through;
+      display: block;
+      font-weight: 400;
+    }
+    .mini-card-add {
+      width: 28px; height: 28px;
+      background: var(--red);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background var(--transition), transform var(--transition);
+    }
+    .mini-card-add:active { background: var(--red-dark); transform: scale(0.92); }
+    .mini-card-add.added { background: #22c55e; }
+
+    /* Loading skeleton */
+    .skel-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--gray-100);
+    }
+    .skel-img {
+      aspect-ratio: 1;
+      background: linear-gradient(90deg, var(--gray-100) 25%, #e8e4de 50%, var(--gray-100) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+    }
+    .skel-line {
+      height: 10px;
+      border-radius: 5px;
+      background: linear-gradient(90deg, var(--gray-100) 25%, #e8e4de 50%, var(--gray-100) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      margin: 0.6rem 0.7rem 0.4rem;
+    }
+    .skel-line.short { width: 60%; margin-bottom: 0.7rem; }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ══════════════════════════════
+       PAGE: CATALOG
+    ══════════════════════════════ */
+    .search-bar {
+      padding: 0.75rem 1rem;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--gray-100);
+      border-radius: 10px;
+      padding: 0.5rem 0.8rem;
+    }
+    .search-icon { font-size: 0.9rem; color: var(--gray-500); flex-shrink: 0; }
+    .search-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      color: var(--gray-900);
+      outline: none;
+    }
+    .search-input::placeholder { color: var(--gray-300); }
+
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+      position: sticky;
+      top: 56px;
+      z-index: 9;
+    }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .filter-tab {
+      flex-shrink: 0;
+      padding: 0.35rem 0.8rem;
+      border: 1.5px solid var(--gray-100);
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      background: transparent;
+      color: var(--gray-700);
+      font-family: var(--font-body);
+      transition: all var(--transition);
+    }
+    .filter-tab.active {
+      background: var(--black);
+      border-color: var(--black);
+      color: var(--white);
+    }
+
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+    }
+
+    /* ══════════════════════════════
+       PAGE: CART
+    ══════════════════════════════ */
+    .cart-page-header {
+      padding: 1rem 1rem 0.5rem;
+      border-bottom: 1px solid var(--gray-100);
+      background: var(--white);
+    }
+    .cart-page-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      letter-spacing: 1px;
+    }
+    .cart-items-list {
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .cart-item-mini {
+      display: flex;
+      gap: 0.75rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 0.75rem;
+      border: 1px solid var(--gray-100);
+      align-items: center;
+    }
+    .cart-item-mini-img {
+      width: 60px; height: 60px;
+      border-radius: 8px;
+      background: var(--gray-100);
+      overflow: hidden;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+    }
+    .cart-item-mini-img img { width:100%; height:100%; object-fit:cover; }
+    .cart-item-mini-info { flex: 1; min-width: 0; }
+    .cart-item-mini-name {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cart-item-mini-meta {
+      font-size: 0.68rem;
+      color: var(--gray-500);
+      margin-bottom: 0.4rem;
+    }
+    .cart-item-mini-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .qty-btn {
+      width: 22px; height: 22px;
+      background: var(--gray-100);
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-700);
+    }
+    .qty-num {
+      font-size: 0.82rem;
+      font-weight: 700;
+      min-width: 16px;
+      text-align: center;
+    }
+    .cart-item-mini-price {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--gray-900);
+      flex-shrink: 0;
+      text-align: right;
+    }
+    .cart-item-mini-remove {
+      background: none;
+      border: none;
+      color: var(--gray-300);
+      font-size: 1rem;
+      flex-shrink: 0;
+      padding: 0 0.2rem;
+    }
+
+    .cart-empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      gap: 0.8rem;
+      color: var(--gray-500);
+    }
+    .cart-empty-icon { font-size: 4rem; }
+    .cart-empty-text { font-size: 0.88rem; }
+
+    .cart-summary {
+      margin: 0 1rem;
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-100);
+      padding: 1rem;
+    }
+    .cart-summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      margin-bottom: 0.5rem;
+    }
+    .cart-summary-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding-top: 0.7rem;
+      border-top: 1px solid var(--gray-100);
+      margin-top: 0.3rem;
+    }
+    .cart-summary-total span { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; }
+    .cart-summary-total strong { font-family: var(--font-display); font-size: 1.5rem; }
+    .btn-checkout-mini {
+      width: 100%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 10px;
+      margin-top: 0.75rem;
+      font-family: var(--font-body);
+      transition: background var(--transition);
+    }
+    .btn-checkout-mini:active { background: var(--red-dark); }
+
+    /* ══════════════════════════════
+       PAGE: PROFILE
+    ══════════════════════════════ */
+    .profile-header {
+      background: var(--black);
+      padding: 1.5rem 1rem 2rem;
+      color: var(--white);
+      text-align: center;
+    }
+    .profile-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 0.8rem;
+      font-family: var(--font-display);
+    }
+    .profile-name {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+    }
+    .profile-username {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.2rem;
+    }
+    .profile-stats {
+      display: flex;
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .profile-stat {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      border-right: 1px solid var(--gray-100);
+    }
+    .profile-stat:last-child { border-right: none; }
+    .profile-stat-num {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      color: var(--gray-900);
+    }
+    .profile-stat-label {
+      font-size: 0.62rem;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 0.2rem;
+    }
+    .profile-menu {
+      padding: 0.5rem 1rem;
+    }
+    .profile-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--gray-100);
+      background: none;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+      width: 100%;
+      text-align: left;
+      font-family: var(--font-body);
+      cursor: pointer;
+    }
+    .profile-menu-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .profile-menu-text {
+      flex: 1;
+    }
+    .profile-menu-title { font-size: 0.88rem; font-weight: 600; color: var(--gray-900); }
+    .profile-menu-sub { font-size: 0.7rem; color: var(--gray-500); margin-top: 0.1rem; }
+    .profile-menu-arrow { color: var(--gray-300); font-size: 0.8rem; }
+
+    /* ══════════════════════════════
+       PRODUCT DETAIL MODAL
+    ══════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: var(--cream);
+      border-radius: 20px 20px 0 0;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .modal-overlay.open .modal-sheet {
+      transform: translateY(0);
+    }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: var(--gray-300);
+      border-radius: 2px;
+      margin: 0.75rem auto 0;
+    }
+    .modal-img {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .modal-img img { width: 100%; height: 100%; object-fit: cover; }
+    .modal-img-placeholder { font-size: 6rem; }
+    .modal-body {
+      padding: 1.2rem 1rem 2rem;
+    }
+    .modal-brand {
+      font-size: 0.65rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+    .modal-name {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      letter-spacing: 1px;
+      line-height: 1.1;
+      margin-bottom: 0.8rem;
+    }
+    .modal-price {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--red);
+      margin-bottom: 1.2rem;
+    }
+    .modal-price .old-p {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--gray-300);
+      text-decoration: line-through;
+      margin-right: 0.4rem;
+    }
+    .modal-size-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray-700);
+      margin-bottom: 0.6rem;
+    }
+    .modal-sizes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.5rem;
+    }
+    .modal-size-btn {
+      min-width: 46px;
+      padding: 0.5rem 0.4rem;
+      background: var(--white);
+      border: 1.5px solid var(--gray-100);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-align: center;
+      font-family: var(--font-body);
+      color: var(--gray-700);
+      transition: all var(--transition);
+    }
+    .modal-size-btn.active {
+      background: var(--black);
+      color: var(--white);
+      border-color: var(--black);
+    }
+    .modal-add-btn {
+      width: 100%;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 10px;
+      font-family: var(--font-body);
+      transition: background var(--transition);
+    }
+    .modal-add-btn:active { background: var(--red-dark); }
+    .modal-add-btn.added { background: #22c55e; }
+
+    /* ══════════════════════════════
+       ORDER SHEET
+    ══════════════════════════════ */
+    .order-form {
+      padding: 1.2rem 1rem 2rem;
+    }
+    .order-title {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      letter-spacing: 1px;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 2px solid var(--red);
+    }
+    .form-group-mini {
+      margin-bottom: 0.9rem;
+    }
+    .form-label-mini {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--gray-700);
+      margin-bottom: 0.35rem;
+    }
+    .form-input-mini {
+      width: 100%;
+      background: var(--white);
+      border: 1.5px solid var(--gray-100);
+      border-radius: 10px;
+      padding: 0.75rem 0.9rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      color: var(--gray-900);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .form-input-mini:focus { border-color: var(--red); }
+    .form-input-mini.error { border-color: var(--red); background: #fff0f0; }
+
+    /* ══════════════════════════════
+       TOAST
+    ══════════════════════════════ */
+    .toast-wrap {
+      position: fixed;
+      top: calc(var(--nav-h) + 0.5rem);
+      left: 1rem; right: 1rem;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      pointer-events: none;
+    }
+    .toast-mini {
+      background: var(--black);
+      color: var(--white);
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border-left: 3px solid var(--red);
+      transform: translateY(-8px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    .toast-mini.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .toast-mini.success { border-left-color: #22c55e; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <img src="logo.jpg" class="topbar-logo" alt="Li-Ning" onerror="this.style.display='none'">
+    <div class="topbar-actions">
+      <div class="lang-switcher">
+        <button class="lang-btn active" onclick="setLang('ru')">RU</button>
+        <button class="lang-btn" onclick="setLang('uz')">UZ</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="topbar-btn" onclick="showPage('cart')">
+        🛒
+        <span class="topbar-badge" id="cart-badge" style="display:none">0</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- PAGES -->
+  <div class="pages">
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <!-- Slider -->
+      <div class="slider-wrap" id="mini-slider">
+        <div class="slide-skeleton">
+          <img src="logo.jpg" class="skeleton-logo" alt="">
+        </div>
+        <div class="slide-dots" id="mini-dots"></div>
+      </div>
+
+      <!-- Categories -->
+      <div class="section-title-row">
+        <div class="section-title" data-i18n="categories">Категории</div>
+      </div>
+      <div class="cats-scroll" id="cats-row">
+        <div class="cat-chip active" data-cat="" onclick="filterByCategory(this, '')">
+          <span class="cat-chip-icon">⚡</span>
+          <span class="cat-chip-name" data-i18n="all">Все</span>
+        </div>
+        <div class="cat-chip" data-cat="shoes" onclick="filterByCategory(this, 'shoes')">
+          <span class="cat-chip-icon">👟</span>
+          <span class="cat-chip-name" data-i18n="shoes">Обувь</span>
+        </div>
+        <div class="cat-chip" data-cat="clothing" onclick="filterByCategory(this, 'clothing')">
+          <span class="cat-chip-icon">👕</span>
+          <span class="cat-chip-name" data-i18n="clothing">Одежда</span>
+        </div>
+        <div class="cat-chip" data-cat="running" onclick="filterByCategory(this, 'running')">
+          <span class="cat-chip-icon">🏃</span>
+          <span class="cat-chip-name" data-i18n="running">Бег</span>
+        </div>
+        <div class="cat-chip" data-cat="training" onclick="filterByCategory(this, 'training')">
+          <span class="cat-chip-icon">💪</span>
+          <span class="cat-chip-name" data-i18n="training">Трен.</span>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div class="section-title-row" style="padding-top:0.5rem">
+        <div class="section-title" data-i18n="new_arrivals">Новинки</div>
+        <button class="see-all-btn" onclick="showPage('catalog')" data-i18n="see_all">Все →</button>
+      </div>
+      <div class="products-wrap">
+        <div class="products-mini-grid" id="home-mini-grid">
+          <!-- skeleton -->
+          <div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+          <div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+          <div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+          <div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATALOG PAGE -->
+    <div class="page" id="page-catalog">
+      <div class="search-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="search" class="search-input" id="mini-search" data-i18n-placeholder="search_placeholder" placeholder="Поиск товаров...">
+        </div>
+      </div>
+      <div class="filter-tabs" id="catalog-filter-tabs">
+        <button class="filter-tab active" data-cat="" onclick="catalogFilter(this,'')">Все</button>
+        <button class="filter-tab" data-cat="shoes" onclick="catalogFilter(this,'shoes')" data-i18n="shoes">Обувь</button>
+        <button class="filter-tab" data-cat="clothing" onclick="catalogFilter(this,'clothing')" data-i18n="clothing">Одежда</button>
+        <button class="filter-tab" data-cat="running" onclick="catalogFilter(this,'running')" data-i18n="running">Бег</button>
+        <button class="filter-tab" data-cat="training" onclick="catalogFilter(this,'training')" data-i18n="training">Тренировка</button>
+        <button class="filter-tab" data-cat="sale" onclick="catalogFilter(this,'sale')" data-i18n="sale">Скидки</button>
+      </div>
+      <div class="catalog-grid" id="catalog-mini-grid">
+        <div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+        <div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+        <div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+        <div class="skel-card"><div class="skel-img"></div><div class="skel-line"></div><div class="skel-line short"></div></div>
+      </div>
+    </div>
+
+    <!-- CART PAGE -->
+    <div class="page" id="page-cart">
+      <div class="cart-page-header">
+        <div class="cart-page-title" data-i18n="cart">Корзина</div>
+      </div>
+      <div id="cart-content"></div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page" id="page-profile">
+      <div class="profile-header" id="profile-header">
+        <div class="profile-avatar" id="profile-avatar">👤</div>
+        <div class="profile-name" id="profile-name">Гость</div>
+        <div class="profile-username" id="profile-username">@username</div>
+      </div>
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-num" id="stat-orders">0</div>
+          <div class="profile-stat-label" data-i18n="orders">Заказы</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num" id="stat-wishlist">0</div>
+          <div class="profile-stat-label" data-i18n="wishlist">Избранное</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-num" id="stat-cart">0</div>
+          <div class="profile-stat-label" data-i18n="in_cart">В корзине</div>
+        </div>
+      </div>
+      <div class="profile-menu">
+        <button class="profile-menu-item">
+          <div class="profile-menu-icon" style="background:#fff0f0">📦</div>
+          <div class="profile-menu-text">
+            <div class="profile-menu-title" data-i18n="my_orders">Мои заказы</div>
+            <div class="profile-menu-sub" data-i18n="orders_sub">История покупок</div>
+          </div>
+          <span class="profile-menu-arrow">›</span>
+        </button>
+        <button class="profile-menu-item">
+          <div class="profile-menu-icon" style="background:#fff0f0">❤️</div>
+          <div class="profile-menu-text">
+            <div class="profile-menu-title" data-i18n="favorites">Избранное</div>
+            <div class="profile-menu-sub" data-i18n="favorites_sub">Сохранённые товары</div>
+          </div>
+          <span class="profile-menu-arrow">›</span>
+        </button>
+        <button class="profile-menu-item">
+          <div class="profile-menu-icon" style="background:#f0f8ff">📍</div>
+          <div class="profile-menu-text">
+            <div class="profile-menu-title" data-i18n="addresses">Адреса доставки</div>
+            <div class="profile-menu-sub" data-i18n="addresses_sub">Управление адресами</div>
+          </div>
+          <span class="profile-menu-arrow">›</span>
+        </button>
+        <button class="profile-menu-item">
+          <div class="profile-menu-icon" style="background:#f0fff0">🌐</div>
+          <div class="profile-menu-text">
+            <div class="profile-menu-title" data-i18n="language">Язык</div>
+            <div class="profile-menu-sub" id="current-lang-label">Русский</div>
+          </div>
+          <span class="profile-menu-arrow">›</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM TABS -->
+  <nav class="tabs">
+    <button class="tab active" onclick="showPage('home')" id="tab-home">
+      <div class="tab-indicator"></div>
+      <span class="tab-icon">🏠</span>
+      <span data-i18n="home">Главная</span>
+    </button>
+    <button class="tab" onclick="showPage('catalog')" id="tab-catalog">
+      <div class="tab-indicator"></div>
+      <span class="tab-icon">🗂️</span>
+      <span data-i18n="catalog">Каталог</span>
+    </button>
+    <button class="tab" onclick="showPage('cart')" id="tab-cart">
+      <div class="tab-indicator"></div>
+      <span class="tab-icon">🛒</span>
+      <span data-i18n="cart_tab">Корзина</span>
+    </button>
+    <button class="tab" onclick="showPage('profile')" id="tab-profile">
+      <div class="tab-indicator"></div>
+      <span class="tab-icon">👤</span>
+      <span data-i18n="profile">Профиль</span>
+    </button>
+  </nav>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="product-modal" onclick="closeProductModal(event)">
+  <div class="modal-sheet" id="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-img" id="modal-img"></div>
+    <div class="modal-body">
+      <div class="modal-brand" id="modal-brand"></div>
+      <div class="modal-name" id="modal-name"></div>
+      <div class="modal-price" id="modal-price"></div>
+      <div class="modal-size-label" data-i18n="select_size">Выберите размер</div>
+      <div class="modal-sizes" id="modal-sizes"></div>
+      <button class="modal-add-btn" id="modal-add-btn" onclick="addToCartFromModal()">
+        <span data-i18n="add_to_cart">+ В корзину</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="order-modal" onclick="closeOrderModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="order-form">
+      <div class="order-title" data-i18n="checkout">Оформление</div>
+      <div class="form-group-mini">
+        <label class="form-label-mini" data-i18n="name">Имя</label>
+        <input type="text" class="form-input-mini" id="order-name" data-i18n-placeholder="name_placeholder" placeholder="Ваше имя">
+      </div>
+      <div class="form-group-mini">
+        <label class="form-label-mini" data-i18n="phone">Телефон</label>
+        <input type="tel" class="form-input-mini" id="order-phone" placeholder="+998 90 000 00 00">
+      </div>
+      <div class="form-group-mini">
+        <label class="form-label-mini" data-i18n="address">Адрес</label>
+        <input type="text" class="form-input-mini" id="order-address" data-i18n-placeholder="address_placeholder" placeholder="Адрес доставки">
+      </div>
+      <div class="form-group-mini">
+        <label class="form-label-mini" data-i18n="comment">Комментарий</label>
+        <input type="text" class="form-input-mini" id="order-comment" data-i18n-placeholder="comment_placeholder" placeholder="Необязательно">
+      </div>
+      <button class="modal-add-btn" style="margin-top:0.5rem" onclick="submitOrder()" data-i18n="submit_order">Оформить заказ</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+/* ── SUPABASE ── */
+const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
+const SB_KEY = 'sb_publishable_OJBupDTCJGVIJpkoV8q3gg_mcvRddQb';
+
+/* ── TELEGRAM ── */
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  tg.setHeaderColor('#1A1A1A');
+  tg.setBackgroundColor('#FAF8F5');
+}
+
+/* ── I18N ── */
+const LANGS = {
+  ru: {
+    home:'Главная', catalog:'Каталог', cart_tab:'Корзина', profile:'Профиль',
+    categories:'Категории', all:'Все', shoes:'Обувь', clothing:'Одежда',
+    running:'Бег', training:'Трен.', sale:'Скидки',
+    new_arrivals:'Новинки', see_all:'Все →',
+    search_placeholder:'Поиск товаров...',
+    select_size:'Выберите размер',
+    add_to_cart:'+ В корзину',
+    cart:'Корзина', checkout:'Оформление',
+    name:'Имя', phone:'Телефон', address:'Адрес', comment:'Комментарий',
+    name_placeholder:'Ваше имя', address_placeholder:'Адрес доставки',
+    comment_placeholder:'Необязательно',
+    submit_order:'Оформить заказ',
+    orders:'Заказы', wishlist:'Избранное', in_cart:'В корзине',
+    my_orders:'Мои заказы', orders_sub:'История покупок',
+    favorites:'Избранное', favorites_sub:'Сохранённые товары',
+    addresses:'Адреса доставки', addresses_sub:'Управление адресами',
+    language:'Язык', lang_label:'Русский',
+    toast_added:'Добавлено в корзину',
+    toast_size:'Выберите размер!',
+    toast_order_ok:'Заказ оформлен! Мы свяжемся с вами.',
+    toast_fill:'Заполните все поля',
+    empty_cart:'Корзина пуста', go_catalog:'Перейти в каталог',
+    total:'Итого', delivery:'Доставка', free:'Бесплатно',
+  },
+  uz: {
+    home:"Bosh sahifa", catalog:"Katalog", cart_tab:"Savat", profile:"Profil",
+    categories:"Kategoriyalar", all:"Barchasi", shoes:"Poyabzal", clothing:"Kiyim",
+    running:"Yugurish", training:"Trenirovka", sale:"Chegirmalar",
+    new_arrivals:"Yangiliklar", see_all:"Barchasi →",
+    search_placeholder:"Mahsulot qidirish...",
+    select_size:"O'lchamni tanlang",
+    add_to_cart:"+ Savatga",
+    cart:"Savat", checkout:"Rasmiylashtirish",
+    name:"Ism", phone:"Telefon", address:"Manzil", comment:"Izoh",
+    name_placeholder:"Ismingiz", address_placeholder:"Yetkazib berish manzili",
+    comment_placeholder:"Ixtiyoriy",
+    submit_order:"Buyurtma berish",
+    orders:"Buyurtmalar", wishlist:"Sevimlilar", in_cart:"Savatda",
+    my_orders:"Mening buyurtmalarim", orders_sub:"Xaridlar tarixi",
+    favorites:"Sevimlilar", favorites_sub:"Saqlangan mahsulotlar",
+    addresses:"Yetkazib berish manzillari", addresses_sub:"Manzillarni boshqarish",
+    language:"Til", lang_label:"O'zbek",
+    toast_added:"Savatga qo'shildi",
+    toast_size:"O'lchamni tanlang!",
+    toast_order_ok:"Buyurtma qabul qilindi!",
+    toast_fill:"Barcha maydonlarni to'ldiring",
+    empty_cart:"Savat bo'sh", go_catalog:"Katalogga o'tish",
+    total:"Jami", delivery:"Yetkazib berish", free:"Bepul",
+  },
+  en: {
+    home:"Home", catalog:"Catalog", cart_tab:"Cart", profile:"Profile",
+    categories:"Categories", all:"All", shoes:"Shoes", clothing:"Clothing",
+    running:"Running", training:"Training", sale:"Sale",
+    new_arrivals:"New Arrivals", see_all:"All →",
+    search_placeholder:"Search products...",
+    select_size:"Select size",
+    add_to_cart:"+ Add to cart",
+    cart:"Cart", checkout:"Checkout",
+    name:"Name", phone:"Phone", address:"Address", comment:"Comment",
+    name_placeholder:"Your name", address_placeholder:"Delivery address",
+    comment_placeholder:"Optional",
+    submit_order:"Place order",
+    orders:"Orders", wishlist:"Wishlist", in_cart:"In cart",
+    my_orders:"My orders", orders_sub:"Purchase history",
+    favorites:"Favorites", favorites_sub:"Saved items",
+    addresses:"Delivery addresses", addresses_sub:"Manage addresses",
+    language:"Language", lang_label:"English",
+    toast_added:"Added to cart",
+    toast_size:"Please select size!",
+    toast_order_ok:"Order placed! We'll contact you.",
+    toast_fill:"Please fill all fields",
+    empty_cart:"Cart is empty", go_catalog:"Go to catalog",
+    total:"Total", delivery:"Delivery", free:"Free",
+  }
+};
+
+let currentLang = localStorage.getItem('mini_lang') || 'ru';
+
+function t(key) { return LANGS[currentLang][key] || key; }
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('mini_lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === lang.toUpperCase());
+  });
+  applyTranslations();
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (LANGS[currentLang][key]) el.textContent = LANGS[currentLang][key];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.dataset.i18nPlaceholder;
+    if (LANGS[currentLang][key]) el.placeholder = LANGS[currentLang][key];
+  });
+  document.getElementById('current-lang-label').textContent = t('lang_label');
+}
+
+/* ── NAVIGATION ── */
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+
+  if (name === 'cart') renderCart();
+  if (name === 'catalog' && !catalogLoaded) loadCatalog();
+
+  if (tg) {
+    if (name !== 'home') {
+      tg.BackButton.show();
+      tg.BackButton.onClick(() => showPage('home'));
+    } else {
+      tg.BackButton.hide();
+    }
+  }
+}
+
+/* ── TOAST ── */
+function showToast(msg, type = '') {
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = `toast-mini ${type}`;
+  el.textContent = msg;
+  wrap.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => el.remove(), 300);
+  }, 2500);
+}
+
+/* ── CART ── */
+let cartItems = JSON.parse(localStorage.getItem('mini_cart') || '[]');
+
+function saveCart() { localStorage.setItem('mini_cart', JSON.stringify(cartItems)); }
+
+function updateCartBadge() {
+  const total = cartItems.reduce((s, i) => s + i.qty, 0);
+  const badge = document.getElementById('cart-badge');
+  if (badge) { badge.textContent = total; badge.style.display = total > 0 ? 'flex' : 'none'; }
+  const statCart = document.getElementById('stat-cart');
+  if (statCart) statCart.textContent = total;
+}
+
+function addToCart(product) {
+  const ex = cartItems.find(i => i.id === product.id && i.size === product.size);
+  if (ex) ex.qty++;
+  else cartItems.push({ ...product, qty: 1 });
+  saveCart();
+  updateCartBadge();
+  showToast('✓ ' + t('toast_added'), 'success');
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
+}
+
+function removeFromCart(id, size) {
+  cartItems = cartItems.filter(i => !(i.id === id && i.size === size));
+  saveCart();
+  updateCartBadge();
+  renderCart();
+}
+
+function changeQty(id, size, delta) {
+  const item = cartItems.find(i => i.id === id && i.size === size);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cartItems = cartItems.filter(i => !(i.id === id && i.size === size));
+  saveCart();
+  updateCartBadge();
+  renderCart();
+}
+
+function getCartTotal() { return cartItems.reduce((s, i) => s + i.price * i.qty, 0); }
+
+function renderCart() {
+  const el = document.getElementById('cart-content');
+  if (!el) return;
+  if (cartItems.length === 0) {
+    el.innerHTML = `<div class="cart-empty-state">
+      <div class="cart-empty-icon">🛒</div>
+      <div class="cart-empty-text">${t('empty_cart')}</div>
+      <button class="modal-add-btn" style="width:auto;padding:.6rem 1.5rem;margin-top:.5rem" onclick="showPage('catalog')">${t('go_catalog')}</button>
+    </div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="cart-items-list">
+      ${cartItems.map(item => `
+        <div class="cart-item-mini">
+          <div class="cart-item-mini-img">
+            ${item.image ? `<img src="${item.image}">` : '👟'}
+          </div>
+          <div class="cart-item-mini-info">
+            <div class="cart-item-mini-name">${item.name}</div>
+            <div class="cart-item-mini-meta">${t('select_size')}: ${item.size}</div>
+            <div class="cart-item-mini-controls">
+              <button class="qty-btn" onclick="changeQty('${item.id}','${item.size}',-1)">−</button>
+              <span class="qty-num">${item.qty}</span>
+              <button class="qty-btn" onclick="changeQty('${item.id}','${item.size}',1)">+</button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem">
+            <button class="cart-item-mini-remove" onclick="removeFromCart('${item.id}','${item.size}')">✕</button>
+            <div class="cart-item-mini-price">${(item.price * item.qty).toLocaleString('ru-RU')}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="cart-summary">
+      <div class="cart-summary-row"><span>${t('delivery')}</span><span>${t('free')}</span></div>
+      <div class="cart-summary-total">
+        <span>${t('total')}</span>
+        <strong>${getCartTotal().toLocaleString('ru-RU')} сум</strong>
+      </div>
+      <button class="btn-checkout-mini" onclick="openOrderModal()">${t('submit_order')}</button>
+    </div>`;
+}
+
+/* ── PRODUCT MODAL ── */
+let currentProduct = null;
+let currentSize = null;
+
+function openProductModal(product) {
+  currentProduct = product;
+  currentSize = null;
+  const images = Array.isArray(product.images) ? product.images : [];
+  const sizes  = Array.isArray(product.sizes)  ? product.sizes  : [];
+
+  document.getElementById('modal-img').innerHTML = images[0]
+    ? `<img src="${images[0]}" alt="${product.name}">`
+    : `<div class="modal-img-placeholder">👟</div>`;
+  document.getElementById('modal-brand').textContent = product.brand || 'Li-Ning';
+  document.getElementById('modal-name').textContent = product.name;
+  document.getElementById('modal-price').innerHTML = product.old_price
+    ? `<span class="old-p">${product.old_price.toLocaleString('ru-RU')}</span>${product.price.toLocaleString('ru-RU')} сум`
+    : `${product.price.toLocaleString('ru-RU')} сум`;
+
+  document.getElementById('modal-sizes').innerHTML = sizes.map(s => `
+    <button class="modal-size-btn" onclick="selectSize(this,'${s}')">${s}</button>
+  `).join('') || '<span style="font-size:.8rem;color:var(--gray-500)">Один размер</span>';
+
+  const addBtn = document.getElementById('modal-add-btn');
+  addBtn.classList.remove('added');
+  addBtn.querySelector('[data-i18n]').textContent = t('add_to_cart');
+
+  document.getElementById('product-modal').classList.add('open');
+  if (tg) tg.HapticFeedback?.impactOccurred('light');
+}
+
+function closeProductModal(e) {
+  if (e.target === document.getElementById('product-modal')) {
+    document.getElementById('product-modal').classList.remove('open');
+  }
+}
+
+function selectSize(btn, size) {
+  document.querySelectorAll('.modal-size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentSize = size;
+}
+
+function addToCartFromModal() {
+  if (!currentProduct) return;
+  const sizes = Array.isArray(currentProduct.sizes) ? currentProduct.sizes : [];
+  if (sizes.length > 0 && !currentSize) {
+    showToast('⚠ ' + t('toast_size'));
+    document.querySelectorAll('.modal-size-btn').forEach(b => {
+      b.style.borderColor = 'var(--red)';
+      setTimeout(() => b.style.borderColor = '', 1500);
+    });
+    return;
+  }
+  addToCart({
+    id: currentProduct.id,
+    name: currentProduct.name,
+    price: currentProduct.price,
+    size: currentSize || '—',
+    image: (currentProduct.images || [])[0] || null,
+    brand: currentProduct.brand || 'Li-Ning'
+  });
+  const btn = document.getElementById('modal-add-btn');
+  btn.classList.add('added');
+  btn.querySelector('[data-i18n]').textContent = '✓';
+  setTimeout(() => {
+    document.getElementById('product-modal').classList.remove('open');
+  }, 700);
+}
+
+/* ── ORDER MODAL ── */
+function openOrderModal() {
+  // Автозаполнение из Telegram
+  if (tg?.initDataUnsafe?.user) {
+    const user = tg.initDataUnsafe.user;
+    const nameEl = document.getElementById('order-name');
+    if (nameEl && !nameEl.value) {
+      nameEl.value = [user.first_name, user.last_name].filter(Boolean).join(' ');
+    }
+  }
+  document.getElementById('order-modal').classList.add('open');
+}
+
+function closeOrderModal(e) {
+  if (e.target === document.getElementById('order-modal')) {
+    document.getElementById('order-modal').classList.remove('open');
+  }
+}
+
+async function submitOrder() {
+  const name    = document.getElementById('order-name').value.trim();
+  const phone   = document.getElementById('order-phone').value.trim();
+  const address = document.getElementById('order-address').value.trim();
+  const comment = document.getElementById('order-comment').value.trim();
+
+  if (!name || !phone || !address) {
+    showToast('⚠ ' + t('toast_fill'));
+    ['order-name','order-phone','order-address'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) el.classList.add('error');
+    });
+    return;
+  }
+
+  const tgUser = tg?.initDataUnsafe?.user;
+  const orderData = {
+    customer_name: name,
+    customer_phone: phone,
+    delivery_address: address,
+    comment: comment || null,
+    items: cartItems,
+    total: getCartTotal(),
+    status: 'new',
+    source: 'telegram_miniapp',
+    tg_user_id: tgUser?.id || null,
+    tg_username: tgUser?.username || null,
+  };
+
+  try {
+    await fetch(`${SB_URL}/rest/v1/orders`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(orderData)
+    });
+
+    cartItems = [];
+    saveCart();
+    updateCartBadge();
+    document.getElementById('order-modal').classList.remove('open');
+    showToast('🎉 ' + t('toast_order_ok'), 'success');
+    renderCart();
+
+    if (tg) {
+      tg.HapticFeedback?.notificationOccurred('success');
+      setTimeout(() => tg.close(), 2000);
+    }
+  } catch(e) {
+    showToast('Ошибка. Попробуйте снова.');
+  }
+}
+
+/* ── PRODUCTS ── */
+let allProducts = [];
+let catalogLoaded = false;
+
+async function fetchAllProducts() {
+  const res = await fetch(
+    `${SB_URL}/rest/v1/products?is_active=eq.true&order=created_at.desc`,
+    { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+  );
+  return await res.json();
+}
+
+function buildMiniCard(p) {
+  const images = Array.isArray(p.images) ? p.images : [];
+  const imgHtml = images[0]
+    ? `<img src="${images[0]}" alt="${p.name}">`
+    : `<div class="mini-card-img-placeholder">👟</div>`;
+  const badge = p.badge ? `<span class="mini-card-badge">${p.badge}</span>` : '';
+  const oldPrice = p.old_price ? `<span class="old">${p.old_price.toLocaleString('ru-RU')}</span>` : '';
+
+  return `
+    <div class="mini-card" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">
+      <div class="mini-card-img">
+        ${badge}
+        ${imgHtml}
+        <button class="mini-card-wish" id="wish-${p.id}" onclick="event.stopPropagation();toggleWish('${p.id}',this)">♡</button>
+      </div>
+      <div class="mini-card-info">
+        <div class="mini-card-brand">${p.brand || 'Li-Ning'}</div>
+        <div class="mini-card-name">${p.name}</div>
+        <div class="mini-card-footer">
+          <div class="mini-card-price">${oldPrice}${p.price.toLocaleString('ru-RU')}</div>
+          <button class="mini-card-add" id="add-${p.id}" onclick="event.stopPropagation();quickAdd(${JSON.stringify(p).replace(/"/g,'&quot;')},this)">+</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function quickAdd(product, btn) {
+  const sizes = Array.isArray(product.sizes) ? product.sizes : [];
+  if (sizes.length > 0) {
+    openProductModal(product);
+    return;
+  }
+  addToCart({ id: product.id, name: product.name, price: product.price, size: '—', image: (product.images||[])[0]||null, brand: product.brand||'Li-Ning' });
+  btn.classList.add('added');
+  btn.textContent = '✓';
+  setTimeout(() => { btn.classList.remove('added'); btn.textContent = '+'; }, 1500);
+}
+
+let wishlist = JSON.parse(localStorage.getItem('mini_wishlist') || '[]');
+function toggleWish(id, btn) {
+  const idx = wishlist.indexOf(id);
+  if (idx > -1) { wishlist.splice(idx, 1); btn.classList.remove('wished'); btn.textContent = '♡'; }
+  else { wishlist.push(id); btn.classList.add('wished'); btn.textContent = '♥'; }
+  localStorage.setItem('mini_wishlist', JSON.stringify(wishlist));
+  const statWish = document.getElementById('stat-wishlist');
+  if (statWish) statWish.textContent = wishlist.length;
+  if (tg) tg.HapticFeedback?.selectionChanged();
+}
+
+/* ── HOME: SLIDER ── */
+async function loadMiniSlider() {
+  try {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/slides?is_active=eq.true&order=sort_order.asc`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    );
+    const slides = await res.json();
+    if (!slides.length) return;
+
+    const wrap = document.getElementById('mini-slider');
+    const dotsEl = document.getElementById('mini-dots');
+
+    // Убираем skeleton
+    wrap.querySelector('.slide-skeleton')?.remove();
+
+    slides.forEach((s, i) => {
+      const el = document.createElement('div');
+      el.className = `slide ${i === 0 ? 'active' : ''}`;
+      if (s.bg_image) el.style.backgroundImage = `url('${s.bg_image}')`;
+      else el.style.background = s.bg_color || '#1a1a1a';
+      el.innerHTML = `
+        <div class="slide-overlay"></div>
+        <div class="slide-content">
+          ${s.subtitle ? `<div class="slide-tag">${s.subtitle}</div>` : ''}
+          <div class="slide-title">${s.title || ''}</div>
+          ${s.button_text ? `<button class="slide-btn" onclick="event.stopPropagation();location.href='${s.button_link||'#'}'">${s.button_text}</button>` : ''}
+        </div>`;
+      wrap.appendChild(el);
+
+      const dot = document.createElement('div');
+      dot.className = `slide-dot ${i === 0 ? 'active' : ''}`;
+      dotsEl.appendChild(dot);
+    });
+
+    let cur = 0;
+    const go = (idx) => {
+      document.querySelectorAll('#mini-slider .slide').forEach((s,i) => s.classList.toggle('active', i === idx));
+      document.querySelectorAll('#mini-dots .slide-dot').forEach((d,i) => d.classList.toggle('active', i === idx));
+      cur = idx;
+    };
+    setInterval(() => go((cur + 1) % slides.length), 4000);
+  } catch(e) { console.log('Слайды:', e); }
+}
+
+/* ── HOME: PRODUCTS ── */
+async function loadHomeProducts(category = '') {
+  const grid = document.getElementById('home-mini-grid');
+  try {
+    const products = allProducts.length ? allProducts : await fetchAllProducts();
+    if (!allProducts.length) allProducts = products;
+
+    const filtered = category ? products.filter(p => p.category === category) : products;
+    const shown = filtered.slice(0, 6);
+
+    grid.innerHTML = shown.length
+      ? shown.map(buildMiniCard).join('')
+      : `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--gray-500)">Товары скоро появятся</div>`;
+  } catch(e) { console.error(e); }
+}
+
+function filterByCategory(el, cat) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  loadHomeProducts(cat);
+}
+
+/* ── CATALOG ── */
+let catalogCategory = '';
+let catalogSearch = '';
+
+async function loadCatalog() {
+  catalogLoaded = true;
+  const grid = document.getElementById('catalog-mini-grid');
+  try {
+    if (!allProducts.length) allProducts = await fetchAllProducts();
+    renderCatalogGrid();
+  } catch(e) { console.error(e); }
+}
+
+function renderCatalogGrid() {
+  const grid = document.getElementById('catalog-mini-grid');
+  let products = allProducts;
+  if (catalogCategory) products = products.filter(p => p.category === catalogCategory);
+  if (catalogSearch) products = products.filter(p =>
+    p.name.toLowerCase().includes(catalogSearch) ||
+    (p.brand||'').toLowerCase().includes(catalogSearch)
+  );
+  grid.innerHTML = products.length
+    ? products.map(buildMiniCard).join('')
+    : `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--gray-500)">Товары не найдены</div>`;
+}
+
+function catalogFilter(btn, cat) {
+  catalogCategory = cat;
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCatalogGrid();
+}
+
+document.getElementById('mini-search').addEventListener('input', function() {
+  catalogSearch = this.value.toLowerCase().trim();
+  renderCatalogGrid();
+});
+
+/* ── PROFILE: TELEGRAM USER ── */
+function loadProfile() {
+  if (tg?.initDataUnsafe?.user) {
+    const user = tg.initDataUnsafe.user;
+    document.getElementById('profile-name').textContent =
+      [user.first_name, user.last_name].filter(Boolean).join(' ') || 'Пользователь';
+    document.getElementById('profile-username').textContent =
+      user.username ? '@' + user.username : '';
+    document.getElementById('profile-avatar').textContent =
+      (user.first_name || 'U')[0].toUpperCase();
+  }
+  document.getElementById('stat-wishlist').textContent = wishlist.length;
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  applyTranslations();
+  updateCartBadge();
+  loadProfile();
+  loadMiniSlider();
+  loadHomeProducts();
+});
+</script>
+</body>
+</html>
