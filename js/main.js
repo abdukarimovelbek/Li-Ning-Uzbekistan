@@ -976,3 +976,19 @@ const HeroSlider = (() => {
   updateNav();
   window.addEventListener('scroll', updateNav, { passive: true });
 })();
+
+// Мегаменю top — динамически под navbar
+(function() {
+  const navbar = document.querySelector('.navbar');
+  const style  = document.createElement('style');
+  document.head.appendChild(style);
+
+  function updateMegaTop() {
+    const navBottom = navbar ? navbar.getBoundingClientRect().bottom : 96;
+    style.textContent = `.mega-menu { top: ${navBottom}px !important; }`;
+  }
+
+  updateMegaTop();
+  window.addEventListener('scroll', updateMegaTop, { passive: true });
+  window.addEventListener('resize', updateMegaTop);
+})();
