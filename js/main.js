@@ -889,7 +889,9 @@ const HeroSlider = (() => {
   const renderSlides = (data) => {
     const container = document.getElementById('hero-slider');
     const dotsContainer = document.getElementById('slider-dots');
-    if (!container) return;
+    // Убираем skeleton
+    const skeleton = document.getElementById('slider-skeleton');
+    if (skeleton) skeleton.remove();
 
     // Очищаем
     container.innerHTML = '';
