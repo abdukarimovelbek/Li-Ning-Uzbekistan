@@ -29,11 +29,7 @@
     }
 
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
-<<<<<<< HEAD
-
-=======
     
->>>>>>> e6aaadc78f9bb830066ce3ec01bec3b0e535e227
     html, body { 
       height: 100%; 
       overflow: hidden; 
@@ -42,10 +38,7 @@
     html::-webkit-scrollbar, body::-webkit-scrollbar { 
       display: none; 
     }
-<<<<<<< HEAD
-=======
     
->>>>>>> e6aaadc78f9bb830066ce3ec01bec3b0e535e227
     body {
       font-family: var(--font-body);
       background: var(--cream);
@@ -1287,7 +1280,8 @@ const LANGS = {
     toast_order_ok:'Заказ оформлен! Мы свяжемся с вами.',
     toast_fill:'Заполните все поля',
     empty_cart:'Корзина пуста', go_catalog:'Перейти в каталог',
-    total:'Итого', delivery:'Доставка', free:'Бесплатно',
+    total:'Итого', delivery:'Доставка', free:'Бесплатно', no_products: 'Товары скоро появятся',
+    not_found: 'Товары не найдены',
   },
   uz: {
     home:"Bosh sahifa", catalog:"Katalog", cart_tab:"Savat", profile:"Profil",
@@ -1312,7 +1306,8 @@ const LANGS = {
     toast_order_ok:"Buyurtma qabul qilindi!",
     toast_fill:"Barcha maydonlarni to'ldiring",
     empty_cart:"Savat bo'sh", go_catalog:"Katalogga o'tish",
-    total:"Jami", delivery:"Yetkazib berish", free:"Bepul",
+    total:"Jami", delivery:"Yetkazib berish", free:"Bepul", no_products: "Mahsulotlar tez orada qo'shiladi",
+    not_found: 'Mahsulot topilmadi',
   },
   en: {
     home:"Home", catalog:"Catalog", cart_tab:"Cart", profile:"Profile",
@@ -1337,7 +1332,8 @@ const LANGS = {
     toast_order_ok:"Order placed! We'll contact you.",
     toast_fill:"Please fill all fields",
     empty_cart:"Cart is empty", go_catalog:"Go to catalog",
-    total:"Total", delivery:"Delivery", free:"Free",
+    total:"Total", delivery:"Delivery", free:"Free", no_products: 'Products coming soon',
+    not_found: 'No products found',
   }
 };
 
@@ -1750,7 +1746,7 @@ async function loadHomeProducts(category = '') {
 
     grid.innerHTML = shown.length
       ? shown.map(buildMiniCard).join('')
-      : `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--gray-500)">Товары скоро появятся</div>`;
+      : `<div style="grid-column:1/-1;text-align:center;padding:2rem;color:var(--gray-500)">${t('no_products')}</div>`;
   } catch(e) { console.error(e); }
 }
 
@@ -1783,7 +1779,7 @@ function renderCatalogGrid() {
   );
   grid.innerHTML = products.length
     ? products.map(buildMiniCard).join('')
-    : `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--gray-500)">Товары не найдены</div>`;
+    : `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--gray-500)">${t('not_found')}</div>`;
 }
 
 function catalogFilter(btn, cat) {
