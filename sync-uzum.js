@@ -83,70 +83,72 @@ async function getProductDetails(productId) {
 }
 
 // ── 3. Преобразуем формат Узум → формат нашей БД ────────────
-function mapUzumToSupabase(uzumProduct, details) {
-  const p = details || uzumProduct;
+function mapUzumToSupabase(uzumProduct) {
+  const p = uzumProduct;
 
-  // Фотографии
+  // Фото — берём из previewImage каждого SKU
   const images = [];
-  if (p.photos?.length) {
-    p.photos.forEach(photo => {
-      const url = photo.url || photo.photoUrl || photo;
-      if (url) images.push(url);
-    });
-  } else if (p.photo) {
-    images.push(p.photo);
-  }
-
-  // Размеры
-  const sizes = [];
-  const colors = [];
-
   if (p.skuList?.length) {
     p.skuList.forEach(sku => {
-      const skuTitle = sku.skuTitle || '';
-      const parts = skuTitle.split('-');
-      if (parts.length >= 2) {
-        const size = parts[parts.length - 1].trim();
-        const color = parts.slice(0, parts.length - 1).join('-').trim();
-        if (size && !sizes.includes(size)) sizes.push(size);
-        if (color && !colors.includes(color)) colors.push(color);
+      if (sku.previewImage && !images.includes(sku.previewImage)) {
+        images.push(`https://images.uzum.uz/${sku.previewImage}`);
       }
     });
   }
 
-  // Цена (в тийинах → сумы)
-  const price    = Math.round((p.sellPrice || p.minSellPrice || p.price || 0) / 100);
-  const oldPrice = p.fullPrice ? Math.round(p.fullPrice / 100) : null;
+  // Размеры и цвета из characteristics ("10, Бирюзовый")
+  const sizes = [];
+  const colors = [];
+  if (p.skuList?.length) {
+    p.skuList.forEach(sku => {
+      const chars = sku.characteristics || '';
+      const parts = chars.split(',').map(s => s.trim());
+      if (parts[0] && !sizes.includes(parts[0])) sizes.push(parts[0]);
+      if (parts[1] && !colors.includes(parts[1])) colors.push(parts[1]);
+    });
+  }
+
+  // Цена — делим на 100 (тийины → сумы)
+  const prices = p.skuList?.map(s => s.price).filter(Boolean) || [];
+  const price = prices.length > 0 ? Math.round(Math.min(...prices) / 100) : 0;
+  const maxPrice = prices.length > 0 ? Math.round(Math.max(...prices) / 100) : 0;
+  const oldPrice = maxPrice > price ? maxPrice : null;
+
+  // Артикул из skuFullTitle: "LINING1-ABFT027-БИРЮЗ-10" → берём часть
+  const skuFull = p.skuList?.[0]?.skuFullTitle || '';
+  const parts = skuFull.split('-');
+  const article = parts.length >= 2 ? parts[1] : String(p.productId);
+
+  // Название — берём из первого SKU
+  const name = p.skuList?.[0]?.productTitle || p.title || 'Товар Li-Ning';
 
   // Категория
   const categoryMap = {
-    'Обувь': 'shoes', 'Кроссовки': 'shoes', 'Кеды': 'shoes',
-    'Одежда': 'clothing', 'Футболки': 'clothing', 'Шорты': 'clothing',
-    'Куртки': 'clothing', 'Худи': 'clothing',
-    'Бег': 'running', 'Беговые': 'running',
-    'Тренировка': 'training', 'Фитнес': 'training',
-    'Аксессуары': 'accessories',
+    'Кроссовки': 'shoes', 'Обувь': 'shoes', 'Кеды': 'shoes', 'Шлепанцы': 'shoes',
+    'Футболка': 'clothing', 'Штаны': 'clothing', 'Шорты': 'clothing',
+    'Брюки': 'clothing', 'Лонгслив': 'clothing', 'Поло': 'clothing',
+    'Сумка': 'accessories', 'Рюкзак': 'accessories', 'Бейсболка': 'accessories',
   };
-
-  const categoryName = p.category?.title || p.categoryName || '';
-  let category = 'shoes'; // по умолчанию
+  let category = 'shoes';
   for (const [key, val] of Object.entries(categoryMap)) {
-    if (categoryName.includes(key)) { category = val; break; }
+    if ((p.category || '').includes(key) || name.includes(key)) {
+      category = val; break;
+    }
   }
 
   return {
-    article:     p.skuCode || p.article || String(p.id),
-    name:        p.title || p.name || 'Товар Li-Ning',
-    description: p.description || p.longDescription || null,
+    article,
+    name,
+    description: null,
     category,
-    brand:       p.brand || 'Li Ning',
+    brand: 'Li Ning',
     price,
-    old_price:   oldPrice && oldPrice > price ? oldPrice : null,
-    sizes:       sizes.length > 0 ? sizes : null,
-    colors:      colors.length > 0 ? colors : null,
-    images:      images.length > 0 ? images : null,
-    badge:       oldPrice && oldPrice > price ? 'SALE' : null,
-    is_active:   true,
+    old_price: oldPrice,
+    sizes: sizes.length > 0 ? sizes : null,
+    colors: colors.length > 0 ? colors : null,
+    images: images.length > 0 ? images : null,
+    badge: oldPrice ? 'SALE' : null,
+    is_active: true,
   };
 }
 
@@ -212,7 +214,7 @@ async function main() {
       process.stdout.write(`  ${i + 1}/${uzumList.length} - ${item.title || item.name}... `);
 
       const details = await getProductDetails(productId);
-      const mapped = mapUzumToSupabase(item, details);
+      const mapped = mapUzumToSupabase(item);
       detailedProducts.push(mapped);
 
       console.log(`✓ (${mapped.images?.length || 0} фото, ${mapped.sizes?.length || 0} размеров)`);
