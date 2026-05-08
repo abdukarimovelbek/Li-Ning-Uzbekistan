@@ -24,7 +24,7 @@ async function getUzumProducts() {
   while (true) {
     const res = await fetch(`${UZUM_API}/product/list?page=${page}&size=${size}`, {
       headers: {
-        'Authorization': `Basic ${UZUM_TOKEN}`,
+        'Authorization': UZUM_TOKEN,
         'Content-Type': 'application/json',
         'Accept': 'application/json'
       }
@@ -57,7 +57,7 @@ async function getProductDetails(productId) {
   try {
     const res = await fetch(`${UZUM_API}/product/${productId}`, {
       headers: {
-        'Authorization': `Basic ${UZUM_TOKEN}`,
+        'Authorization': UZUM_TOKEN,
         'Content-Type': 'application/json'
       }
     });
