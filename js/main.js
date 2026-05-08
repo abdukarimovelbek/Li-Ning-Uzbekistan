@@ -220,11 +220,12 @@ const ProductCards = (() => {
         addBtn.addEventListener('click', e => {
           e.stopPropagation();
           const data = {
-            id:    card.dataset.productId || Math.random().toString(36).slice(2),
-            name:  card.querySelector('.product-name')?.textContent || 'Товар',
-            price: parseInt(card.dataset.price || '0'),
-            size:  card.dataset.defaultSize || '42',
-            emoji: card.querySelector('.product-img')?.textContent?.trim() || '👟',
+            id:      card.dataset.productId || Math.random().toString(36).slice(2),
+            article: card.dataset.article || card.dataset.productId,
+            name:    card.querySelector('.product-name')?.textContent || 'Товар',
+            price:   parseInt(card.dataset.price || '0'),
+            size:    card.dataset.defaultSize || '42',
+            emoji:   card.querySelector('.product-img')?.textContent?.trim() || '👟',
           };
           Cart.add(data);
           // Animate button
@@ -756,6 +757,7 @@ const buildCard = (p) => {
   return `
     <div class="product-card"
       data-product-id="${p.id}"
+      data-article="${p.article || ''}"
       data-price="${p.price}"
       data-brand="${(p.brand||'').toLowerCase()}"
       data-sizes="${sizes.join(',')}"

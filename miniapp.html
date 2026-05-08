@@ -1837,6 +1837,7 @@ function addToCartFromModal() {
   }
   addToCart({
     id: currentProduct.id,
+    article: currentProduct.article || currentProduct.id,
     name: currentProduct.name,
     price: currentProduct.price,
     size: currentSize || '—',
@@ -1912,7 +1913,7 @@ async function submitOrder() {
     comment:        comment || null,
     payment_method: payment,
     items:          cartItems.map(item => ({
-      article:  item.id,
+      article:  item.article || item.id,
       name:     item.name,
       price:    item.price,
       quantity: item.qty,
@@ -1999,7 +2000,7 @@ function quickAdd(product, btn) {
     openProductModal(product);
     return;
   }
-  addToCart({ id: product.id, name: product.name, price: product.price, size: '—', image: (product.images||[])[0]||null, brand: product.brand||'Li-Ning' });
+  addToCart({ id: product.id, article: product.article || product.id, name: product.name, price: product.price, size: '—', image: (product.images||[])[0]||null, brand: product.brand||'Li-Ning' });
   btn.classList.add('added');
   btn.textContent = '✓';
   setTimeout(() => { btn.classList.remove('added'); btn.textContent = '+'; }, 1500);
