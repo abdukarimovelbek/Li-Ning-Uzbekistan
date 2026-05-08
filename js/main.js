@@ -488,7 +488,7 @@ const OrderForm = (() => {
       inputs.forEach(input => { if (!validateField(input)) allValid = false; });
 
       if (!allValid) {
-        Toast.show('Проверьте форму', 'Заполните все обязательные поля', '');
+        window.Toast?.show('Проверьте форму', 'Заполните все обязательные поля', '');
         return;
       }
 
@@ -539,20 +539,20 @@ const OrderForm = (() => {
         if (res.ok) {
           const data = await res.json();
           const orderId = data[0]?.id?.slice(0, 8).toUpperCase() || 'XXXXXX';
-          Toast.show('🎉 Заказ принят!', `Номер заказа: ${orderId}`, 'success');
+          window.Toast?.show('🎉 Заказ принят!', `Номер заказа: ${orderId}`, 'success');
           Cart.clear();
           submitBtn.textContent = '✓ Заказ оформлен';
           setTimeout(() => window.location.href = 'index.html', 2500);
         } else {
           const err = await res.text();
           console.error('Ошибка заказа:', err);
-          Toast.show('Ошибка', 'Попробуйте снова', '');
+          window.Toast?.show('Ошибка', 'Попробуйте снова', '');
           submitBtn.disabled = false;
           submitBtn.textContent = 'Оформить заказ';
         }
       } catch(e) {
         console.error(e);
-        Toast.show('Ошибка соединения', 'Проверьте интернет', '');
+        window.Toast?.show('Ошибка соединения', 'Проверьте интернет', '');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Оформить заказ';
       }
