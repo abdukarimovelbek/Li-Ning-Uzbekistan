@@ -1375,9 +1375,11 @@ function showPage(name) {
   if (tg) {
     if (name !== 'home') {
       tg.BackButton.show();
+      tg.BackButton.offClick();
       tg.BackButton.onClick(() => showPage('home'));
     } else {
       tg.BackButton.hide();
+      tg.BackButton.offClick();
     }
   }
 }
