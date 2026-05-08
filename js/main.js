@@ -499,7 +499,7 @@ const OrderForm = (() => {
       }
 
       // Собираем товары из корзины
-      const cartItems = Cart.getItems();
+      const cartItems = window.Cart.getItems();
       const orderItems = cartItems.map(item => ({
         article:  item.id,
         name:     item.name,
@@ -521,7 +521,7 @@ const OrderForm = (() => {
         comment:         document.getElementById('comment')?.value.trim() || null,
         payment_method:  document.querySelector('.pay-option.selected input')?.value || null,
         items:           orderItems,
-        total:           Cart.getTotal(),
+        total:           window.Cart.getTotal(),
         status:          'new',
         source:          'website',
       };
@@ -542,7 +542,7 @@ const OrderForm = (() => {
           const data = await res.json();
           const orderId = data[0]?.id?.slice(0, 8).toUpperCase() || 'XXXXXX';
           window.Toast?.show('🎉 Заказ принят!', `Номер заказа: ${orderId}`, 'success');
-          Cart.clear();
+          window.Cart.clear();
           submitBtn.textContent = '✓ Заказ оформлен';
           setTimeout(() => window.location.href = 'index.html', 2500);
         } else {
