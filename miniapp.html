@@ -1000,6 +1000,114 @@
       opacity: 1;
     }
     .toast-mini.success { border-left-color: #22c55e; }
+    /* ── ORDER FORM ── */
+    .order-section {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .order-section-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray-900);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .order-step {
+      width: 22px; height: 22px;
+      background: var(--red);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .delivery-options-mini {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .delivery-opt {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.8rem;
+      border: 1.5px solid var(--gray-100);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .delivery-opt:has(input:checked) {
+      border-color: var(--red);
+      background: rgba(196,30,58,0.03);
+    }
+    .delivery-opt input { display: none; }
+    .delivery-opt-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .delivery-opt-content span:first-child {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray-900);
+    }
+    .delivery-opt-sub {
+      font-size: 0.7rem;
+      color: var(--gray-500);
+    }
+    .delivery-opt-price {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      color: var(--gray-900);
+      flex-shrink: 0;
+    }
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .pay-opt {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.9rem 0.5rem;
+      border: 1.5px solid var(--gray-100);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-align: center;
+    }
+    .pay-opt:has(input:checked) {
+      border-color: var(--red);
+      background: rgba(196,30,58,0.03);
+    }
+    .pay-opt input { display: none; }
+    .pay-opt-icon { font-size: 1.6rem; }
+    .pay-opt-name { font-size: 0.75rem; font-weight: 600; color: var(--gray-700); }
+    .order-total-mini {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-100);
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+    }
+    .order-total-row-mini {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--gray-500);
+      margin-bottom: 0.4rem;
+    }
+
   </style>
 </head>
 <body>
@@ -1216,28 +1324,119 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="order-form">
-      <div class="order-title" data-i18n="checkout">Оформление</div>
-      <div class="form-group-mini">
-        <label class="form-label-mini" data-i18n="name">Имя</label>
-        <input type="text" class="form-input-mini" id="order-name" data-i18n-placeholder="name_placeholder" placeholder="Ваше имя">
+      <div class="order-title">Оформление заказа</div>
+
+      <!-- 1. Личные данные -->
+      <div class="order-section">
+        <div class="order-section-title"><span class="order-step">1</span> Личные данные</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem">
+          <div class="form-group-mini">
+            <label class="form-label-mini">Имя *</label>
+            <input type="text" class="form-input-mini" id="order-first-name" placeholder="Азиз">
+          </div>
+          <div class="form-group-mini">
+            <label class="form-label-mini">Фамилия *</label>
+            <input type="text" class="form-input-mini" id="order-last-name" placeholder="Мирзаев">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem">
+          <div class="form-group-mini">
+            <label class="form-label-mini">Телефон *</label>
+            <input type="tel" class="form-input-mini" id="order-phone" placeholder="+998 90 123 45 67">
+          </div>
+          <div class="form-group-mini">
+            <label class="form-label-mini">Email</label>
+            <input type="email" class="form-input-mini" id="order-email" placeholder="email@mail.ru">
+          </div>
+        </div>
       </div>
-      <div class="form-group-mini">
-        <label class="form-label-mini" data-i18n="phone">Телефон</label>
-        <input type="tel" class="form-input-mini" id="order-phone" placeholder="+998 90 000 00 00">
+
+      <!-- 2. Способ доставки -->
+      <div class="order-section">
+        <div class="order-section-title"><span class="order-step">2</span> Способ доставки</div>
+        <div class="delivery-options-mini">
+          <label class="delivery-opt" id="del-courier">
+            <input type="radio" name="delivery" value="courier" checked onchange="updateDelivery(20000)">
+            <div class="delivery-opt-content">
+              <span>🚚 Курьерская доставка</span>
+              <span class="delivery-opt-sub">Доставка по Ташкенту — 1–2 рабочих дня</span>
+            </div>
+            <span class="delivery-opt-price">20 000 сум</span>
+          </label>
+          <label class="delivery-opt" id="del-pickup">
+            <input type="radio" name="delivery" value="pickup" onchange="updateDelivery(0)">
+            <div class="delivery-opt-content">
+              <span>🏪 Самовывоз</span>
+              <span class="delivery-opt-sub">Чиланзар, ул. Катартал 72 — готово через 2 ч</span>
+            </div>
+            <span class="delivery-opt-price">Бесплатно</span>
+          </label>
+          <label class="delivery-opt" id="del-express">
+            <input type="radio" name="delivery" value="express" onchange="updateDelivery(40000)">
+            <div class="delivery-opt-content">
+              <span>⚡ Экспресс-доставка</span>
+              <span class="delivery-opt-sub">Доставка в течение 3 часов</span>
+            </div>
+            <span class="delivery-opt-price">40 000 сум</span>
+          </label>
+        </div>
+        <div class="form-group-mini" style="margin-top:0.8rem">
+          <label class="form-label-mini">Адрес доставки *</label>
+          <input type="text" class="form-input-mini" id="order-address" placeholder="Ташкент, Чиланзар, ул. Катартал, дом 15">
+        </div>
+        <div class="form-group-mini">
+          <label class="form-label-mini">Комментарий</label>
+          <input type="text" class="form-input-mini" id="order-comment" placeholder="Домофон не работает, позвоните">
+        </div>
       </div>
-      <div class="form-group-mini">
-        <label class="form-label-mini" data-i18n="address">Адрес</label>
-        <input type="text" class="form-input-mini" id="order-address" data-i18n-placeholder="address_placeholder" placeholder="Адрес доставки">
+
+      <!-- 3. Способ оплаты -->
+      <div class="order-section">
+        <div class="order-section-title"><span class="order-step">3</span> Способ оплаты</div>
+        <div class="payment-grid">
+          <label class="pay-opt active" id="pay-cash">
+            <input type="radio" name="payment" value="cash" checked>
+            <span class="pay-opt-icon">💵</span>
+            <span class="pay-opt-name">Наличными</span>
+          </label>
+          <label class="pay-opt" id="pay-card">
+            <input type="radio" name="payment" value="card">
+            <span class="pay-opt-icon">💳</span>
+            <span class="pay-opt-name">Карта / Uzcard</span>
+          </label>
+          <label class="pay-opt" id="pay-click">
+            <input type="radio" name="payment" value="click">
+            <span class="pay-opt-icon">📱</span>
+            <span class="pay-opt-name">Click / Payme</span>
+          </label>
+          <label class="pay-opt" id="pay-installment">
+            <input type="radio" name="payment" value="installment">
+            <span class="pay-opt-icon">📅</span>
+            <span class="pay-opt-name">Рассрочка</span>
+          </label>
+        </div>
       </div>
-      <div class="form-group-mini">
-        <label class="form-label-mini" data-i18n="comment">Комментарий</label>
-        <input type="text" class="form-input-mini" id="order-comment" data-i18n-placeholder="comment_placeholder" placeholder="Необязательно">
+
+      <!-- Итого -->
+      <div class="order-total-mini">
+        <div class="order-total-row-mini">
+          <span>Товары</span>
+          <span id="order-items-total">0 сум</span>
+        </div>
+        <div class="order-total-row-mini">
+          <span>Доставка</span>
+          <span id="order-delivery-price">20 000 сум</span>
+        </div>
+        <div class="order-total-row-mini" style="font-weight:700;font-size:1rem;color:var(--gray-900);padding-top:0.5rem;border-top:1px solid var(--gray-100);margin-top:0.5rem">
+          <span>Итого</span>
+          <span id="order-grand-total" style="font-family:var(--font-display);font-size:1.4rem">0 сум</span>
+        </div>
       </div>
-      <button class="modal-add-btn" style="margin-top:0.5rem" onclick="submitOrder()" data-i18n="submit_order">Оформить заказ</button>
+
+      <button class="modal-add-btn" style="margin-top:1rem" onclick="submitOrder()">Оформить заказ →</button>
     </div>
   </div>
 </div>
-
 <!-- TOAST -->
 <div class="toast-wrap" id="toast-wrap"></div>
 
@@ -1555,15 +1754,33 @@ function addToCartFromModal() {
 }
 
 /* ── ORDER MODAL ── */
+let deliveryCost = 20000;
+
+function updateDelivery(cost) {
+  deliveryCost = cost;
+  updateOrderTotals();
+}
+
+function updateOrderTotals() {
+  const itemsTotal = getCartTotal();
+  const grand = itemsTotal + deliveryCost;
+  const el1 = document.getElementById('order-items-total');
+  const el2 = document.getElementById('order-delivery-price');
+  const el3 = document.getElementById('order-grand-total');
+  if (el1) el1.textContent = itemsTotal.toLocaleString('ru-RU') + ' сум';
+  if (el2) el2.textContent = deliveryCost === 0 ? 'Бесплатно' : deliveryCost.toLocaleString('ru-RU') + ' сум';
+  if (el3) el3.textContent = grand.toLocaleString('ru-RU') + ' сум';
+}
+
 function openOrderModal() {
-  // Автозаполнение из Telegram
   if (tg?.initDataUnsafe?.user) {
     const user = tg.initDataUnsafe.user;
-    const nameEl = document.getElementById('order-name');
-    if (nameEl && !nameEl.value) {
-      nameEl.value = [user.first_name, user.last_name].filter(Boolean).join(' ');
-    }
+    const fn = document.getElementById('order-first-name');
+    const ln = document.getElementById('order-last-name');
+    if (fn && !fn.value) fn.value = user.first_name || '';
+    if (ln && !ln.value) ln.value = user.last_name || '';
   }
+  updateOrderTotals();
   document.getElementById('order-modal').classList.add('open');
 }
 
@@ -1574,29 +1791,28 @@ function closeOrderModal(e) {
 }
 
 async function submitOrder() {
-  const name    = document.getElementById('order-name').value.trim();
-  const phone   = document.getElementById('order-phone').value.trim();
-  const address = document.getElementById('order-address').value.trim();
-  const comment = document.getElementById('order-comment').value.trim();
+  const firstName = document.getElementById('order-first-name').value.trim();
+  const lastName  = document.getElementById('order-last-name').value.trim();
+  const phone     = document.getElementById('order-phone').value.trim();
+  const address   = document.getElementById('order-address').value.trim();
+  const comment   = document.getElementById('order-comment').value.trim();
+  const delivery  = document.querySelector('input[name="delivery"]:checked')?.value || 'courier';
+  const payment   = document.querySelector('input[name="payment"]:checked')?.value || 'cash';
 
-  if (!name || !phone || !address) {
-    showToast('⚠ ' + t('toast_fill'));
-    ['order-name','order-phone','order-address'].forEach(id => {
-      const el = document.getElementById(id);
-      if (!el.value.trim()) el.classList.add('error');
-    });
+  if (!firstName || !phone || !address) {
+    showToast('⚠ Заполните обязательные поля');
     return;
   }
 
-  const tgUser = tg?.initDataUnsafe?.user;
-
-  // Колонки должны совпадать с таблицей orders в Supabase
   const orderData = {
-    first_name:     name.split(' ')[0] || name,
-    last_name:      name.split(' ').slice(1).join(' ') || null,
+    first_name:     firstName,
+    last_name:      lastName || '',
     phone:          phone,
+    email:          document.getElementById('order-email')?.value.trim() || null,
+    delivery_type:  delivery,
     address:        address,
     comment:        comment || null,
+    payment_method: payment,
     items:          cartItems.map(item => ({
       article:  item.id,
       name:     item.name,
@@ -1605,10 +1821,9 @@ async function submitOrder() {
       size:     item.size,
       image:    item.image || null,
     })),
-    total:          getCartTotal(),
+    total:          getCartTotal() + deliveryCost,
     status:         'new',
     source:         'telegram_miniapp',
-    payment_method: 'cash',
   };
 
   try {
@@ -1624,31 +1839,23 @@ async function submitOrder() {
     });
 
     if (res.ok || res.status === 201) {
-      // Очищаем корзину
       cartItems = [];
       saveCart();
       updateCartBadge();
-
-      // Закрываем модал заказа
       document.getElementById('order-modal').classList.remove('open');
-
-      // Показываем успех и переходим на главную
-      showToast('🎉 ' + t('toast_order_ok'), 'success');
+      showToast('🎉 Заказ оформлен! Мы свяжемся с вами.', 'success');
       if (tg) tg.HapticFeedback?.notificationOccurred('success');
-
-      // Переходим на главную БЕЗ закрытия приложения
       setTimeout(() => showPage('home'), 1000);
     } else {
       const err = await res.text();
       console.error('Ошибка заказа:', err);
-      showToast('Ошибка сохранения заказа', '');
+      showToast('Ошибка сохранения заказа');
     }
   } catch(e) {
     console.error(e);
     showToast('Ошибка соединения');
   }
 }
-
 /* ── PRODUCTS ── */
 let allProducts = [];
 let catalogLoaded = false;
