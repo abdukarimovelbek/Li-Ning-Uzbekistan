@@ -13,7 +13,7 @@ const UZUM_SHOP_ID = process.env.UZUM_SHOP_ID;  // ID вашего магази�
 const SB_URL       = process.env.SB_URL || 'https://dgyirginrefvjsbhhooi.supabase.co';
 const SB_KEY       = process.env.SB_KEY;         // из GitHub Secrets
 
-const UZUM_API = 'https://api-seller.uzum.uz/api/seller';
+const UZUM_API = 'https://api-seller.uzum.uz/api/seller-openapi';
 
 // ── 1. Получаем все товары из Узум ──────────────────────────
 async function getUzumProducts() {
@@ -24,7 +24,7 @@ async function getUzumProducts() {
   console.log('📦 Получаем товары из Узум...');
 
   while (true) {
-    const res = await fetch(`${UZUM_API}/product/list?page=${page}&size=${size}`, {
+    const res = await fetch(`${UZUM_API}/v1/product/shop/${UZUM_SHOP_ID}?page=${page}&size=${size}&filter=ALL&order=ASC&sortBy=DEFAULT&productRank=A`, {
       headers: {
         'Authorization': UZUM_TOKEN,
         'Content-Type': 'application/json',
