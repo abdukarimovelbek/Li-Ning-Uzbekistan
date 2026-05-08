@@ -38,7 +38,8 @@ async function getUzumProducts() {
     }
 
     const data = await res.json();
-    const items = data?.payload?.products || data?.products || data?.content || [];
+    console.log('Узум ответ:', JSON.stringify(data).substring(0, 500));
+    const items = data?.payload?.products || data?.products || data?.content || data?.payload?.content || [];
 
     if (items.length === 0) break;
 
