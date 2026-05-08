@@ -110,8 +110,8 @@ function mapUzumToSupabase(uzumProduct) {
 
   // Цена — делим на 100 (тийины → сумы)
   const prices = p.skuList?.map(s => s.price).filter(Boolean) || [];
-  const price = prices.length > 0 ? Math.round(Math.min(...prices) / 100) : 0;
-  const maxPrice = prices.length > 0 ? Math.round(Math.max(...prices) / 100) : 0;
+  const price = prices.length > 0 ? Math.round(Math.min(...prices)) : 0;
+  const maxPrice = prices.length > 0 ? Math.round(Math.max(...prices)) : 0;
   const oldPrice = maxPrice > price ? maxPrice : null;
 
   // Артикул из skuFullTitle: "LINING1-ABFT027-БИРЮЗ-10" → берём часть
