@@ -28,7 +28,8 @@ async function getUzumProducts() {
       headers: {
         'Authorization': UZUM_TOKEN,
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Accept-Language': 'ru-RU',
       }
     });
 
@@ -61,11 +62,17 @@ async function getProductDetails(productId) {
     const res = await fetch(`${UZUM_API}/product/${productId}`, {
       headers: {
         'Authorization': UZUM_TOKEN,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept-Language': 'ru-RU',
+
       }
     });
     if (!res.ok) return null;
     const data = await res.json();
+    // Временный лог для первого товара
+    if (productId === 1530792) {
+      console.log('ДЕТАЛИ ТОВАРА:', JSON.stringify(data).substring(0, 1000));
+    }
     return data?.payload || data;
   } catch(e) {
     console.error(`  Ошибка деталей товара ${productId}:`, e.message);
