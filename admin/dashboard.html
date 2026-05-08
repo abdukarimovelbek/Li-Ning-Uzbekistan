@@ -361,12 +361,17 @@
 
     <!-- ORDERS -->
     <div class="section" id="section-orders">
-      <div class="order-filter-row">
-        <button class="filter-tab active" onclick="filterOrders('all',this)">Все</button>
-        <button class="filter-tab" onclick="filterOrders('new',this)">Новые</button>
-        <button class="filter-tab" onclick="filterOrders('confirmed',this)">Подтверждённые</button>
-        <button class="filter-tab" onclick="filterOrders('delivered',this)">Доставленные</button>
-        <button class="filter-tab" onclick="filterOrders('cancelled',this)">Отменённые</button>
+      <div class="order-filter-row" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem">
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="filter-tab active" onclick="filterOrders('all',this)">Все</button>
+          <button class="filter-tab" onclick="filterOrders('new',this)">Новые</button>
+          <button class="filter-tab" onclick="filterOrders('confirmed',this)">Подтверждённые</button>
+          <button class="filter-tab" onclick="filterOrders('delivered',this)">Доставленные</button>
+          <button class="filter-tab" onclick="filterOrders('cancelled',this)">Отменённые</button>
+        </div>
+        <button onclick="exportOrdersXLSX()" style="background:var(--green);color:#fff;border:none;padding:.5rem 1.1rem;font-size:.78rem;font-weight:700;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:.4rem;border-radius:4px">
+          ⬇ Экспорт XLSX
+        </button>
       </div>
       <div class="table-card">
         <table>
@@ -1472,6 +1477,97 @@ async function deleteSlide(id) {
 }
 // Загружаем слайды при открытии раздела
 const origShowSection = showSection;
+
+/* ── EXPORT XLSX ── */
+async function exportOrdersXLSX() {
+  const btn = event.target.closest('button');
+  btn.textContent = '⏳ Загрузка...';
+  btn.disabled = true;
+
+  try {
+    // Загружаем все заказы
+    const orders = await sbFetch('orders', 'GET', null, '?order=created_at.desc');
+
+    // Разворачиваем каждый товар в отдельную строку
+    const rows = [];
+    orders.forEach(order => {
+      const items = Array.isArray(order.items) ? order.items : [];
+      if (items.length === 0) {
+        rows.push({
+          'ID заказа':        order.id?.slice(0,8).toUpperCase(),
+          'Дата':             new Date(order.created_at).toLocaleString('ru-RU'),
+          'Имя':              order.first_name || '—',
+          'Фамилия':          order.last_name || '—',
+          'Телефон':          order.phone || '—',
+          'Адрес':            order.address || '—',
+          'Источник':         order.source === 'telegram_miniapp' ? 'Telegram' : 'Сайт',
+          'Тип доставки':     order.delivery_type || '—',
+          'Способ оплаты':    order.payment_method || '—',
+          'Артикул товара':   '—',
+          'Название товара':  '—',
+          'Цвет':             '—',
+          'Размер':           '—',
+          'Количество':       '—',
+          'Цена за ед.':      '—',
+          'Сумма товара':     '—',
+          'Итого заказа':     order.total || 0,
+          'Статус':           order.status || 'new',
+        });
+      } else {
+        items.forEach(item => {
+          rows.push({
+            'ID заказа':        order.id?.slice(0,8).toUpperCase(),
+            'Дата':             new Date(order.created_at).toLocaleString('ru-RU'),
+            'Имя':              order.first_name || '—',
+            'Фамилия':          order.last_name || '—',
+            'Телефон':          order.phone || '—',
+            'Адрес':            order.address || '—',
+            'Источник':         order.source === 'telegram_miniapp' ? 'Telegram' : 'Сайт',
+            'Тип доставки':     order.delivery_type || '—',
+            'Способ оплаты':    order.payment_method || '—',
+            'Артикул товара':   item.article || '—',
+            'Название товара':  item.name || '—',
+            'Цвет':             item.color || '—',
+            'Размер':           item.size || '—',
+            'Количество':       item.quantity || item.qty || 1,
+            'Цена за ед.':      item.price || 0,
+            'Сумма товара':     (item.price || 0) * (item.quantity || item.qty || 1),
+            'Итого заказа':     order.total || 0,
+            'Статус':           order.status || 'new',
+          });
+        });
+      }
+    });
+
+    // Генерируем CSV с BOM для корректного отображения кириллицы в Excel
+    const headers = Object.keys(rows[0]);
+    const csvContent = '\uFEFF' + [
+      headers.join(';'),
+      ...rows.map(row => headers.map(h => {
+        const val = String(row[h] ?? '').replace(/;/g, ',').replace(/\n/g, ' ');
+        return `"${val}"`;
+      }).join(';'))
+    ].join('\n');
+
+    // Скачиваем файл
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const date = new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = `li-ning-orders-${date}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast(`✅ Экспортировано ${orders.length} заказов (${rows.length} строк)`);
+  } catch(e) {
+    console.error(e);
+    showToast('Ошибка экспорта', true);
+  } finally {
+    btn.innerHTML = '⬇ Экспорт XLSX';
+    btn.disabled = false;
+  }
+}
 
 </script>
 </body>
