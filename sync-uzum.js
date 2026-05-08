@@ -7,6 +7,8 @@
  */
 
 const UZUM_TOKEN   = process.env.UZUM_TOKEN;    // из GitHub Secrets
+console.log('Token length:', UZUM_TOKEN?.length || 0);
+console.log('Token start:', UZUM_TOKEN?.substring(0, 5) || 'EMPTY');
 const UZUM_SHOP_ID = process.env.UZUM_SHOP_ID;  // ID вашего магазина
 const SB_URL       = process.env.SB_URL || 'https://dgyirginrefvjsbhhooi.supabase.co';
 const SB_KEY       = process.env.SB_KEY;         // из GitHub Secrets
