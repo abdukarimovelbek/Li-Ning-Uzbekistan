@@ -90,36 +90,17 @@ function mapUzumToSupabase(uzumProduct, details) {
 
   // Размеры
   const sizes = [];
-  if (p.skuList?.length) {
-    p.skuList.forEach(sku => {
-      if (sku.characteristics) {
-        sku.characteristics.forEach(ch => {
-          if (ch.title?.toLowerCase().includes('размер') ||
-              ch.title?.toLowerCase().includes('size') ||
-              ch.title?.toLowerCase() === 'razmer') {
-            if (ch.value && !sizes.includes(ch.value)) {
-              sizes.push(ch.value);
-            }
-          }
-        });
-      }
-    });
-  }
-
-  // Цвета
   const colors = [];
+
   if (p.skuList?.length) {
     p.skuList.forEach(sku => {
-      if (sku.characteristics) {
-        sku.characteristics.forEach(ch => {
-          if (ch.title?.toLowerCase().includes('цвет') ||
-              ch.title?.toLowerCase().includes('color') ||
-              ch.title?.toLowerCase() === 'rang') {
-            if (ch.value && !colors.includes(ch.value)) {
-              colors.push(ch.value);
-            }
-          }
-        });
+      const skuTitle = sku.skuTitle || '';
+      const parts = skuTitle.split('-');
+      if (parts.length >= 2) {
+        const size = parts[parts.length - 1].trim();
+        const color = parts.slice(0, parts.length - 1).join('-').trim();
+        if (size && !sizes.includes(size)) sizes.push(size);
+        if (color && !colors.includes(color)) colors.push(color);
       }
     });
   }
