@@ -59,24 +59,24 @@ async function getUzumProducts() {
 // ── 2. Получаем детали одного товара (фото, размеры, цвета) ─
 async function getProductDetails(productId) {
   try {
-    const res = await fetch(`${UZUM_API}/product/${productId}`, {
-      headers: {
+    const res = await fetch(`${UZUM_API}/v1/product/${productId}`, {
+      headers: { 
         'Authorization': UZUM_TOKEN,
-        'Content-Type': 'application/json',
         'Accept-Language': 'ru-RU',
-
       }
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.log(`  Детали ${productId}: ${res.status}`);
+      return null;
+    }
     const data = await res.json();
-    // Временный лог для первого товара
     if (productId === 1530792) {
-      console.log('ДЕТАЛИ ТОВАРА:', JSON.stringify(data).substring(0, 1000));
+      console.log('ДЕТАЛИ:', JSON.stringify(data).substring(0, 800));
     }
     return data?.payload || data;
-  } catch(e) {
-    console.error(`  Ошибка деталей товара ${productId}:`, e.message);
-    return null;
+  } catch(e) { 
+    console.log(`  Ошибка деталей:`, e.message);
+    return null; 
   }
 }
 
