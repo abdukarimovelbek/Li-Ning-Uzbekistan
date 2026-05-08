@@ -219,6 +219,7 @@ const ProductCards = (() => {
       if (addBtn) {
         addBtn.addEventListener('click', e => {
           e.stopPropagation();
+          console.log('card article:', card.dataset.article, 'productId:', card.dataset.productId);
           const data = {
             id:      card.dataset.productId || Math.random().toString(36).slice(2),
             article: card.dataset.article || card.dataset.productId,
@@ -502,7 +503,7 @@ const OrderForm = (() => {
       // Собираем товары из корзины
       const cartItems = window.Cart.getItems();
       const orderItems = cartItems.map(item => ({
-        article:  item.id,
+        article:  item.article || item.id,
         name:     item.name,
         price:    item.price,
         quantity: item.qty,
