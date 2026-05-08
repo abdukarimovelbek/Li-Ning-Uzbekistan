@@ -1587,21 +1587,30 @@ async function submitOrder() {
   }
 
   const tgUser = tg?.initDataUnsafe?.user;
+
+  // Колонки должны совпадать с таблицей orders в Supabase
   const orderData = {
-    customer_name: name,
-    customer_phone: phone,
-    delivery_address: address,
-    comment: comment || null,
-    items: cartItems,
-    total: getCartTotal(),
-    status: 'new',
-    source: 'telegram_miniapp',
-    tg_user_id: tgUser?.id || null,
-    tg_username: tgUser?.username || null,
+    first_name:     name.split(' ')[0] || name,
+    last_name:      name.split(' ').slice(1).join(' ') || null,
+    phone:          phone,
+    address:        address,
+    comment:        comment || null,
+    items:          cartItems.map(item => ({
+      article:  item.id,
+      name:     item.name,
+      price:    item.price,
+      quantity: item.qty,
+      size:     item.size,
+      image:    item.image || null,
+    })),
+    total:          getCartTotal(),
+    status:         'new',
+    source:         'telegram_miniapp',
+    payment_method: 'cash',
   };
 
   try {
-    await fetch(`${SB_URL}/rest/v1/orders`, {
+    const res = await fetch(`${SB_URL}/rest/v1/orders`, {
       method: 'POST',
       headers: {
         'apikey': SB_KEY,
@@ -1612,19 +1621,29 @@ async function submitOrder() {
       body: JSON.stringify(orderData)
     });
 
-    cartItems = [];
-    saveCart();
-    updateCartBadge();
-    document.getElementById('order-modal').classList.remove('open');
-    showToast('🎉 ' + t('toast_order_ok'), 'success');
-    renderCart();
+    if (res.ok || res.status === 201) {
+      // Очищаем корзину
+      cartItems = [];
+      saveCart();
+      updateCartBadge();
 
-    if (tg) {
-      tg.HapticFeedback?.notificationOccurred('success');
-      setTimeout(() => tg.close(), 2000);
+      // Закрываем модал заказа
+      document.getElementById('order-modal').classList.remove('open');
+
+      // Показываем успех и переходим на главную
+      showToast('🎉 ' + t('toast_order_ok'), 'success');
+      if (tg) tg.HapticFeedback?.notificationOccurred('success');
+
+      // Переходим на главную БЕЗ закрытия приложения
+      setTimeout(() => showPage('home'), 1000);
+    } else {
+      const err = await res.text();
+      console.error('Ошибка заказа:', err);
+      showToast('Ошибка сохранения заказа', '');
     }
   } catch(e) {
-    showToast('Ошибка. Попробуйте снова.');
+    console.error(e);
+    showToast('Ошибка соединения');
   }
 }
 
