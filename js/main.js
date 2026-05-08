@@ -492,9 +492,11 @@ const OrderForm = (() => {
         return;
       }
 
-      const submitBtn = form.querySelector('.submit-order');
-      submitBtn.textContent = 'Оформляем заказ...';
-      submitBtn.disabled = true;
+      const submitBtn = form.querySelector('.submit-order') || form.querySelector('[type="submit"]');
+      if (submitBtn) {
+        submitBtn.textContent = 'Оформляем заказ...';
+        submitBtn.disabled = true;
+      }
 
       // Собираем товары из корзины
       const cartItems = Cart.getItems();
