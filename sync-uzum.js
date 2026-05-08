@@ -92,7 +92,7 @@ function mapUzumToSupabase(uzumProduct) {
     p.skuList.forEach(sku => {
       if (sku.previewImage && !images.includes(sku.previewImage)) {
         const imgUrl = sku.previewImage?.startsWith('http') 
-        ? sku.previewImage 
+        ? `${sku.previewImage}/original.jpg`
         : `https://images.uzum.uz/${sku.previewImage}/original.jpg`;
       if (!images.includes(imgUrl)) images.push(imgUrl);
       }
