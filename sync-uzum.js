@@ -91,7 +91,10 @@ function mapUzumToSupabase(uzumProduct) {
   if (p.skuList?.length) {
     p.skuList.forEach(sku => {
       if (sku.previewImage && !images.includes(sku.previewImage)) {
-        images.push(`https://images.uzum.uz/${sku.previewImage}/original.jpg`);
+        const imgUrl = sku.previewImage?.startsWith('http') 
+        ? sku.previewImage 
+        : `https://images.uzum.uz/${sku.previewImage}/original.jpg`;
+      if (!images.includes(imgUrl)) images.push(imgUrl);
       }
     });
   }
