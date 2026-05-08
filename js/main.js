@@ -992,3 +992,41 @@ const HeroSlider = (() => {
   window.addEventListener('scroll', updateMegaTop, { passive: true });
   window.addEventListener('resize', updateMegaTop);
 })();
+
+// Читаем категорию из URL при загрузке каталога
+document.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const cat = params.get('category');
+  if (cat && document.getElementById('catalog-products')) {
+    // Активируем нужную кнопку фильтра
+    document.querySelectorAll('.filter-tab').forEach(btn => {
+      if (btn.dataset.cat === cat) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+    // Применяем фильтр
+    setCategoryFilter(cat);
+  }
+});
+
+function setCategoryFilter(cat) {
+  // Подсвечиваем активную кнопку
+  document.querySelectorAll('.filter-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === cat);
+  });
+  // Фильтруем карточки
+  document.querySelectorAll('.product-card').forEach(card => {
+    if (!cat || card.dataset.category === cat) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  // Обновляем счётчик
+  const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
+  const countEl = document.querySelector('.catalog-count strong');
+  if (countEl) countEl.textContent = visible;
+}
+window.setCategoryFilter = setCategoryFilter;
