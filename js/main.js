@@ -481,7 +481,7 @@ const OrderForm = (() => {
     });
 
     // Submit
-    form.addEventListener('submit', e => {
+    form.addEventListener('submit', async e => {
       e.preventDefault();
       const inputs = form.querySelectorAll('.form-input, .form-select');
       let allValid = true;
@@ -496,11 +496,66 @@ const OrderForm = (() => {
       submitBtn.textContent = 'Оформляем заказ...';
       submitBtn.disabled = true;
 
-      setTimeout(() => {
-        Toast.show('🎉 Заказ принят!', 'Мы свяжемся с вами в течение 15 минут', 'success');
-        Cart.clear();
-        setTimeout(() => window.location.href = 'index.html', 2500);
-      }, 1800);
+      // Собираем товары из корзины
+      const cartItems = Cart.getItems();
+      const orderItems = cartItems.map(item => ({
+        article:  item.id,
+        name:     item.name,
+        price:    item.price,
+        quantity: item.qty,
+        size:     item.size,
+        color:    item.color || null,
+        image:    item.image || null,
+      }));
+
+      const orderData = {
+        first_name:      document.getElementById('first-name').value.trim(),
+        last_name:       document.getElementById('last-name').value.trim(),
+        phone:           document.getElementById('phone').value.trim(),
+        email:           document.getElementById('email')?.value.trim() || null,
+        delivery_type:   document.querySelector('.delivery-option.selected input')?.value || null,
+        address:         document.getElementById('address').value.trim(),
+        city:            document.getElementById('city').value.trim(),
+        comment:         document.getElementById('comment')?.value.trim() || null,
+        payment_method:  document.querySelector('.pay-option.selected input')?.value || null,
+        items:           orderItems,
+        total:           Cart.getTotal(),
+        status:          'new',
+        source:          'website',
+      };
+
+      try {
+        const res = await fetch(`${SB_URL}/rest/v1/orders`, {
+          method: 'POST',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=representation'
+          },
+          body: JSON.stringify(orderData)
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const orderId = data[0]?.id?.slice(0, 8).toUpperCase() || 'XXXXXX';
+          Toast.show('🎉 Заказ принят!', `Номер заказа: ${orderId}`, 'success');
+          Cart.clear();
+          submitBtn.textContent = '✓ Заказ оформлен';
+          setTimeout(() => window.location.href = 'index.html', 2500);
+        } else {
+          const err = await res.text();
+          console.error('Ошибка заказа:', err);
+          Toast.show('Ошибка', 'Попробуйте снова', '');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Оформить заказ';
+        }
+      } catch(e) {
+        console.error(e);
+        Toast.show('Ошибка соединения', 'Проверьте интернет', '');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Оформить заказ';
+      }
     });
   });
 })();

@@ -3,7 +3,7 @@ name: Sync Uzum → Supabase
 on:
   # Запускать каждые 6 часов автоматически
   schedule:
-    - cron: '0 */6 * * *'
+  - cron: '*/30 * * * *'
   # Или вручную из GitHub
   workflow_dispatch:
 
