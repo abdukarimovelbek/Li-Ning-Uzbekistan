@@ -1108,6 +1108,91 @@
       margin-bottom: 0.4rem;
     }
 
+        /* ── ORDERS PAGE ── */
+    .order-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-100);
+      overflow: hidden;
+    }
+    .order-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      background: var(--cream);
+    }
+    .order-card-id {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      letter-spacing: 0.5px;
+    }
+    .order-card-date {
+      font-size: 0.68rem;
+      color: var(--gray-500);
+    }
+    .order-card-status {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+    .status-new { background: #FFF3CD; color: #856404; }
+    .status-processing { background: #CCE5FF; color: #004085; }
+    .status-delivered { background: #D4EDDA; color: #155724; }
+    .status-cancelled { background: #F8D7DA; color: #721C24; }
+    .order-card-items {
+      padding: 0.8rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .order-card-item {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+    .order-card-item-img {
+      width: 44px; height: 44px;
+      border-radius: 6px;
+      background: var(--gray-100);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .order-card-item-img img { width:100%; height:100%; object-fit:cover; }
+    .order-card-item-info { flex: 1; min-width: 0; }
+    .order-card-item-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .order-card-item-meta { font-size: 0.68rem; color: var(--gray-500); }
+    .order-card-item-price {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+    .order-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.7rem 1rem;
+      border-top: 1px solid var(--gray-100);
+      background: var(--cream);
+    }
+    .order-card-total-label { font-size: 0.72rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }
+    .order-card-total {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--gray-900);
+    }
+
   </style>
 </head>
 <body>
@@ -1216,6 +1301,17 @@
       </div>
       <div id="cart-content"></div>
     </div>
+     
+    <!-- ORDERS PAGE -->
+    <div class="page" id="page-orders">
+      <div class="cart-page-header" style="display:flex;align-items:center;gap:0.8rem">
+        <button onclick="showPage('profile')" style="background:none;border:none;font-size:1.2rem;cursor:pointer">←</button>
+        <div class="cart-page-title">Мои заказы</div>
+      </div>
+      <div id="orders-list" style="padding:0.75rem 1rem;display:flex;flex-direction:column;gap:0.75rem">
+        <div style="text-align:center;padding:3rem;color:var(--gray-500)">Загрузка...</div>
+      </div>
+    </div>
 
     <!-- PROFILE PAGE -->
     <div class="page" id="page-profile">
@@ -1239,11 +1335,11 @@
         </div>
       </div>
       <div class="profile-menu">
-        <button class="profile-menu-item">
+        <button class="profile-menu-item" onclick="openOrdersPage()">
           <div class="profile-menu-icon" style="background:#fff0f0">📦</div>
           <div class="profile-menu-text">
             <div class="profile-menu-title" data-i18n="my_orders">Мои заказы</div>
-            <div class="profile-menu-sub" data-i18n="orders_sub">История покупок</div>
+            <div class="profile-menu-sub" id="orders-count-label">История покупок</div>
           </div>
           <span class="profile-menu-arrow">›</span>
         </button>
@@ -1570,6 +1666,7 @@ function showPage(name) {
 
   if (name === 'cart') renderCart();
   if (name === 'catalog' && !catalogLoaded) loadCatalog();
+  if (name === 'orders') loadMyOrders();
 
   if (tg) {
     if (name !== 'home') {
@@ -1856,6 +1953,7 @@ async function submitOrder() {
     showToast('Ошибка соединения');
   }
 }
+
 /* ── PRODUCTS ── */
 let allProducts = [];
 let catalogLoaded = false;
@@ -2034,6 +2132,97 @@ function loadProfile() {
       (user.first_name || 'U')[0].toUpperCase();
   }
   document.getElementById('stat-wishlist').textContent = wishlist.length;
+}
+
+/* ── ORDERS PAGE ── */
+async function openOrdersPage() {
+  showPage('orders');
+  await loadMyOrders();
+}
+
+async function loadMyOrders() {
+  const list = document.getElementById('orders-list');
+  list.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500)">Загрузка...</div>';
+
+  try {
+    const phone = document.getElementById('order-phone')?.value.trim();
+    const tgUser = tg?.initDataUnsafe?.user;
+
+    // Ищем по номеру телефона если он введён, иначе показываем все последние
+    let url = `${SB_URL}/rest/v1/orders?order=created_at.desc&limit=20`;
+    if (phone) {
+      url = `${SB_URL}/rest/v1/orders?phone=eq.${encodeURIComponent(phone)}&order=created_at.desc`;
+    }
+
+    const res = await fetch(url, {
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+    });
+    const orders = await res.json();
+
+    if (!orders.length) {
+      list.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--gray-500)">
+        <div style="font-size:3rem;margin-bottom:0.8rem">📦</div>
+        <div>Заказов пока нет</div>
+      </div>`;
+      return;
+    }
+
+    // Обновляем счётчик
+    const label = document.getElementById('orders-count-label');
+    if (label) label.textContent = `${orders.length} заказов`;
+    const stat = document.getElementById('stat-orders');
+    if (stat) stat.textContent = orders.length;
+
+    const statusMap = {
+      'new':        { label: 'Новый',      cls: 'status-new' },
+      'processing': { label: 'В работе',   cls: 'status-processing' },
+      'delivered':  { label: 'Доставлен',  cls: 'status-delivered' },
+      'cancelled':  { label: 'Отменён',    cls: 'status-cancelled' },
+    };
+
+    list.innerHTML = orders.map(order => {
+      const items = Array.isArray(order.items) ? order.items : [];
+      const date = new Date(order.created_at).toLocaleDateString('ru-RU', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      const status = statusMap[order.status] || { label: order.status, cls: 'status-new' };
+      const shortId = order.id?.slice(0, 8).toUpperCase();
+
+      return `
+        <div class="order-card">
+          <div class="order-card-header">
+            <div>
+              <div class="order-card-id">Заказ #${shortId}</div>
+              <div class="order-card-date">${date}</div>
+            </div>
+            <span class="order-card-status ${status.cls}">${status.label}</span>
+          </div>
+          <div class="order-card-items">
+            ${items.slice(0, 3).map(item => `
+              <div class="order-card-item">
+                <div class="order-card-item-img">
+                  ${item.image ? `<img src="${item.image}">` : '👟'}
+                </div>
+                <div class="order-card-item-info">
+                  <div class="order-card-item-name">${item.name}</div>
+                  <div class="order-card-item-meta">Размер: ${item.size} · ${item.quantity} шт.</div>
+                </div>
+                <div class="order-card-item-price">${(item.price * item.quantity).toLocaleString('ru-RU')}</div>
+              </div>
+            `).join('')}
+            ${items.length > 3 ? `<div style="font-size:0.75rem;color:var(--gray-500);text-align:center">+ ещё ${items.length - 3} товара</div>` : ''}
+          </div>
+          <div class="order-card-footer">
+            <span class="order-card-total-label">Итого</span>
+            <span class="order-card-total">${(order.total || 0).toLocaleString('ru-RU')} сум</span>
+          </div>
+        </div>`;
+    }).join('');
+
+  } catch(e) {
+    console.error(e);
+    list.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">Ошибка загрузки</div>';
+  }
 }
 
 /* ── INIT ── */
