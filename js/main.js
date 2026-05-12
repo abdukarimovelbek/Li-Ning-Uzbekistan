@@ -260,8 +260,8 @@ const ProductCards = (() => {
     });
   };
 
-  document.addEventListener('DOMContentLoaded', init);
   window.ProductCards = { init };
+  document.addEventListener('DOMContentLoaded', init);
 })();
 
 
