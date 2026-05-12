@@ -572,9 +572,18 @@ const Navbar = (() => {
 
     // Active link highlighting
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const params = new URLSearchParams(window.location.search);
+    const gender = params.get('gender');
+
     document.querySelectorAll('.nav-links a').forEach(link => {
-      const href = link.getAttribute('href');
-      if (href === currentPage || (href === 'index.html' && currentPage === '')) {
+      const href = link.getAttribute('href') || '';
+      const linkParams = new URLSearchParams(href.split('?')[1] || '');
+      const linkGender = linkParams.get('gender');
+      const linkPage = href.split('?')[0];
+
+      if (gender && linkGender === gender && linkPage === currentPage) {
+        link.classList.add('active');
+      } else if (!gender && href === currentPage) {
         link.classList.add('active');
       }
     });
@@ -1074,7 +1083,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Заголовок каталога
-  const pageTitle = document.querySelector('.page-header h1');
+  const pageTitle = document.getElementById('catalog-page-title');
   if (pageTitle) {
     if (gender && cat) pageTitle.textContent = `${genderLabels[gender]} — ${catLabels[cat]}`;
     else if (gender)   pageTitle.textContent = genderLabels[gender] || 'Каталог';
