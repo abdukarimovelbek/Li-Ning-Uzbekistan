@@ -774,6 +774,7 @@ const buildCard = (p) => {
       data-rating="5"
       data-category="${p.category||''}"
       data-gender="${p.gender||'uni'}"
+      data-subcategory="${p.subcategory||''}"
       data-href="product.html?id=${p.id}"
       onclick="if(!event.target.closest('button')) window.location.href='product.html?id=${p.id}'">
       <div class="product-img-wrap">
@@ -1075,11 +1076,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const genderLabels = { male: 'Мужчины', female: 'Женщины', uni: 'Унисекс' };
   const catLabels = { shoes: 'Обувь', clothing: 'Одежда', running: 'Бег', training: 'Тренировка', accessories: 'Аксессуары' };
   const extra = document.getElementById('breadcrumb-extra');
+  const subcatLabels = { sneakers: 'Кроссовки', slippers: 'Сланцы / Сабо', sneakers_low: 'Кеды', sandals: 'Сандали' };
+  const subcategory = params.get('subcategory');
+
   if (extra) {
     let html = '';
     if (gender) html += `<span>/</span><a href="catalog.html?gender=${gender}">${genderLabels[gender] || gender}</a>`;
-    if (cat)    html += `<span>/</span><span>${catLabels[cat] || cat}</span>`;
+    if (cat)    html += `<span>/</span><a href="catalog.html?gender=${gender||''}&category=${cat}">${catLabels[cat] || cat}</a>`;
+    if (subcategory) html += `<span>/</span><span>${subcatLabels[subcategory] || subcategory}</span>`;
     extra.innerHTML = html;
+  }
+
+  // Заголовок
+  const pageTitle = document.getElementById('catalog-page-title');
+  if (pageTitle) {
+    if (subcategory) pageTitle.textContent = `${genderLabels[gender]||''} — ${subcatLabels[subcategory]||subcategory}`.trim();
+    else if (gender && cat) pageTitle.textContent = `${genderLabels[gender]} — ${catLabels[cat]}`;
+    else if (gender) pageTitle.textContent = genderLabels[gender] || 'Каталог';
+    else if (cat)    pageTitle.textContent = catLabels[cat] || 'Каталог';
   }
 
   // Заголовок каталога
@@ -1097,14 +1111,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function applyCatalogFilters(cat, gender) {
+  const params = new URLSearchParams(window.location.search);
+  const subcategory = params.get('subcategory');
+
   document.querySelectorAll('.product-card').forEach(card => {
     const cardCat    = card.dataset.category || '';
     const cardGender = card.dataset.gender || 'uni';
+    const cardSub    = card.dataset.subcategory || '';
 
-    const catOk    = !cat    || cardCat === cat;
-    const genderOk = !gender || cardGender === gender || cardGender === 'uni';
+    const catOk    = !cat         || cardCat === cat;
+    const genderOk = !gender      || cardGender === gender || cardGender === 'uni';
+    const subOk    = !subcategory || cardSub === subcategory;
 
-    card.style.display = (catOk && genderOk) ? '' : 'none';
+    card.style.display = (catOk && genderOk && subOk) ? '' : 'none';
   });
 
   const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
