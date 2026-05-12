@@ -1544,8 +1544,9 @@ async function exportOrdersXLSX() {
     const csvContent = '\uFEFF' + [
       headers.join(';'),
       ...rows.map(row => headers.map(h => {
-        const val = String(row[h] ?? '').replace(/;/g, ',').replace(/\n/g, ' ');
-        return `"${val}"`;
+        const val = row[h] ?? '';
+        if (typeof val === 'number') return val;
+        return `"${String(val).replace(/;/g, ',').replace(/\n/g, ' ')}"`;
       }).join(';'))
     ].join('\n');
 
