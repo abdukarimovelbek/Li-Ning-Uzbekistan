@@ -1302,7 +1302,7 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
 }
 .mega-menu {
   position: fixed;
-  top: calc(var(--nav-h) + 20px);
+  top: calc(var(--nav-h) + 36px);
   left: 0; right: 0;
   background: #fff;
   border-top: 3px solid var(--red);
