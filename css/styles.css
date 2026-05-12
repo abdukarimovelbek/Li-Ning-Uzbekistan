@@ -1353,13 +1353,13 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
 .mega-col ul { display: flex; flex-direction: column; gap: 0.5rem; }
 .mega-col ul li a {
   font-size: 0.82rem;
-  color: var(--gray-700);
+  color: var(--gray-700) !important;
   transition: color var(--transition), padding-left var(--transition);
   display: block;
   padding: 0.1rem 0;
 }
 .mega-col ul li a:hover {
-  color: var(--red);
+  color: var(--red) !important;
   padding-left: 4px;
 }
 .mega-sale {
