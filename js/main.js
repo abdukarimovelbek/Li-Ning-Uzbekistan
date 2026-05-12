@@ -73,8 +73,8 @@ const Cart = (() => {
     }
     save();
     updateUI(true);
-    Toast.show(`${product.name} добавлен в корзину`, 'В корзине: ' + items.reduce((s,i)=>s+i.qty,0) + ' товара', 'success');
-    CartDrawer.open();
+    window.Toast?.show(`${product.name} добавлен в корзину`, 'В корзине: ' + items.reduce((s,i)=>s+i.qty,0) + ' товара', 'success');
+    window.CartDrawer?.open();
   };
 
   const remove = (id, size) => {
