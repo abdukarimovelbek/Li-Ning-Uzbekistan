@@ -806,7 +806,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const products = await fetchProducts('&limit=4');
       if (products.length > 0) {
         homeGrid.innerHTML = products.map(buildCard).join('');
-        ProductCards.init();
+        if (window.ProductCards) ProductCards.init();
       } else {
         homeGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
       }
