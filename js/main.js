@@ -1119,7 +1119,7 @@ function applyCatalogFilters(cat, gender) {
     const cardSub    = card.dataset.subcategory || '';
 
     const catOk    = !cat         || cardCat === cat;
-    const genderOk = !gender      || cardGender === gender || (cardGender === 'uni' && cardCat === cat);
+    const genderOk = !gender || cardGender === gender || (cardGender === 'uni' && cardCat === cat && cardGender !== 'kids');
     const subOk    = !subcategory || cardSub === subcategory;
 
     card.style.display = (catOk && genderOk && subOk) ? '' : 'none';
