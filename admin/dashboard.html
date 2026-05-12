@@ -1546,7 +1546,7 @@ async function exportOrdersXLSX() {
       ...rows.map(row => headers.map(h => {
         const val = row[h] ?? '';
         if (typeof val === 'number') return val;
-        return `"${String(val).replace(/;/g, ',').replace(/\n/g, ' ')}"`;
+        return `"${String(val).replace(/"/g, '""').replace(/;/g, ',').replace(/\n/g, ' ')}"`;
       }).join(';'))
     ].join('\n');
 
