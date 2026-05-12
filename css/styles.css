@@ -637,23 +637,43 @@ button { font-family: var(--font-body); }
 .filter-sidebar {
   position: sticky; top: calc(var(--nav-h) + 1rem);
 }
+
 .filter-block {
   border: 1px solid var(--gray-100);
   margin-bottom: 0.8rem; background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
 }
+
 .filter-block-head {
   display: flex; align-items: center; justify-content: space-between;
   padding: 1rem 1.2rem;
   font-size: 0.8rem; font-weight: 600; letter-spacing: 1px;
   text-transform: uppercase; color: var(--gray-900);
   user-select: none;
-  background: var(--white);
+  background: var(--gray-100);
   transition: background var(--transition);
 }
-.filter-block-head:hover { background: var(--gray-100); }
-.filter-block-head .toggle { color: var(--gray-300); transition: transform var(--transition); font-size: 0.7rem; }
-.filter-block-head .toggle.open { transform: rotate(180deg); }
-.filter-block-body { padding: 0.8rem 1.2rem 1.2rem; display: none; }
+
+.filter-block-head:hover { 
+  background: var(--gray-100); 
+}
+
+.filter-block-head .toggle { 
+  color: var(--gray-300); 
+  transition: transform var(--transition); 
+  font-size: 0.7rem; 
+}
+
+.filter-block-head .toggle.open { 
+  transform: rotate(180deg); 
+}
+
+.filter-block-body { 
+  padding: 0.8rem 1.2rem 1.2rem; 
+  display: none; 
+}
+
 .filter-block-body.open { display: block; }
 .filter-brand-item {
   display: flex; align-items: center; gap: 0.6rem;
