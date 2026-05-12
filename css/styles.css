@@ -1341,6 +1341,11 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--gray-100);
   letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.mega-col h4 a {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
 }
 .mega-col ul { display: flex; flex-direction: column; gap: 0.5rem; }
 .mega-col ul li a {
