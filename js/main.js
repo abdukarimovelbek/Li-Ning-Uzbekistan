@@ -1096,14 +1096,6 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (cat)    pageTitle.textContent = catLabels[cat] || 'Каталог';
   }
 
-  // Заголовок каталога
-  const pageTitle = document.getElementById('catalog-page-title');
-  if (pageTitle) {
-    if (gender && cat) pageTitle.textContent = `${genderLabels[gender]} — ${catLabels[cat]}`;
-    else if (gender)   pageTitle.textContent = genderLabels[gender] || 'Каталог';
-    else if (cat)      pageTitle.textContent = catLabels[cat] || 'Каталог';
-  }
-
   // Применяем фильтры
   if (cat || gender) {
     applyCatalogFilters(cat, gender);
