@@ -799,6 +799,9 @@ const buildCard = (p) => {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // Ждём инициализации ProductCards
+  await new Promise(r => setTimeout(r, 0));
+
   // Главная страница — последние 4 товара
   const homeGrid = document.getElementById('home-products');
   if (homeGrid) {
@@ -820,7 +823,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const products = await fetchProducts();
       if (products.length > 0) {
         catalogGrid.innerHTML = products.map(buildCard).join('');
-        if (window.ProductCards) ProductCards.init();;
+        if (window.ProductCards) ProductCards.init();
         // Обновляем счётчик
         const countEl = document.querySelector('.catalog-count strong');
         if (countEl) countEl.textContent = products.length;
