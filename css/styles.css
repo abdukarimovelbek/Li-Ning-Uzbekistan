@@ -1346,6 +1346,9 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
 .mega-col h4 a {
   border-bottom: none !important;
   padding-bottom: 0 !important;
+  display: block;
+  margin: 0 !important;
+  padding-left: 0 !important;
 }
 .mega-col ul { display: flex; flex-direction: column; gap: 0.5rem; }
 .mega-col ul li a {
