@@ -545,13 +545,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const images = Array.isArray(p.images) ? p.images : [];
       if (window.Cart && window.Cart.add) {
       window.Cart.add({
-        id:    p.id,
-        name:  p.name,
-        brand: p.brand || 'Li Ning',
-        price: p.price,
-        size:  selectedSize.dataset.size,
-        image: images[0] || null,
-        qty:   1
+        id:      p.id,
+        article: p.article || p.id,
+        name:    p.name,
+        brand:   p.brand || 'Li Ning',
+        price:   p.price,
+        size:    selectedSize.dataset.size,
+        image:   images[0] || null,
+        qty:     1
       });
       } else {
         // Запасной вариант — добавляем напрямую в localStorage
@@ -561,14 +562,15 @@ document.addEventListener('DOMContentLoaded', () => {
           existing.qty++;
         } else {
           items.push({
-            id:    p.id,
-            name:  p.name,
-            brand: p.brand || 'Li Ning',
-            price: p.price,
-            size:  selectedSize.dataset.size,
-            image: images[0] || null,
-            qty:   1
-          });
+          id:      p.id,
+          article: p.article || p.id,
+          name:    p.name,
+          brand:   p.brand || 'Li Ning',
+          price:   p.price,
+          size:    selectedSize.dataset.size,
+          image:   images[0] || null,
+          qty:     1
+        });
         }
         localStorage.setItem('lining_cart', JSON.stringify(items));
         // Открываем корзину

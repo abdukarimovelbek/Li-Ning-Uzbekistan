@@ -632,13 +632,12 @@ button { font-family: var(--font-body); }
   gap: 2.5rem;
   max-width: 1400px; margin: 0 auto;
   padding: 0 2rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 .filter-sidebar {
-  position: static;
-  height: auto;
-  overflow: visible;
+  position: relative;
+  height: fit-content;
 }
 
 .filter-block {
