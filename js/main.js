@@ -1132,3 +1132,28 @@ function setCategoryFilter(cat) {
   if (countEl) countEl.textContent = visible;
 }
 window.setCategoryFilter = setCategoryFilter;
+
+/* ── MEGA MENU FIX ── */
+document.querySelectorAll('.nav-item-mega').forEach(item => {
+  let hideTimer = null;
+
+  const show = () => {
+    clearTimeout(hideTimer);
+    item.querySelector('.mega-menu').style.display = 'grid';
+  };
+
+  const hide = () => {
+    hideTimer = setTimeout(() => {
+      item.querySelector('.mega-menu').style.display = '';
+    }, 200);
+  };
+
+  item.addEventListener('mouseenter', show);
+  item.addEventListener('mouseleave', hide);
+
+  const menu = item.querySelector('.mega-menu');
+  if (menu) {
+    menu.addEventListener('mouseenter', show);
+    menu.addEventListener('mouseleave', hide);
+  }
+});

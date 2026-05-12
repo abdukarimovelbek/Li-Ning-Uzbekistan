@@ -1330,7 +1330,7 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.nav-item-mega:hover .mega-menu { display: grid; }
+/* управляется через JS */
 .mega-menu:hover { display: grid; }
 .nav-item-mega:hover .mega-menu,
 .mega-menu:hover {
