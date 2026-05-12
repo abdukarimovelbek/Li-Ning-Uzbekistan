@@ -1357,7 +1357,13 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
   transition: color var(--transition), padding-left var(--transition);
   display: block;
   padding: 0.1rem 0;
+  border-bottom: none !important;
 }
+.mega-col ul li a.active {
+  color: var(--gray-700) !important;
+  border-bottom: none !important;
+}
+
 .mega-col ul li a:hover {
   color: var(--red) !important;
   padding-left: 4px;
