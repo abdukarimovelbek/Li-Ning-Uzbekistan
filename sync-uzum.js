@@ -139,11 +139,21 @@ function mapUzumToSupabase(uzumProduct) {
     }
   }
 
+  // Определяем пол по названию
+  let gender = 'uni';
+  const nameLower = name.toLowerCase();
+  if (nameLower.includes('мужск') || nameLower.includes('erkak') || nameLower.includes('мужчин')) {
+    gender = 'male';
+  } else if (nameLower.includes('женск') || nameLower.includes('ayol') || nameLower.includes('женщин') || nameLower.includes('болалар') || nameLower.includes('детск')) {
+    gender = 'female';
+  }
+
   return {
     article,
     name,
     description: null,
     category,
+    gender,
     brand: 'Li Ning',
     price,
     old_price: oldPrice,

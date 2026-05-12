@@ -764,6 +764,7 @@ const buildCard = (p) => {
       data-sizes="${sizes.join(',')}"
       data-rating="5"
       data-category="${p.category||''}"
+      data-gender="${p.gender||'uni'}"
       data-href="product.html?id=${p.id}"
       onclick="if(!event.target.closest('button')) window.location.href='product.html?id=${p.id}'">
       <div class="product-img-wrap">
@@ -1055,21 +1056,53 @@ const HeroSlider = (() => {
 
 // Читаем категорию из URL при загрузке каталога
 document.addEventListener('DOMContentLoaded', () => {
+  if (!document.getElementById('catalog-products')) return;
+
   const params = new URLSearchParams(window.location.search);
-  const cat = params.get('category');
-  if (cat && document.getElementById('catalog-products')) {
-    // Активируем нужную кнопку фильтра
-    document.querySelectorAll('.filter-tab').forEach(btn => {
-      if (btn.dataset.cat === cat) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
-    // Применяем фильтр
-    setCategoryFilter(cat);
+  const cat    = params.get('category');
+  const gender = params.get('gender');
+
+  // Хлебные крошки
+  const genderLabels = { male: 'Мужчины', female: 'Женщины', uni: 'Унисекс' };
+  const catLabels = { shoes: 'Обувь', clothing: 'Одежда', running: 'Бег', training: 'Тренировка', accessories: 'Аксессуары' };
+  const extra = document.getElementById('breadcrumb-extra');
+  if (extra) {
+    let html = '';
+    if (gender) html += `<span>/</span><a href="catalog.html?gender=${gender}">${genderLabels[gender] || gender}</a>`;
+    if (cat)    html += `<span>/</span><span>${catLabels[cat] || cat}</span>`;
+    extra.innerHTML = html;
+  }
+
+  // Заголовок каталога
+  const pageTitle = document.querySelector('.page-header h1');
+  if (pageTitle) {
+    if (gender && cat) pageTitle.textContent = `${genderLabels[gender]} — ${catLabels[cat]}`;
+    else if (gender)   pageTitle.textContent = genderLabels[gender] || 'Каталог';
+    else if (cat)      pageTitle.textContent = catLabels[cat] || 'Каталог';
+  }
+
+  // Применяем фильтры
+  if (cat || gender) {
+    applyCatalogFilters(cat, gender);
   }
 });
+
+function applyCatalogFilters(cat, gender) {
+  document.querySelectorAll('.product-card').forEach(card => {
+    const cardCat    = card.dataset.category || '';
+    const cardGender = card.dataset.gender || 'uni';
+
+    const catOk    = !cat    || cardCat === cat;
+    const genderOk = !gender || cardGender === gender || cardGender === 'uni';
+
+    card.style.display = (catOk && genderOk) ? '' : 'none';
+  });
+
+  const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
+  const countEl = document.querySelector('.catalog-count strong');
+  if (countEl) countEl.textContent = visible;
+}
+window.applyCatalogFilters = applyCatalogFilters;
 
 function setCategoryFilter(cat) {
   // Подсвечиваем активную кнопку
