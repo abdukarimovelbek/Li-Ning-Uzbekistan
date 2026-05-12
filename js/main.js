@@ -823,10 +823,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const products = await fetchProducts();
       if (products.length > 0) {
         catalogGrid.innerHTML = products.map(buildCard).join('');
-        if (window.ProductCards) ProductCards.init();
-        // Обновляем счётчик
-        const countEl = document.querySelector('.catalog-count strong');
-        if (countEl) countEl.textContent = products.length;
+        window.ProductCards?.init();
+        // Применяем фильтры из URL ПОСЛЕ загрузки карточек
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlCat = urlParams.get('category');
+        const urlGender = urlParams.get('gender');
+        if (urlCat || urlGender) {
+          applyCatalogFilters(urlCat, urlGender);
+        } else {
+          const countEl = document.querySelector('.catalog-count strong');
+          if (countEl) countEl.textContent = products.length;
+        }
       } else {
         catalogGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
       }
@@ -1099,10 +1106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     else if (cat)    pageTitle.textContent = catLabels[cat] || 'Каталог';
   }
 
-  // Применяем фильтры
-  if (cat || gender) {
-    applyCatalogFilters(cat, gender);
-  }
+  // фильтры применяются после загрузки карточек в блоке catalogGrid
 });
 
 function applyCatalogFilters(cat, gender) {
