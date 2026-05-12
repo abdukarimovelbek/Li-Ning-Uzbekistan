@@ -636,14 +636,7 @@ button { font-family: var(--font-body); }
 }
 
 .filter-sidebar {
-  position: sticky;
-  top: calc(var(--nav-h) + 1rem);
-  max-height: calc(100vh - var(--nav-h) - 2rem);
-  overflow-y: auto;
-  scrollbar-width: none;
-}
-.filter-sidebar::-webkit-scrollbar { 
-  display: none; 
+  position: static;
 }
 
 .filter-block {
