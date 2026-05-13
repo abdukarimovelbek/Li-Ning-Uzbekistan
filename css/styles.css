@@ -1423,7 +1423,10 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
   align-items: center;
   gap: 1rem;
   border-bottom: 2px solid var(--gray-100);
-  position: relative;
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 98;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 .nav-search-bar.open { display: flex; }
 .nav-search-bar .nav-search {
