@@ -1385,27 +1385,22 @@ window.setCategoryFilter = setCategoryFilter;
 /* ── MEGA MENU FIX ── */
 document.querySelectorAll('.nav-item-mega').forEach(item => {
   let hideTimer = null;
-
-  const menu = item.querySelector('.mega-menu');
-  if (!menu) return; // ← пропускаем если нет мегаменю
+  const megaMenu = item.querySelector('.mega-menu');
+  if (!megaMenu) return;
 
   const show = () => {
     clearTimeout(hideTimer);
-    menu.style.display = 'grid';
+    megaMenu.style.display = 'grid';
   };
 
   const hide = () => {
     hideTimer = setTimeout(() => {
-      menu.style.display = '';
+      megaMenu.style.display = '';
     }, 200);
   };
 
   item.addEventListener('mouseenter', show);
   item.addEventListener('mouseleave', hide);
-
-  const menu = item.querySelector('.mega-menu');
-  if (menu) {
-    menu.addEventListener('mouseenter', show);
-    menu.addEventListener('mouseleave', hide);
-  }
+  megaMenu.addEventListener('mouseenter', show);
+  megaMenu.addEventListener('mouseleave', hide);
 });
