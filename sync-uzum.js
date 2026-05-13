@@ -19,7 +19,8 @@ const UZUM_API = 'https://api-seller.uzum.uz/api/seller-openapi';
 async function getUzumProducts() {
   let allProducts = [];
   let page = 0;
-  const size = 100;
+  const size = 24; // Uzum отдаёт по 24 товара на страницу
+  let totalPages = null;
 
   console.log('📦 Получаем товары из Узум...');
 
@@ -39,18 +40,46 @@ async function getUzumProducts() {
     }
 
     const data = await res.json();
-    console.log('Узум ответ:', JSON.stringify(data).substring(0, 500));
+
+    // Логируем первую страницу полностью чтобы видеть структуру
+    if (page === 0) {
+      console.log('Узум ответ (стр.0):', JSON.stringify(data).substring(0, 800));
+    }
+
     const items = data?.productList || data?.payload?.products || data?.products || data?.content || [];
-    if (items.length > 0) {
+
+    if (page === 0 && items.length > 0) {
       console.log('ПЕРВЫЙ ТОВАР ПОЛНЫЙ:', JSON.stringify(items[0]).substring(0, 1500));
     }
-    if (items.length === 0) break;
+
+    if (items.length === 0) {
+      console.log(`  Страница ${page} пустая — останавливаемся`);
+      break;
+    }
 
     allProducts = allProducts.concat(items);
-    console.log(`  Загружено: ${allProducts.length} товаров...`);
 
-    if (items.length < size) break;
+    // Вычисляем totalPages из ответа если есть
+    if (totalPages === null) {
+      const total = data?.totalCount || data?.total || data?.payload?.totalCount || data?.totalElements || null;
+      if (total) {
+        totalPages = Math.ceil(total / size);
+        console.log(`  📄 Всего товаров: ${total}, страниц: ${totalPages}`);
+      }
+    }
+
+    console.log(`  Страница ${page + 1}${totalPages ? '/' + totalPages : ''}: загружено ${allProducts.length} товаров`);
+
+    // Останавливаемся если дошли до последней страницы
+    if (totalPages !== null && page + 1 >= totalPages) break;
+
+    // Запасной вариант — если API не вернул totalCount,
+    // останавливаемся только когда страница ПУСТАЯ (проверяем выше)
+    // Не останавливаемся по items.length < size — Uzum может отдать неполную страницу не на последней
     page++;
+
+    // Небольшая пауза между страницами чтобы не получить rate limit
+    await new Promise(r => setTimeout(r, 200));
   }
 
   console.log(`✅ Всего из Узум: ${allProducts.length} товаров`);
