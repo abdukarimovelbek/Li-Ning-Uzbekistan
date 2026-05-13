@@ -31,6 +31,235 @@ function isTelegram() {
   return !!window.Telegram?.WebApp?.initData;
 }
 
+/* ─── AUTH MODULE ────────────────────────────── */
+// Вставить в main.js ПЕРЕД секцией Cart (перед /* ─── 2. CART STATE & MANAGER ─── */)
+
+const Auth = (() => {
+  const SB_AUTH = `${SB_URL}/auth/v1`;
+  let _user = null;
+  let _pendingAction = null; // действие которое выполним после логина
+
+  // ── Получаем текущего пользователя из localStorage ──
+  const loadUser = () => {
+    try {
+      const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+      if (session?.access_token && session?.expires_at > Date.now() / 1000) {
+        _user = session.user;
+        return _user;
+      }
+    } catch(e) {}
+    _user = null;
+    return null;
+  };
+
+  // ── Текущий пользователь ──
+  const getUser = () => _user;
+
+  // ── Проверка авторизации ──
+  const isLoggedIn = () => !!_user;
+
+  // ── Если не вошёл — открываем модал, запоминаем действие ──
+  const requireAuth = (action) => {
+    if (isLoggedIn()) {
+      action?.();
+      return true;
+    }
+    _pendingAction = action;
+    openModal();
+    return false;
+  };
+
+  // ── Регистрация ──
+  const signUp = async (email, password, name) => {
+    const res = await fetch(`${SB_AUTH}/signup`, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, data: { full_name: name } })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.msg || 'Ошибка регистрации');
+    return data;
+  };
+
+  // ── Вход ──
+  const signIn = async (email, password) => {
+    const res = await fetch(`${SB_AUTH}/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error_description || data.msg || 'Неверный email или пароль');
+    
+    localStorage.setItem('lining_session', JSON.stringify(data));
+    _user = data.user;
+    onLogin();
+    return data;
+  };
+
+  // ── Выход ──
+  const signOut = async () => {
+    const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+    if (session?.access_token) {
+      await fetch(`${SB_AUTH}/logout`, {
+        method: 'POST',
+        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${session.access_token}` }
+      }).catch(() => {});
+    }
+    localStorage.removeItem('lining_session');
+    _user = null;
+    updateNavUI();
+    window.Toast?.show('Вы вышли из аккаунта', '', '');
+    closeModal();
+  };
+
+  // ── После успешного входа ──
+  const onLogin = () => {
+    updateNavUI();
+    closeModal();
+    window.Toast?.show(`Добро пожаловать! 👋`, _user?.user_metadata?.full_name || _user?.email || '', 'success');
+    if (_pendingAction) {
+      setTimeout(() => { _pendingAction?.(); _pendingAction = null; }, 300);
+    }
+  };
+
+  // ── Обновляем иконку человечка ──
+  const updateNavUI = () => {
+    const btn = document.getElementById('auth-btn');
+    if (!btn) return;
+    if (_user) {
+      const name = _user.user_metadata?.full_name || _user.email || '';
+      const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+      btn.innerHTML = `<span style="width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center">${initials}</span>`;
+      btn.title = name;
+    } else {
+      btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+      btn.title = 'Войти';
+    }
+  };
+
+  // ── Открыть/закрыть модал ──
+  const openModal = (tab = 'login') => {
+    const modal = document.getElementById('auth-modal');
+    const overlay = document.getElementById('auth-overlay');
+    if (!modal) return;
+    modal.style.display = 'block';
+    requestAnimationFrame(() => { modal.classList.add('open'); overlay.classList.add('open'); });
+    switchTab(tab);
+  };
+
+  const closeModal = () => {
+    const modal = document.getElementById('auth-modal');
+    const overlay = document.getElementById('auth-overlay');
+    if (!modal) return;
+    modal.classList.remove('open');
+    overlay.classList.remove('open');
+    setTimeout(() => { modal.style.display = 'none'; }, 250);
+    clearErrors();
+  };
+
+  const switchTab = (tab) => {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.toggle('active', f.id === `auth-form-${tab}`));
+  };
+
+  const clearErrors = () => {
+    document.querySelectorAll('.auth-error').forEach(el => { el.textContent = ''; el.style.display = 'none'; });
+    document.querySelectorAll('.auth-input').forEach(inp => inp.classList.remove('error'));
+  };
+
+  const showError = (formId, msg) => {
+    const err = document.querySelector(`#${formId} .auth-error`);
+    if (err) { err.textContent = msg; err.style.display = 'block'; }
+  };
+
+  // ── Обработчики форм ──
+  const initForms = () => {
+    // Вход
+    document.getElementById('auth-form-login')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      clearErrors();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = e.target.querySelector('.auth-submit');
+      btn.textContent = 'Входим...'; btn.disabled = true;
+      try {
+        await signIn(email, password);
+      } catch(err) {
+        showError('auth-form-login', err.message);
+        btn.textContent = 'Войти'; btn.disabled = false;
+      }
+    });
+
+    // Регистрация
+    document.getElementById('auth-form-register')?.addEventListener('submit', async e => {
+      e.preventDefault();
+      clearErrors();
+      const name = document.getElementById('reg-name').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const btn = e.target.querySelector('.auth-submit');
+
+      if (password.length < 6) { showError('auth-form-register', 'Пароль минимум 6 символов'); return; }
+      btn.textContent = 'Регистрируем...'; btn.disabled = true;
+
+      try {
+        await signUp(email, password, name);
+        // Автоматически входим после регистрации
+        await signIn(email, password);
+      } catch(err) {
+        showError('auth-form-register', err.message);
+        btn.textContent = 'Зарегистрироваться'; btn.disabled = false;
+      }
+    });
+
+    // Кнопка выхода в кабинете
+    document.getElementById('auth-signout-btn')?.addEventListener('click', signOut);
+  };
+
+  // ── Иконка человечка ──
+  const initAuthBtn = () => {
+    const btn = document.getElementById('auth-btn');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      if (isLoggedIn()) {
+        openModal('account');
+      } else {
+        openModal('login');
+      }
+    });
+  };
+
+  // ── Инициализация ──
+  document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('order-form')) {
+      if (!window.Auth?.isLoggedIn()) {
+        window.Auth?.openModal('login');
+      }
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadUser();
+    updateNavUI();
+    initForms();
+    initAuthBtn();
+
+    // Таб-переключение
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+
+    // Закрытие оверлея
+    document.getElementById('auth-overlay')?.addEventListener('click', closeModal);
+    document.getElementById('auth-modal-close')?.addEventListener('click', closeModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  });
+
+  window.Auth = { getUser, isLoggedIn, requireAuth, signOut, openModal, closeModal };
+  return { getUser, isLoggedIn, requireAuth };
+})();
+
 /* ─── 2. CART STATE & MANAGER ───────────────── */
 const Cart = (() => {
   let items = JSON.parse(localStorage.getItem('lining_cart') || '[]');
@@ -228,7 +457,7 @@ const ProductCards = (() => {
             size:    card.dataset.defaultSize || '42',
             emoji:   card.querySelector('.product-img')?.textContent?.trim() || '👟',
           };
-          Cart.add(data);
+          window.Auth.requireAuth(() => Cart.add(data));
           // Animate button
           addBtn.textContent = '✓ Добавлено';
           addBtn.style.background = '#22c55e';
@@ -244,12 +473,14 @@ const ProductCards = (() => {
       if (wishBtn) {
         wishBtn.addEventListener('click', e => {
           e.stopPropagation();
-          const isWished = wishBtn.dataset.wished === 'true';
-          wishBtn.dataset.wished = (!isWished).toString();
-          wishBtn.textContent = isWished ? '♡' : '♥';
-          Toast.show(isWished ? 'Убрано из желаемого' : 'Добавлено в желаемое', '', 'warning');
+          window.Auth.requireAuth(() => {
+            const isWished = wishBtn.dataset.wished === 'true';
+            wishBtn.dataset.wished = (!isWished).toString();
+            wishBtn.textContent = isWished ? '♡' : '♥';
+            Toast.show(isWished ? 'Убрано из желаемого' : 'Добавлено в желаемое', '', 'warning');
+          });
         });
-      }
+      } // ← эта скобка закрывает if (wishBtn)
 
       // Click → product page
       card.addEventListener('click', (e) => {
