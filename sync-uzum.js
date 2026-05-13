@@ -15,74 +15,70 @@ const SB_KEY       = process.env.SB_KEY;
 
 const UZUM_API = 'https://api-seller.uzum.uz/api/seller-openapi';
 
-// ── 1. Получаем все товары из Узум ──────────────────────────
+// ── 1. Получаем все товары из Узум (все статусы) ────────────
 async function getUzumProducts() {
+  // Uzum разбивает товары по фильтрам-статусам
+  // filter=ALL даёт только IN_STOCK (~69 шт)
+  // Перебираем все возможные фильтры чтобы получить все товары
+  const FILTERS = ['IN_STOCK', 'ACTIVE', 'INACTIVE', 'ARCHIVED', 'MODERATION', 'BLOCKED'];
+
+  const seenIds = new Set();      // защита от дублей между фильтрами
   let allProducts = [];
-  let page = 0;
-  const size = 24; // Uzum отдаёт по 24 товара на страницу
-  let totalPages = null;
+  const size = 24;
 
-  console.log('📦 Получаем товары из Узум...');
+  console.log('📦 Получаем товары из Узум (все статусы)...');
 
-  while (true) {
-    const res = await fetch(`${UZUM_API}/v1/product/shop/${UZUM_SHOP_ID}?page=${page}&size=${size}&filter=ALL&order=ASC&sortBy=DEFAULT&productRank=A`, {
-      headers: {
-        'Authorization': UZUM_TOKEN,
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Accept-Language': 'ru-RU',
+  for (const filter of FILTERS) {
+    console.log(`\n  🔍 Фильтр: ${filter}`);
+    let page = 0;
+    let filterCount = 0;
+
+    while (true) {
+      const res = await fetch(
+        `${UZUM_API}/v1/product/shop/${UZUM_SHOP_ID}?page=${page}&size=${size}&filter=${filter}&order=ASC&sortBy=DEFAULT&productRank=A`,
+        {
+          headers: {
+            'Authorization': UZUM_TOKEN,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Accept-Language': 'ru-RU',
+          }
+        }
+      );
+
+      if (!res.ok) {
+        const errText = await res.text();
+        console.log(`    ⚠️  Фильтр ${filter} стр.${page}: ${res.status} — пропускаем`);
+        break;
       }
-    });
 
-    if (!res.ok) {
-      console.error('❌ Ошибка Узум API:', res.status, await res.text());
-      break;
-    }
+      const data = await res.json();
+      const items = data?.productList || data?.payload?.products || data?.products || data?.content || [];
 
-    const data = await res.json();
+      if (items.length === 0) break;
 
-    // Логируем первую страницу полностью чтобы видеть структуру
-    if (page === 0) {
-      console.log('Узум ответ (стр.0):', JSON.stringify(data).substring(0, 800));
-    }
-
-    const items = data?.productList || data?.payload?.products || data?.products || data?.content || [];
-
-    if (page === 0 && items.length > 0) {
-      console.log('ПЕРВЫЙ ТОВАР ПОЛНЫЙ:', JSON.stringify(items[0]).substring(0, 1500));
-    }
-
-    if (items.length === 0) {
-      console.log(`  Страница ${page} пустая — останавливаемся`);
-      break;
-    }
-
-    allProducts = allProducts.concat(items);
-
-    // Вычисляем totalPages из ответа если есть
-    if (totalPages === null) {
-      const total = data?.totalCount || data?.total || data?.payload?.totalCount || data?.totalElements || null;
-      if (total) {
-        totalPages = Math.ceil(total / size);
-        console.log(`  📄 Всего товаров: ${total}, страниц: ${totalPages}`);
+      // Добавляем только новые (по productId) чтобы не дублировать между фильтрами
+      let addedThisPage = 0;
+      for (const item of items) {
+        const id = item.productId || item.id;
+        if (!seenIds.has(id)) {
+          seenIds.add(id);
+          allProducts.push(item);
+          addedThisPage++;
+        }
       }
+
+      filterCount += addedThisPage;
+      console.log(`    Стр.${page + 1}: +${addedThisPage} новых (всего по фильтру: ${filterCount}, итого: ${allProducts.length})`);
+
+      page++;
+      await new Promise(r => setTimeout(r, 200));
     }
 
-    console.log(`  Страница ${page + 1}${totalPages ? '/' + totalPages : ''}: загружено ${allProducts.length} товаров`);
-
-    // Останавливаемся если дошли до последней страницы
-    if (totalPages !== null && page + 1 >= totalPages) break;
-
-    // Запасной вариант — если API не вернул totalCount,
-    // останавливаемся только когда страница ПУСТАЯ (проверяем выше)
-    // Не останавливаемся по items.length < size — Uzum может отдать неполную страницу не на последней
-    page++;
-
-    // Небольшая пауза между страницами чтобы не получить rate limit
-    await new Promise(r => setTimeout(r, 200));
+    console.log(`  ✅ Фильтр ${filter}: итого ${filterCount} товаров`);
   }
 
-  console.log(`✅ Всего из Узум: ${allProducts.length} товаров`);
+  console.log(`\n✅ Всего уникальных товаров из Узум: ${allProducts.length}`);
   return allProducts;
 }
 
