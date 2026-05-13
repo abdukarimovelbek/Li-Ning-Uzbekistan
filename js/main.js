@@ -6,6 +6,14 @@
 
 'use strict';
 
+/* ─── SUPABASE CONFIG ───────────────────────── */
+const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
+const SB_KEY = 'sb_publishable_OJBupDTCJGVIJpkoV8q3gg_mcvRddQb';
+
+const CACHE_KEY = 'lining_products_cache';
+const CACHE_TTL = 5 * 60 * 1000;
+
+
 /* ─── TELEGRAM MINI APP ─────────────────────── */
 const tg = window.Telegram?.WebApp;
 
@@ -939,13 +947,6 @@ const PageTransition = (() => {
     });
   });
 })();
-
-/* ─── SUPABASE CONFIG ───────────────────────── */
-const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
-const SB_KEY = 'sb_publishable_OJBupDTCJGVIJpkoV8q3gg_mcvRddQb';
-
-const CACHE_KEY = 'lining_products_cache';
-const CACHE_TTL = 5 * 60 * 1000;
 
 async function fetchProducts(filter = '') {
   const cacheKey = CACHE_KEY + filter;
