@@ -1086,7 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const genderLabels = { male: 'Мужчины', female: 'Женщины', uni: 'Унисекс' };
   const catLabels = { shoes: 'Обувь', clothing: 'Одежда', running: 'Бег', training: 'Тренировка', accessories: 'Аксессуары' };
   const extra = document.getElementById('breadcrumb-extra');
-  const subcatLabels = { sneakers: 'Кроссовки', slippers: 'Сланцы / Сабо', sneakers_low: 'Кеды', sandals: 'Сандали' };
+  const subcatLabels = { sneakers: 'Кроссовки', slippers: 'Сланцы / Сабо', sneakers_low: 'Кеды', sandals: 'Сандали', tshirts: 'Футболки', shorts: 'Шорты', pants: 'Брюки', longsleeves: 'Лонгсливы' };
   const subcategory = params.get('subcategory');
 
   if (extra) {
