@@ -1386,14 +1386,17 @@ window.setCategoryFilter = setCategoryFilter;
 document.querySelectorAll('.nav-item-mega').forEach(item => {
   let hideTimer = null;
 
+  const menu = item.querySelector('.mega-menu');
+  if (!menu) return; // ← пропускаем если нет мегаменю
+
   const show = () => {
     clearTimeout(hideTimer);
-    item.querySelector('.mega-menu').style.display = 'grid';
+    menu.style.display = 'grid';
   };
 
   const hide = () => {
     hideTimer = setTimeout(() => {
-      item.querySelector('.mega-menu').style.display = '';
+      menu.style.display = '';
     }, 200);
   };
 
