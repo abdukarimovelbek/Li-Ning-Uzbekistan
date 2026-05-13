@@ -8,7 +8,7 @@
 
 /* ─── SUPABASE CONFIG ───────────────────────── */
 const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
-const SB_KEY = 'sb_publishable_OJBupDTCJGVIJpkoV8q3gg_mcvRddQb';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRneWlyZ2lucmVmdmpzYmhob29pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDUzNjgsImV4cCI6MjA5MzI4MTM2OH0.A-ueG5j_wcxZ7joJM645hrImLwFYjz_SM4ATLTc0cfU';
 
 const CACHE_KEY = 'lining_products_cache';
 const CACHE_TTL = 5 * 60 * 1000;
