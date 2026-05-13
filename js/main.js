@@ -500,7 +500,6 @@ const ProductCards = (() => {
   };
 
   window.ProductCards = { init };
-  document.addEventListener('DOMContentLoaded', init);
 })();
 
 
@@ -1041,7 +1040,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const products = await fetchProducts('&limit=4');
       if (products.length > 0) {
         homeGrid.innerHTML = products.map(buildCard).join('');
-        if (window.ProductCards) ProductCards.init();
+        window.ProductCards?.init();
       } else {
         homeGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
       }
@@ -1080,7 +1079,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       shoesGrid.innerHTML = products.length > 0
         ? products.map(buildCard).join('')
         : '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
-      if (window.ProductCards) ProductCards.init();;
+      window.ProductCards?.init();;
     } catch(e) { console.error(e); }
   }
 
@@ -1089,7 +1088,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const products = await fetchProducts('&category=eq.clothing');
       clothingGrid.innerHTML = products.map(buildCard).join('');
-      if (window.ProductCards) ProductCards.init();;
+      window.ProductCards?.init();;
     } catch(e) { console.error(e); }
   }
 
@@ -1098,7 +1097,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const products = await fetchProducts('&category=eq.running');
       runningGrid.innerHTML = products.map(buildCard).join('');
-      if (window.ProductCards) ProductCards.init();;
+      window.ProductCards?.init();;
     } catch(e) { console.error(e); }
   }
 
@@ -1107,7 +1106,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const products = await fetchProducts('&category=eq.training');
       trainingGrid.innerHTML = products.map(buildCard).join('');
-      if (window.ProductCards) ProductCards.init();;
+      window.ProductCards?.init();;
     } catch(e) { console.error(e); }
   }
 
