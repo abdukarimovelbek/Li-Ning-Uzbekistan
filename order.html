@@ -708,14 +708,24 @@ function selectDelivery(el, type) {
   el.querySelector('input[type=radio]').checked = true;
 
   const storeList = document.getElementById('store-list');
+  const addressInput = document.getElementById('address');
+
   if (type === 'pickup') {
     storeList.classList.add('open');
   } else {
     storeList.classList.remove('open');
     document.querySelectorAll('input[name=pickup_store]').forEach(r => r.checked = false);
     document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
-    // Сбрасываем текст обратно
     document.getElementById('pickup-label').textContent = 'Бесплатно · Выберите магазин ниже';
+
+    // ── Разблокируем поле адреса ──
+    if (addressInput) {
+      addressInput.value = '';
+      addressInput.readOnly = false;
+      addressInput.style.background = '';
+      addressInput.style.color = '';
+      addressInput.style.cursor = '';
+    }
   }
 }
 
@@ -734,6 +744,31 @@ document.querySelectorAll('.store-option').forEach(opt => {
 
     // Закрываем список
     document.getElementById('store-list').classList.remove('open');
+  });
+});
+
+document.querySelectorAll('.store-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+
+    const name = opt.querySelector('.store-option-name').textContent;
+    const addr = opt.querySelector('.store-option-addr').textContent;
+
+    document.getElementById('pickup-label').innerHTML =
+      `<strong>${name}</strong> · <span style="color:var(--gray-500);font-size:0.78rem">${addr}</span>`;
+
+    document.getElementById('store-list').classList.remove('open');
+
+    // ── Автозаполняем поле адреса ──
+    const addressInput = document.getElementById('address');
+    if (addressInput) {
+      addressInput.value = addr;
+      addressInput.readOnly = true;
+      addressInput.style.background = 'var(--gray-100)';
+      addressInput.style.color = 'var(--gray-500)';
+      addressInput.style.cursor = 'not-allowed';
+    }
   });
 });
 
