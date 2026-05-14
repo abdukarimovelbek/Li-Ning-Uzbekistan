@@ -1464,3 +1464,15 @@ document.querySelectorAll('.nav-item-mega').forEach(item => {
   megaMenu.addEventListener('mouseenter', show);
   megaMenu.addEventListener('mouseleave', hide);
 });
+
+/* ─── WISHLIST NAV ───────────────────────────── */
+function openWishlist() {
+  if (window.Auth?.isLoggedIn()) {
+    window.location.href = 'wishlist.html';
+  } else {
+    window.Auth?.requireAuth(() => {
+      window.location.href = 'wishlist.html';
+    });
+  }
+}
+window.openWishlist = openWishlist;
