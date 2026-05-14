@@ -1058,7 +1058,6 @@ const buildCard = (p) => {
           ${imgHtml}
         </div>
         <div class="product-actions">
-          <button class="btn-addcart">+ В корзину</button>
           <button class="btn-wishlist" data-wished="false">♡</button>
         </div>
       </div>

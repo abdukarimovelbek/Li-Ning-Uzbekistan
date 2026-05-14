@@ -597,11 +597,9 @@ button { font-family: var(--font-body); }
 .badge-new { background: var(--gray-900); }
 .badge-sale { background: var(--red); }
 .badge-hot { background: var(--gold); color: var(--black); }
+
 .product-actions {
-  position: absolute; bottom: 1rem; left: 1rem; right: 1rem;
-  display: flex; gap: 0.5rem;
-  opacity: 0; transform: translateY(8px);
-  transition: opacity var(--transition), transform var(--transition);
+  display: none;
 }
 .product-actions button {
   flex: 1; padding: 0.6rem; font-size: 0.72rem; letter-spacing: 1px;
@@ -609,8 +607,35 @@ button { font-family: var(--font-body); }
 }
 .btn-addcart { background: var(--red); color: #fff; transition: background var(--transition); }
 .btn-addcart:hover { background: var(--red-dark); }
-.btn-wishlist { background: var(--white); color: var(--gray-700); width: 38px; flex: 0 0 38px; border: 1px solid var(--gray-300); transition: all var(--transition); }
-.btn-wishlist:hover { background: var(--gray-900); color: var(--white); border-color: var(--gray-900); }
+
+.btn-wishlist {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  width: 36px;
+  height: 36px;
+  background: var(--white);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  cursor: pointer;
+  z-index: 2;
+  color: var(--gray-500);
+  transition: all var(--transition);
+}
+.btn-wishlist:hover {
+  background: var(--red);
+  color: var(--white);
+  box-shadow: 0 4px 12px rgba(196,30,58,0.3);
+  transform: scale(1.1);
+}
+.btn-wishlist[data-wished="true"] {
+  color: var(--red);
+}
 
 .product-info {
   padding: 1.4rem 1.4rem 1.2rem;
