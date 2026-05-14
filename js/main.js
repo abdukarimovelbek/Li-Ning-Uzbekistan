@@ -458,7 +458,6 @@ const Toast = (() => {
 const ProductCards = (() => {
   const init = () => {
     document.querySelectorAll('.product-card').forEach(card => {
-      // Highlight on hover — extra class for additional effects
       card.addEventListener('mouseenter', () => card.classList.add('is-hovered'));
       card.addEventListener('mouseleave', () => card.classList.remove('is-hovered'));
 
@@ -467,7 +466,6 @@ const ProductCards = (() => {
       if (addBtn) {
         addBtn.addEventListener('click', e => {
           e.stopPropagation();
-          console.log('card article:', card.dataset.article, 'productId:', card.dataset.productId);
           const data = {
             id:      card.dataset.productId || Math.random().toString(36).slice(2),
             article: card.dataset.article || card.dataset.productId,
@@ -481,7 +479,6 @@ const ProductCards = (() => {
           } else {
             Cart.add(data);
           }
-          // Animate button
           addBtn.textContent = '✓ Добавлено';
           addBtn.style.background = '#22c55e';
           setTimeout(() => {
@@ -491,49 +488,41 @@ const ProductCards = (() => {
         });
       }
 
-    // Wishlist toggle — СТАЛО:
-    if (wishBtn) {
-      wishBtn.addEventListener('click', e => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (window.Auth) {
-          window.Auth.requireAuth(async () => {
-            const user = window.Auth.getUser();
-            const productId = card.dataset.productId;
-            const isWished = wishBtn.dataset.wished === 'true';
+      // Wishlist toggle
+      const wishBtn = card.querySelector('.btn-wishlist');
+      if (wishBtn) {
+        wishBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (window.Auth) {
+            window.Auth.requireAuth(async () => {
+              const user = window.Auth.getUser();
+              const productId = card.dataset.productId;
+              const isWished = wishBtn.dataset.wished === 'true';
 
-            if (isWished) {
-              // Удаляем из Supabase
-              await fetch(
-                `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&product_id=eq.${productId}`,
-                {
-                  method: 'DELETE',
-                  headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
-                }
-              );
-              wishBtn.dataset.wished = 'false';
-              wishBtn.textContent = '♡';
-              Toast.show('Убрано из избранного', '', '');
-            } else {
-              // Добавляем в Supabase
-              await fetch(`${SB_URL}/rest/v1/wishlists`, {
-                method: 'POST',
-                headers: {
-                  'apikey': SB_KEY,
-                  'Authorization': `Bearer ${SB_KEY}`,
-                  'Content-Type': 'application/json',
-                  'Prefer': 'return=minimal'
-                },
-                body: JSON.stringify({ user_id: user.id, product_id: productId })
-              });
-              wishBtn.dataset.wished = 'true';
-              wishBtn.textContent = '♥';
-              Toast.show('Добавлено в избранное', '', 'success');
-            }
-          });
-        }
-      });
-    }
+              if (isWished) {
+                await fetch(
+                  `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&product_id=eq.${productId}`,
+                  { method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+                );
+                wishBtn.dataset.wished = 'false';
+                wishBtn.textContent = '♡';
+                Toast.show('Убрано из избранного', '', '');
+              } else {
+                await fetch(`${SB_URL}/rest/v1/wishlists`, {
+                  method: 'POST',
+                  headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                  body: JSON.stringify({ user_id: user.id, product_id: productId })
+                });
+                wishBtn.dataset.wished = 'true';
+                wishBtn.textContent = '♥';
+                Toast.show('Добавлено в избранное', '', 'success');
+              }
+            });
+          }
+        });
+      }
+
       // Click → product page
       card.addEventListener('click', (e) => {
         if (e.target.closest('button')) return;
@@ -545,7 +534,7 @@ const ProductCards = (() => {
 
   window.ProductCards = { init };
 })();
-
+  
 
 /* ─── 6. FILTER SIDEBAR ─────────────────────── */
 const FilterSidebar = (() => {
@@ -1059,9 +1048,9 @@ const buildCard = (p) => {
         <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
           ${imgHtml}
         </div>
-        <div class="product-actions">
+        
           <button class="btn-wishlist" data-wished="false">♡</button>
-        </div>
+        
       </div>
       <div class="product-info">
         <div class="product-brand">${p.brand || 'Li Ning'}</div>
