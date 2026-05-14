@@ -800,6 +800,8 @@ const OrderForm = (() => {
         phone:           document.getElementById('phone').value.trim(),
         email:           document.getElementById('email')?.value.trim() || null,
         delivery_type:   document.querySelector('.delivery-option.selected input')?.value || null,
+        pickup_store:    document.querySelector('input[name=pickup_store]:checked')?.value || null, // ← добавь
+        address:         document.getElementById('address').value.trim(),
         address:         document.getElementById('address').value.trim(),
         city:            document.getElementById('city').value.trim(),
         comment:         document.getElementById('comment')?.value.trim() || null,

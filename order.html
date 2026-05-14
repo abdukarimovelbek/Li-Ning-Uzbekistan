@@ -291,7 +291,7 @@
           Способ доставки
         </div>
         <div class="delivery-options">
-          <div class="delivery-option selected" data-price="20000" onclick="selectDelivery(this)">
+          <div class="delivery-option selected" data-price="20000" onclick="selectDelivery(this, 'delivery')">
             <input type="radio" name="delivery" value="courier" checked>
               <div class="delivery-label">
                 <strong>🚚 Курьерская доставка</strong>
@@ -299,15 +299,36 @@
               </div>
               <div class="delivery-price">20 000 сум</div>
           </div>
-          <div class="delivery-option" data-price="0" onclick="selectDelivery(this)">
-            <input type="radio" name="delivery" value="pickup">
-              <div class="delivery-label">
-                <strong>🏪 Самовывоз из магазина</strong>
-                <span>Чиланзар, ул. Катартал 72 — готово через 2 ч</span>
-              </div>
-              <div class="delivery-price">Бесплатно</div>
+          <div class="delivery-option" onclick="selectDelivery(this, 'pickup')">
+            <input type="radio" name="delivery" value="pickup" id="delivery-pickup">
+            <div class="delivery-label">
+              <strong>Самовывоз</strong>
+              <span>Бесплатно · Выберите магазин ниже</span>
+            </div>
+            <div class="delivery-price">Бесплатно</div>
           </div>
-          <div class="delivery-option" data-price="40000" onclick="selectDelivery(this)">
+
+          <div class="store-list" id="store-list">
+            <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);font-weight:600;padding:0.3rem 0.2rem">Ташкент</div>
+
+            <label class="store-option"><input type="radio" name="pickup_store" value="Tashkent City Mall"><div class="store-option-info"><div class="store-option-name">Tashkent City Mall</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Eco Park"><div class="store-option-info"><div class="store-option-name">Eco Park</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Alayskiy"><div class="store-option-info"><div class="store-option-name">Alayskiy</div><div class="store-option-addr">Yahyo Gulyamov ko'chasi 7, Ташкент</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Magic City"><div class="store-option-info"><div class="store-option-name">Magic City</div><div class="store-option-addr">Bobur ko'chasi 174, Ташкент</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Atlas Chimgan"><div class="store-option-info"><div class="store-option-name">Atlas Chimgan</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="High Town Plaza"><div class="store-option-info"><div class="store-option-name">High Town Plaza</div><div class="store-option-addr">Yangi Shahar ko'chasi 67, Ташкент</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Malika"><div class="store-option-info"><div class="store-option-name">Malika</div><div class="store-option-addr">Buz Bozor ko'chasi, Ташкент</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Novza"><div class="store-option-info"><div class="store-option-name">Novza</div><div class="store-option-addr">Mukimi Street 25/1, Ташкент</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Yunusabad Gallery"><div class="store-option-info"><div class="store-option-name">Yunusabad Gallery</div><div class="store-option-addr">Юнусабад, Ташкент</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Shota Rustavely"><div class="store-option-info"><div class="store-option-name">Shota Rustavely</div><div class="store-option-addr">Shota Rustaveli ko'chasi, Ташкент</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="Scopus Mall"><div class="store-option-info"><div class="store-option-name">Scopus Mall</div><div class="store-option-addr">Чиланзар, Ташкент</div></div></label>
+
+            <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);font-weight:600;padding:0.6rem 0.2rem 0.3rem">Самарканд</div>
+
+            <label class="store-option"><input type="radio" name="pickup_store" value="Family Park Samarkand"><div class="store-option-info"><div class="store-option-name">Family Park</div><div class="store-option-addr">Narpayskaya Ulitsa 76, Самарканд</div></div></label>
+            <label class="store-option"><input type="radio" name="pickup_store" value="M. Baraka Samarkand"><div class="store-option-info"><div class="store-option-name">M. Baraka</div><div class="store-option-addr">Mir Said Baraka Street 2, Самарканд</div></div></label>
+          </div>
+          <div class="delivery-option" data-price="40000" onclick="selectDelivery(this, 'delivery')">
             <input type="radio" name="delivery" value="express">
             <div class="delivery-label">
               <strong>⚡ Экспресс-доставка</strong>
@@ -673,6 +694,31 @@ document.addEventListener('DOMContentLoaded', () => {
     <button id="auth-signout-btn" class="auth-signout">Выйти из аккаунта</button>
   </div>
 </div>
+
+<script>
+
+function selectDelivery(el, type) {
+  document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input[type=radio]').checked = true;
+  const storeList = document.getElementById('store-list');
+  if (type === 'pickup') {
+    storeList.classList.add('open');
+  } else {
+    storeList.classList.remove('open');
+    document.querySelectorAll('input[name=pickup_store]').forEach(r => r.checked = false);
+    document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
+  }
+}
+
+document.querySelectorAll('.store-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+  });
+});
+
+</script>
 
 </body>
 </html>
