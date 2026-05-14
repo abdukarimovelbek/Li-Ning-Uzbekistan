@@ -257,14 +257,6 @@ const Auth = (() => {
     });
   };
 
-  // ── Инициализация ──
-  document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('order-form')) {
-      if (!window.Auth?.isLoggedIn()) {
-        window.Auth?.openModal('login');
-      }
-    }
-  });
 
   document.addEventListener('DOMContentLoaded', () => {
     loadUser();
@@ -499,28 +491,49 @@ const ProductCards = (() => {
         });
       }
 
-    // Wishlist toggle
-    const wishBtn = card.querySelector('.btn-wishlist');
+    // Wishlist toggle — СТАЛО:
     if (wishBtn) {
       wishBtn.addEventListener('click', e => {
         e.stopPropagation();
         e.preventDefault();
         if (window.Auth) {
-          window.Auth.requireAuth(() => {
+          window.Auth.requireAuth(async () => {
+            const user = window.Auth.getUser();
+            const productId = card.dataset.productId;
             const isWished = wishBtn.dataset.wished === 'true';
-            wishBtn.dataset.wished = (!isWished).toString();
-            wishBtn.textContent = isWished ? '♡' : '♥';
-            Toast.show(isWished ? 'Убрано из желаемого' : 'Добавлено в желаемое', '', 'warning');
+
+            if (isWished) {
+              // Удаляем из Supabase
+              await fetch(
+                `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&product_id=eq.${productId}`,
+                {
+                  method: 'DELETE',
+                  headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+                }
+              );
+              wishBtn.dataset.wished = 'false';
+              wishBtn.textContent = '♡';
+              Toast.show('Убрано из избранного', '', '');
+            } else {
+              // Добавляем в Supabase
+              await fetch(`${SB_URL}/rest/v1/wishlists`, {
+                method: 'POST',
+                headers: {
+                  'apikey': SB_KEY,
+                  'Authorization': `Bearer ${SB_KEY}`,
+                  'Content-Type': 'application/json',
+                  'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify({ user_id: user.id, product_id: productId })
+              });
+              wishBtn.dataset.wished = 'true';
+              wishBtn.textContent = '♥';
+              Toast.show('Добавлено в избранное', '', 'success');
+            }
           });
-        } else {
-          const isWished = wishBtn.dataset.wished === 'true';
-          wishBtn.dataset.wished = (!isWished).toString();
-          wishBtn.textContent = isWished ? '♡' : '♥';
-          Toast.show(isWished ? 'Убрано из желаемого' : 'Добавлено в желаемое', '', 'warning');
         }
       });
     }
-
       // Click → product page
       card.addEventListener('click', (e) => {
         if (e.target.closest('button')) return;
@@ -1060,6 +1073,28 @@ const buildCard = (p) => {
     </div>`;
 };
 
+// Загружаем избранное пользователя и подсвечиваем карточки
+async function highlightWishlist() {
+  const user = window.Auth?.getUser();
+  if (!user) return;
+
+  const res = await fetch(
+    `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&select=product_id`,
+    { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+  );
+  const data = await res.json();
+  const wishedIds = new Set(data.map(w => w.product_id));
+
+  document.querySelectorAll('.product-card').forEach(card => {
+    const btn = card.querySelector('.btn-wishlist');
+    if (btn && wishedIds.has(card.dataset.productId)) {
+      btn.dataset.wished = 'true';
+      btn.textContent = '♥';
+    }
+  });
+}
+window.highlightWishlist = highlightWishlist;
+
 document.addEventListener('DOMContentLoaded', async () => {
   // Ждём инициализации ProductCards
   await new Promise(r => setTimeout(r, 0));
@@ -1072,6 +1107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (products.length > 0) {
         homeGrid.innerHTML = products.map(buildCard).join('');
         window.ProductCards?.init();
+        highlightWishlist();
       } else {
         homeGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
       }
@@ -1086,6 +1122,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (products.length > 0) {
         catalogGrid.innerHTML = products.map(buildCard).join('');
         window.ProductCards?.init();
+        highlightWishlist();
         // Применяем фильтры из URL ПОСЛЕ загрузки карточек
         const urlParams = new URLSearchParams(window.location.search);
         const urlCat = urlParams.get('category');
@@ -1110,7 +1147,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       shoesGrid.innerHTML = products.length > 0
         ? products.map(buildCard).join('')
         : '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
-      window.ProductCards?.init();;
+      window.ProductCards?.init();
+      highlightWishlist();
     } catch(e) { console.error(e); }
   }
 
@@ -1119,7 +1157,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const products = await fetchProducts('&category=eq.clothing');
       clothingGrid.innerHTML = products.map(buildCard).join('');
-      window.ProductCards?.init();;
+      window.ProductCards?.init();
+      highlightWishlist();
     } catch(e) { console.error(e); }
   }
 
@@ -1128,7 +1167,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const products = await fetchProducts('&category=eq.running');
       runningGrid.innerHTML = products.map(buildCard).join('');
-      window.ProductCards?.init();;
+      window.ProductCards?.init();
+      highlightWishlist();
     } catch(e) { console.error(e); }
   }
 
@@ -1137,7 +1177,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
       const products = await fetchProducts('&category=eq.training');
       trainingGrid.innerHTML = products.map(buildCard).join('');
-      window.ProductCards?.init();;
+      window.ProductCards?.init();
+      highlightWishlist();
     } catch(e) { console.error(e); }
   }
 

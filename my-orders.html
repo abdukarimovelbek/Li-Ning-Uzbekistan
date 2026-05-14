@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <title>Мои заказы — Li Ning Store</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .orders-page { padding: 3rem 2rem 5rem; max-width: 900px; margin: 0 auto; }
+    .order-card {
+      background: var(--white);
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: box-shadow var(--transition);
+    }
+    .order-card:hover { box-shadow: var(--shadow-md); }
+    .order-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem;
+      background: var(--cream);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .order-card-id { font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px; color: var(--gray-900); }
+    .order-card-date { font-size: 0.75rem; color: var(--gray-500); margin-top: 0.2rem; }
+    .order-card-status {
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    }
+    .status-new { background: rgba(184,134,11,0.1); color: var(--gold); }
+    .status-processing { background: rgba(59,130,246,0.1); color: #3b82f6; }
+    .status-delivered { background: rgba(34,197,94,0.1); color: #22c55e; }
+    .status-cancelled { background: rgba(196,30,58,0.1); color: var(--red); }
+    .order-card-items { padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
+    .order-card-item { display: flex; align-items: center; gap: 1rem; }
+    .order-card-item-img {
+      width: 56px; height: 56px; flex-shrink: 0;
+      background: var(--gray-100); border-radius: var(--radius-sm);
+      overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    }
+    .order-card-item-img img { width: 100%; height: 100%; object-fit: cover; }
+    .order-card-item-name { font-size: 0.88rem; font-weight: 600; color: var(--gray-900); }
+    .order-card-item-meta { font-size: 0.75rem; color: var(--gray-500); margin-top: 0.15rem; }
+    .order-card-item-price { margin-left: auto; font-family: var(--font-display); font-size: 1rem; color: var(--gray-900); white-space: nowrap; }
+    .order-card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--gray-100);
+      background: var(--cream);
+    }
+    .order-card-total-label { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; }
+    .order-card-total { font-family: var(--font-display); font-size: 1.4rem; color: var(--red); }
+    .orders-empty {
+      text-align: center; padding: 5rem 2rem;
+      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    }
+    .orders-empty-icon { font-size: 4rem; }
+    .orders-empty-title { font-family: var(--font-display); font-size: 2rem; letter-spacing: 2px; }
+    .orders-empty-sub { font-size: 0.9rem; color: var(--gray-500); }
+  </style>
+</head>
+<body>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">Мои заказы</span><span class="ticker-sep">✦</span>
+    <span class="ticker-item">Доставка по всему Узбекистану</span><span class="ticker-sep">✦</span>
+    <span class="ticker-item">Поддержка 24/7</span><span class="ticker-sep">✦</span>
+    <span class="ticker-item">Мои заказы</span><span class="ticker-sep">✦</span>
+    <span class="ticker-item">Доставка по всему Узбекистану</span><span class="ticker-sep">✦</span>
+  </div>
+</div>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo"><img src="logo.jpg" alt="Li-Ning"></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-no-active">Новинки</a></li>
+      <li><a href="catalog.html?gender=male">Мужчины</a></li>
+      <li><a href="catalog.html?gender=female">Женщины</a></li>
+      <li><a href="sale.html" style="color:var(--red);font-weight:700">Распродажа</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="nav-icon-btn" onclick="toggleSearch()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <button class="nav-icon-btn" id="auth-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <a href="wishlist.html" class="nav-icon-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </a>
+      <button class="nav-icon-btn cart-btn" style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-count" style="display:none">0</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="nav-search-bar" id="nav-search-bar">
+  <input type="text" class="nav-search" placeholder="Искать среди товаров Li-Ning..." id="nav-search-input" onkeydown="if(event.key==='Escape') toggleSearch()">
+  <svg class="nav-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+</div>
+
+<div class="cart-overlay"></div>
+<div class="cart-drawer">
+  <div class="cart-header"><h2>КОРЗИНА</h2><button class="cart-close">✕</button></div>
+  <div class="cart-body"></div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Итого</span><strong>0 сум</strong></div>
+    <button class="btn-checkout" onclick="window.location.href='order.html'">Оформить заказ →</button>
+  </div>
+</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header-inner">
+    <div class="breadcrumb">
+      <a href="index.html">Главная</a><span>/</span><span>Мои заказы</span>
+    </div>
+    <h1>МОИ ЗАКАЗЫ</h1>
+  </div>
+</div>
+
+<div class="orders-page">
+  <div id="orders-container">
+    <div style="text-align:center;padding:4rem;color:var(--gray-500)">Загрузка...</div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-bottom" style="padding-top:2rem">
+      <span>© 2025 Li Ning Store Tashkent</span>
+      <span><a href="#">Политика конфиденциальности</a></span>
+    </div>
+  </div>
+</footer>
+
+<!-- Auth Modal -->
+<div id="auth-overlay" class="auth-overlay"></div>
+<div id="auth-modal" class="auth-modal" style="display:none">
+  <button id="auth-modal-close" class="auth-modal-close">✕</button>
+  <div class="auth-logo"><img src="logo.jpg" alt="Li-Ning" style="height:36px"></div>
+  <div class="auth-tabs">
+    <button class="auth-tab active" data-tab="login">Войти</button>
+    <button class="auth-tab" data-tab="register">Регистрация</button>
+  </div>
+  <form id="auth-form-login" class="auth-form active">
+    <div class="auth-error" style="display:none"></div>
+    <div class="auth-field"><label class="auth-label">Email</label><input id="login-email" type="email" class="auth-input" placeholder="you@example.com" required autocomplete="email"></div>
+    <div class="auth-field"><label class="auth-label">Пароль</label><input id="login-password" type="password" class="auth-input" placeholder="••••••••" required autocomplete="current-password"></div>
+    <button type="submit" class="auth-submit">Войти</button>
+    <p class="auth-switch">Нет аккаунта? <a href="#" onclick="document.querySelector('.auth-tab[data-tab=register]').click();return false">Зарегистрироваться</a></p>
+  </form>
+  <form id="auth-form-register" class="auth-form">
+    <div class="auth-error" style="display:none"></div>
+    <div class="auth-field"><label class="auth-label">Имя</label><input id="reg-name" type="text" class="auth-input" placeholder="Ваше имя" required></div>
+    <div class="auth-field"><label class="auth-label">Email</label><input id="reg-email" type="email" class="auth-input" placeholder="you@example.com" required></div>
+    <div class="auth-field"><label class="auth-label">Пароль</label><input id="reg-password" type="password" class="auth-input" placeholder="Минимум 6 символов" required></div>
+    <button type="submit" class="auth-submit">Зарегистрироваться</button>
+    <p class="auth-switch">Уже есть аккаунт? <a href="#" onclick="document.querySelector('.auth-tab[data-tab=login]').click();return false">Войти</a></p>
+  </form>
+  <div id="auth-form-account" class="auth-form">
+    <div class="auth-account-avatar" id="auth-avatar-big">?</div>
+    <div class="auth-account-name" id="auth-account-name">Пользователь</div>
+    <div class="auth-account-email" id="auth-account-email"></div>
+    <div class="auth-account-links">
+      <a href="my-orders.html" class="auth-account-link" style="color:var(--red)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+        Мои заказы
+      </a>
+      <a href="wishlist.html" class="auth-account-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        Избранное
+      </a>
+    </div>
+    <button id="auth-signout-btn" class="auth-signout">Выйти из аккаунта</button>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+const statusMap = {
+  'new':        { label: 'Новый',     cls: 'status-new' },
+  'processing': { label: 'В работе',  cls: 'status-processing' },
+  'delivered':  { label: 'Доставлен', cls: 'status-delivered' },
+  'cancelled':  { label: 'Отменён',   cls: 'status-cancelled' },
+};
+
+async function loadMyOrders() {
+  const container = document.getElementById('orders-container');
+  const user = window.Auth?.getUser();
+  if (!user) return;
+
+  container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500)">Загрузка заказов...</div>';
+
+  try {
+    // Ищем заказы по email пользователя
+    const email = user.email;
+    const res = await fetch(
+      `${SB_URL}/rest/v1/orders?email=eq.${encodeURIComponent(email)}&order=created_at.desc`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    );
+    const orders = await res.json();
+
+    if (!orders.length) {
+      container.innerHTML = `
+        <div class="orders-empty">
+          <div class="orders-empty-icon">📦</div>
+          <div class="orders-empty-title">ЗАКАЗОВ НЕТ</div>
+          <div class="orders-empty-sub">Вы ещё не делали заказов</div>
+          <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог →</a>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = `
+      <div style="margin-bottom:2rem">
+        <div class="section-label">История покупок</div>
+        <div class="section-title">МОИ ЗАКАЗЫ</div>
+        <div style="font-size:0.82rem;color:var(--gray-500);margin-top:0.3rem">${orders.length} ${orders.length === 1 ? 'заказ' : orders.length < 5 ? 'заказа' : 'заказов'}</div>
+      </div>
+      ${orders.map(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+        const date = new Date(order.created_at).toLocaleDateString('ru-RU', {
+          day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+        const status = statusMap[order.status] || { label: order.status, cls: 'status-new' };
+        const shortId = order.id?.slice(0, 8).toUpperCase();
+        return `
+          <div class="order-card">
+            <div class="order-card-header">
+              <div>
+                <div class="order-card-id">Заказ #${shortId}</div>
+                <div class="order-card-date">${date}</div>
+              </div>
+              <span class="order-card-status ${status.cls}">${status.label}</span>
+            </div>
+            <div class="order-card-items">
+              ${items.slice(0, 3).map(item => `
+                <div class="order-card-item">
+                  <div class="order-card-item-img">
+                    ${item.image ? `<img src="${item.image}">` : '👟'}
+                  </div>
+                  <div style="flex:1">
+                    <div class="order-card-item-name">${item.name}</div>
+                    <div class="order-card-item-meta">Размер: ${item.size} · ${item.quantity} шт.</div>
+                  </div>
+                  <div class="order-card-item-price">${(item.price * item.quantity).toLocaleString('ru-RU')} сум</div>
+                </div>`).join('')}
+              ${items.length > 3 ? `<div style="font-size:0.75rem;color:var(--gray-500);text-align:center;padding:0.5rem 0">+ ещё ${items.length - 3} товара</div>` : ''}
+            </div>
+            <div class="order-card-footer">
+              <span class="order-card-total-label">Итого</span>
+              <span class="order-card-total">${(order.total||0).toLocaleString('ru-RU')} сум</span>
+            </div>
+          </div>`;
+      }).join('')}`;
+  } catch(e) {
+    console.error(e);
+    container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500)">Ошибка загрузки заказов</div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    if (!window.Auth?.isLoggedIn()) {
+      window.Auth?.openModal('login');
+    } else {
+      loadMyOrders();
+    }
+  }, 100);
+});
+</script>
+</body>
+</html>
