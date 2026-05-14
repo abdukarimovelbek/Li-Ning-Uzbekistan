@@ -1039,11 +1039,13 @@ button { font-family: var(--font-body); }
   width: 24px; height: 24px; background: var(--red); color: #fff;
   font-size: 0.72rem; display: flex; align-items: center; justify-content: center;
   font-weight: 700;
+  border-radius: 6px;
 }
 .delivery-options { display: flex; flex-direction: column; gap: 0.6rem; }
 .delivery-option {
   display: flex; align-items: center; gap: 1rem;
   padding: 1rem 1.2rem; border: 1.5px solid var(--gray-100);
+  border-radius: var(--radius-md);
   transition: border-color var(--transition), background var(--transition);
 }
 .delivery-option:hover { border-color: var(--gray-300); }
