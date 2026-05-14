@@ -1134,7 +1134,20 @@ button { font-family: var(--font-body); }
 .brand-name.li-ning { color: var(--red); }
 
 /* ─── Toast Notification ─────────────────────── */
-.toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 600; display: flex; flex-direction: column; gap: 0.5rem; }
+.toast-container {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: max-content;
+  max-width: 90vw;
+}
+
 .toast {
   background: var(--white);
   color: var(--black);
@@ -1144,11 +1157,13 @@ button { font-family: var(--font-body); }
   font-size: 0.85rem;
   box-shadow: var(--shadow-md);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  transform: translateX(110%);
+  transform: translateY(-20px);
   opacity: 0;
   transition: transform 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.35s;
 }
-.toast.show { transform: translateX(0); opacity: 1; }
+
+.toast.show { transform: translateY(0); opacity: 1; }
+
 .toast.success { border-left-color: #22c55e; }
 .toast.warning { border-left-color: var(--gold); }
 .toast-title { font-weight: 700; margin-bottom: .15rem; color: var(--black); }

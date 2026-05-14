@@ -303,9 +303,13 @@
             <input type="radio" name="delivery" value="pickup" id="delivery-pickup">
             <div class="delivery-label">
               <strong>Самовывоз</strong>
-              <span>Бесплатно · Выберите магазин ниже</span>
+              <span id="pickup-label">Бесплатно · Выберите магазин ниже</span>
             </div>
             <div class="delivery-price">Бесплатно</div>
+            <button type="button" onclick="event.stopPropagation();document.getElementById('store-list').classList.toggle('open')" 
+              style="font-size:0.72rem;color:var(--red);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0">
+              Выбрать магазин
+            </button>
           </div>
 
           <div class="store-list" id="store-list">
@@ -695,12 +699,14 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 </div>
 
+<script src="js/main.js"></script>
 <script>
 
 function selectDelivery(el, type) {
   document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   el.querySelector('input[type=radio]').checked = true;
+
   const storeList = document.getElementById('store-list');
   if (type === 'pickup') {
     storeList.classList.add('open');
@@ -708,6 +714,8 @@ function selectDelivery(el, type) {
     storeList.classList.remove('open');
     document.querySelectorAll('input[name=pickup_store]').forEach(r => r.checked = false);
     document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
+    // Сбрасываем текст обратно
+    document.getElementById('pickup-label').textContent = 'Бесплатно · Выберите магазин ниже';
   }
 }
 
@@ -715,6 +723,17 @@ document.querySelectorAll('.store-option').forEach(opt => {
   opt.addEventListener('click', () => {
     document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
     opt.classList.add('selected');
+
+    // Берём название и адрес выбранного магазина
+    const name = opt.querySelector('.store-option-name').textContent;
+    const addr = opt.querySelector('.store-option-addr').textContent;
+
+    // Обновляем текст в блоке самовывоза
+    document.getElementById('pickup-label').innerHTML =
+      `<strong>${name}</strong> · <span style="color:var(--gray-500);font-size:0.78rem">${addr}</span>`;
+
+    // Закрываем список
+    document.getElementById('store-list').classList.remove('open');
   });
 });
 
