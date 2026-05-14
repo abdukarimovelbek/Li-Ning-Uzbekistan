@@ -86,6 +86,25 @@ const Auth = (() => {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error_description || data.msg || 'Ошибка регистрации');
+    
+    // Создаём профиль сразу после регистрации
+    if (data.user?.id) {
+      await fetch(`${SB_URL}/rest/v1/profiles`, {
+        method: 'POST',
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${SB_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          id: data.user.id,
+          email: email,
+          full_name: name
+        })
+      });
+    }
+    
     return data;
   };
 
