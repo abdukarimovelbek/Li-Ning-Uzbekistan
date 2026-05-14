@@ -1442,6 +1442,18 @@ function setCategoryFilter(cat) {
 }
 window.setCategoryFilter = setCategoryFilter;
 
+/* ─── WISHLIST NAV ───────────────────────────── */
+function openWishlist() {
+  if (window.Auth?.isLoggedIn()) {
+    window.location.href = 'wishlist.html';
+  } else {
+    window.Auth?.requireAuth(() => {
+      window.location.href = 'wishlist.html';
+    });
+  }
+}
+window.openWishlist = openWishlist;
+
 /* ── MEGA MENU FIX ── */
 document.querySelectorAll('.nav-item-mega').forEach(item => {
   let hideTimer = null;
@@ -1465,14 +1477,3 @@ document.querySelectorAll('.nav-item-mega').forEach(item => {
   megaMenu.addEventListener('mouseleave', hide);
 });
 
-/* ─── WISHLIST NAV ───────────────────────────── */
-function openWishlist() {
-  if (window.Auth?.isLoggedIn()) {
-    window.location.href = 'wishlist.html';
-  } else {
-    window.Auth?.requireAuth(() => {
-      window.location.href = 'wishlist.html';
-    });
-  }
-}
-window.openWishlist = openWishlist;
