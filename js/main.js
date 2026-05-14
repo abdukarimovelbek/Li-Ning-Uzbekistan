@@ -484,7 +484,11 @@ const ProductCards = (() => {
             size:    card.dataset.defaultSize || '42',
             emoji:   card.querySelector('.product-img')?.textContent?.trim() || '👟',
           };
-          window.Auth.requireAuth(() => Cart.add(data));
+          if (window.Auth) {
+            window.Auth.requireAuth(() => Cart.add(data));
+          } else {
+            Cart.add(data);
+          }
           // Animate button
           addBtn.textContent = '✓ Добавлено';
           addBtn.style.background = '#22c55e';
@@ -495,19 +499,27 @@ const ProductCards = (() => {
         });
       }
 
-      // Wishlist toggle
-      const wishBtn = card.querySelector('.btn-wishlist');
-      if (wishBtn) {
-        wishBtn.addEventListener('click', e => {
-          e.stopPropagation();
+    // Wishlist toggle
+    const wishBtn = card.querySelector('.btn-wishlist');
+    if (wishBtn) {
+      wishBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (window.Auth) {
           window.Auth.requireAuth(() => {
             const isWished = wishBtn.dataset.wished === 'true';
             wishBtn.dataset.wished = (!isWished).toString();
             wishBtn.textContent = isWished ? '♡' : '♥';
             Toast.show(isWished ? 'Убрано из желаемого' : 'Добавлено в желаемое', '', 'warning');
           });
-        });
-      } // ← эта скобка закрывает if (wishBtn)
+        } else {
+          const isWished = wishBtn.dataset.wished === 'true';
+          wishBtn.dataset.wished = (!isWished).toString();
+          wishBtn.textContent = isWished ? '♡' : '♥';
+          Toast.show(isWished ? 'Убрано из желаемого' : 'Добавлено в желаемое', '', 'warning');
+        }
+      });
+    }
 
       // Click → product page
       card.addEventListener('click', (e) => {
