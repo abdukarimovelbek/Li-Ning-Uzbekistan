@@ -1048,9 +1048,7 @@ const buildCard = (p) => {
         <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
           ${imgHtml}
         </div>
-        
           <button class="btn-wishlist" data-wished="false">♡</button>
-        
       </div>
       <div class="product-info">
         <div class="product-brand">${p.brand || 'Li Ning'}</div>
