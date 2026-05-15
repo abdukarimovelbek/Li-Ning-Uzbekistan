@@ -500,23 +500,31 @@ const ProductCards = (() => {
               const productId = card.dataset.productId;
               const isWished = wishBtn.dataset.wished === 'true';
 
+              const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+              const token = session?.access_token || SB_KEY;
+
               if (isWished) {
                 await fetch(
                   `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&product_id=eq.${productId}`,
-                  { method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+                  { method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
                 );
                 wishBtn.dataset.wished = 'false';
                 wishBtn.textContent = '♡';
-                Toast.show('Убрано из избранного', '', '');
+                window.Toast?.show('Убрано из избранного', '', '');
               } else {
                 await fetch(`${SB_URL}/rest/v1/wishlists`, {
                   method: 'POST',
-                  headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+                  headers: {
+                    'apikey': SB_KEY,
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Prefer': 'return=minimal'
+                  },
                   body: JSON.stringify({ user_id: user.id, product_id: productId })
                 });
                 wishBtn.dataset.wished = 'true';
                 wishBtn.textContent = '♥';
-                Toast.show('Добавлено в избранное', '', 'success');
+                window.Toast?.show('Добавлено в избранное', '', 'success');
               }
             });
           }
@@ -1066,9 +1074,12 @@ async function highlightWishlist() {
   const user = window.Auth?.getUser();
   if (!user) return;
 
+  const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+  const token = session?.access_token || SB_KEY;
+
   const res = await fetch(
     `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&select=product_id`,
-    { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
   );
   const data = await res.json();
   const wishedIds = new Set(data.map(w => w.product_id));
