@@ -204,9 +204,12 @@ async function renderWishlist() {
   container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">Загружаем...</div>';
 
   try {
+    const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+    const token = session?.access_token || SB_KEY;
+    
     const res = await fetch(
       `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&select=product_id`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
     );
     const data = await res.json();
     const productIds = data.map(w => w.product_id);
@@ -224,7 +227,7 @@ async function renderWishlist() {
 
     const productsRes = await fetch(
       `${SB_URL}/rest/v1/products?id=in.(${productIds.join(',')})&is_active=eq.true`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
     );
     const products = await productsRes.json();
 

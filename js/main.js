@@ -518,7 +518,7 @@ const ProductCards = (() => {
                     'apikey': SB_KEY,
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json',
-                    'Prefer': 'return=minimal'
+                    'Prefer': 'resolution=ignore-duplicates,return=minimal'
                   },
                   body: JSON.stringify({ user_id: user.id, product_id: productId })
                 });
