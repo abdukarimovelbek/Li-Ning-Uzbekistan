@@ -220,7 +220,7 @@ async function renderWishlist() {
           <div class="wishlist-empty-icon">♡</div>
           <div class="wishlist-empty-title">СПИСОК ПУСТ</div>
           <div class="wishlist-empty-sub">Добавляйте понравившиеся товары нажав ♡ на карточке</div>
-          <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог →</a>
+          <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог</a>
         </div>`;
       return;
     }
@@ -236,7 +236,7 @@ async function renderWishlist() {
         <div class="wishlist-empty">
           <div class="wishlist-empty-icon">♡</div>
           <div class="wishlist-empty-title">СПИСОК ПУСТ</div>
-          <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог →</a>
+          <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог</a>
         </div>`;
       return;
     }
@@ -285,9 +285,11 @@ async function renderWishlist() {
 async function removeFromWishlist(productId) {
   const user = window.Auth?.getUser();
   if (!user) return;
+  const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+  const token = session?.access_token || SB_KEY;
   await fetch(
     `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&product_id=eq.${productId}`,
-    { method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    { method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
   );
   window.Toast?.show('Убрано из избранного', '', '');
   renderWishlist();
