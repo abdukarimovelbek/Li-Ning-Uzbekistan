@@ -1187,19 +1187,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         catalogGrid.innerHTML = products.map(buildCard).join('');
         window.ProductCards?.init();
         highlightWishlist();
+
         // Применяем фильтры из URL ПОСЛЕ загрузки карточек
         const urlParams = new URLSearchParams(window.location.search);
         const urlCat = urlParams.get('category');
         const urlGender = urlParams.get('gender');
-        if (urlCat || urlGender) {
+        const urlSearch = urlParams.get('search');
+
+        if (urlSearch) {
+          // Заполняем поисковую строку и фильтруем
+          const searchInput = document.getElementById('nav-search-input');
+          if (searchInput) searchInput.value = urlSearch;
+          const q = urlSearch.toLowerCase();
+          document.querySelectorAll('.product-card').forEach(card => {
+            const name = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
+            const brand = card.querySelector('.product-brand')?.textContent.toLowerCase() || '';
+            card.style.display = (name.includes(q) || brand.includes(q)) ? '' : 'none';
+          });
+          const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
+          const countEl = document.querySelector('.catalog-count strong');
+          if (countEl) countEl.textContent = visible;
+        } else if (urlCat || urlGender) {
           applyCatalogFilters(urlCat, urlGender);
         } else {
           const countEl = document.querySelector('.catalog-count strong');
           if (countEl) countEl.textContent = products.length;
         }
-      } else {
-        catalogGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
-      }
+        } else {
+          catalogGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
+        }
     } catch(e) { console.error(e); }
   }
 
@@ -1258,6 +1274,19 @@ function toggleSearch() {
     setTimeout(() => input?.focus(), 100);
   }
 }
+// Обработчик поиска — при нажатии Enter переходим в каталог
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('nav-search-input');
+  if (!input) return;
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const q = input.value.trim();
+      if (q.length > 0) {
+        window.location.href = `catalog.html?search=${encodeURIComponent(q)}`;
+      }
+    }
+  });
+});
 window.toggleSearch = toggleSearch;
 
 /* ─── CITY SELECTOR ─────────────────────────── */
