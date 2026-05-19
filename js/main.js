@@ -1114,7 +1114,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       );
       const orders = await ordersRes.json();
       console.log('Заказов найдено:', orders.length);
-      console.log('Первый заказ items:', JSON.stringify(orders[0]?.items));      
+      console.log('Первый заказ items:', JSON.stringify(orders[0]?.items));
 
       // Считаем сколько раз каждый товар заказывали
       const productCount = {};
@@ -1126,6 +1126,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           productCount[id] = (productCount[id] || 0) + (item.quantity || 1);
         });
       });
+      
+      console.log('productCount:', JSON.stringify(productCount));
+      console.log('topArticles:', Object.entries(productCount).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>id));
 
       // Сортируем по количеству заказов
       const topArticles = Object.entries(productCount)
