@@ -1908,3 +1908,114 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
 .store-option input[type=radio] { margin-top: 3px; accent-color: var(--red); flex-shrink: 0; }
 .store-option-name { font-size: 0.88rem; font-weight: 600; color: var(--gray-900); }
 .store-option-addr { font-size: 0.75rem; color: var(--gray-500); margin-top: 0.15rem; }
+
+/* ─── COLLECTIONS GRID ───────────────────────── */
+.collections-grid {
+  display: flex;
+  align-items: stretch;
+  height: 520px;
+  background: var(--black);
+  overflow: hidden;
+  position: relative;
+}
+
+.collections-side-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  font-weight: 600;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+.collection-card {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  display: block;
+  cursor: pointer;
+}
+.collection-card:last-child { border-right: none; }
+
+.collection-img-wrap {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.collection-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+  filter: brightness(0.85);
+}
+
+.collection-card:hover .collection-img-wrap img {
+  transform: translateY(-8px) scale(1.03);
+  filter: brightness(1);
+}
+
+.collection-label {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: var(--white);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  transition: color 0.3s ease;
+}
+
+.collection-card:hover .collection-label {
+  color: var(--red);
+}
+
+/* Иконка стрелки снизу справа */
+.collection-card::after {
+  content: '↗';
+  position: absolute;
+  bottom: 1.2rem;
+  right: 1.2rem;
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  color: var(--white);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.collection-card:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .collections-grid {
+    flex-direction: column;
+    height: auto;
+  }
+  .collections-side-label { display: none; }
+  .collection-card {
+    height: 200px;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+}
