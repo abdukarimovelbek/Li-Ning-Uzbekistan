@@ -1131,10 +1131,12 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('topArticles:', Object.entries(productCount).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>id));
 
       // Сортируем по количеству заказов
-      const topArticles = Object.entries(productCount)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 8)
-        .map(([id]) => id);
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const topArticles = Object.entries(productCount)
+          .filter(([id]) => !uuidRegex.test(id))
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 8)
+          .map(([id]) => id);
 
       let products = [];
 
