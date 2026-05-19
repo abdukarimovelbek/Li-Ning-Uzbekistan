@@ -1594,7 +1594,7 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
 .hero-slider {
   position: relative;
   overflow: hidden;
-  min-height: calc(100vh - var(--nav-h));
+  height: 100vh;
   margin-top: calc(-1 * var(--nav-h));
   width: 100%;
 }
@@ -1604,7 +1604,7 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
   grid-template-columns: 1fr;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - var(--nav-h));
+  height: 100vh;
   padding-top: calc(var(--nav-h) + 2rem);
   position: relative;
   overflow: hidden;
