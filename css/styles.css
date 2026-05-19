@@ -1923,11 +1923,10 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
 
 .collections-side-label {
   writing-mode: vertical-rl;
-  transform: rotate(180deg) scaleX(-1);
-  justify-content: flex-end;
-  padding-top: 1.5rem;
-  display: flex;
+  transform: rotate(180deg);
+  justify-content: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   padding: 0 1rem;
   height: 100%;
