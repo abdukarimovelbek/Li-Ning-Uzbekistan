@@ -1114,6 +1114,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       );
       const orders = await ordersRes.json();
 
+      // После получения orders добавь:
+      console.log('Заказов найдено:', orders.length);
+      console.log('productCount:', productCount);
+      console.log('topArticles:', topArticles);      
+
       // Считаем сколько раз каждый товар заказывали
       const productCount = {};
       orders.forEach(order => {
@@ -1169,11 +1174,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       homeGrid.innerHTML = products.map(buildCard).join('');
       window.ProductCards?.init(); 
     }
-      // После получения orders добавь:
-      console.log('Заказов найдено:', orders.length);
-      console.log('productCount:', productCount);
-      console.log('topArticles:', topArticles);
-
   }
 
   // Каталог — все товары
