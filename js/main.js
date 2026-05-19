@@ -1137,7 +1137,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Загружаем топ товары по article
         const articlesParam = topArticles.map(a => `"${a}"`).join(',');
         const res = await fetch(
-          `${SB_URL}/rest/v1/products?article=in.(${topArticles.join(',')})&is_active=eq.true`,
+          `${SB_URL}/rest/v1/products?article=in.(${topArticles.join(',')})&is_active=eq.true&limit=8`,
           { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
         );
         products = await res.json();
@@ -1167,8 +1167,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Запасной вариант
       const products = await fetchProducts('&limit=8');
       homeGrid.innerHTML = products.map(buildCard).join('');
-      window.ProductCards?.init();
+      window.ProductCards?.init(); 
     }
+      // После получения orders добавь:
+      console.log('Заказов найдено:', orders.length);
+      console.log('productCount:', productCount);
+      console.log('topArticles:', topArticles);
+
   }
 
   // Каталог — все товары
