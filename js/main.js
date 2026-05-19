@@ -1098,11 +1098,63 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Ждём инициализации ProductCards
   await new Promise(r => setTimeout(r, 0));
 
-  // Главная страница — последние 4 товара
+  // Главная страница — популярные товары за последние 2 недели
   const homeGrid = document.getElementById('home-products');
   if (homeGrid) {
     try {
-      const products = await fetchProducts('&limit=4');
+      // Дата 2 недели назад
+      const twoWeeksAgo = new Date();
+      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+      const dateStr = twoWeeksAgo.toISOString();
+
+      // Получаем заказы за последние 2 недели
+      const ordersRes = await fetch(
+        `${SB_URL}/rest/v1/orders?created_at=gte.${dateStr}&select=items`,
+        { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+      );
+      const orders = await ordersRes.json();
+
+      // Считаем сколько раз каждый товар заказывали
+      const productCount = {};
+      orders.forEach(order => {
+        const items = Array.isArray(order.items) ? order.items : [];
+        items.forEach(item => {
+          const id = item.article || item.id;
+          if (!id) return;
+          productCount[id] = (productCount[id] || 0) + (item.quantity || 1);
+        });
+      });
+
+      // Сортируем по количеству заказов
+      const topArticles = Object.entries(productCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8)
+        .map(([id]) => id);
+
+      let products = [];
+
+      if (topArticles.length > 0) {
+        // Загружаем топ товары по article
+        const articlesParam = topArticles.map(a => `"${a}"`).join(',');
+        const res = await fetch(
+          `${SB_URL}/rest/v1/products?article=in.(${topArticles.join(',')})&is_active=eq.true`,
+          { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+        );
+        products = await res.json();
+
+        // Сортируем в том же порядке что и topArticles
+        products.sort((a, b) => {
+          const ai = topArticles.indexOf(a.article);
+          const bi = topArticles.indexOf(b.article);
+          return ai - bi;
+        });
+      }
+
+      // Если заказов нет — показываем просто последние товары
+      if (products.length === 0) {
+        products = await fetchProducts('&limit=8');
+      }
+
       if (products.length > 0) {
         homeGrid.innerHTML = products.map(buildCard).join('');
         window.ProductCards?.init();
@@ -1110,7 +1162,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       } else {
         homeGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
       }
-    } catch(e) { console.error(e); }
+    } catch(e) {
+      console.error(e);
+      // Запасной вариант
+      const products = await fetchProducts('&limit=8');
+      homeGrid.innerHTML = products.map(buildCard).join('');
+      window.ProductCards?.init();
+    }
   }
 
   // Каталог — все товары
