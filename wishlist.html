@@ -83,7 +83,14 @@
 
 <div class="nav-search-bar" id="nav-search-bar">
   <input type="text" class="nav-search" placeholder="Искать среди товаров Li-Ning..." id="nav-search-input" onkeydown="if(event.key==='Escape') toggleSearch()">
-  <svg class="nav-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <button onclick="
+        const q = document.getElementById('nav-search-input').value.trim();
+        if(q) window.location.href='catalog.html?search='+encodeURIComponent(q);
+        " style="background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0">
+        <svg class="nav-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
 </div>
 
 <!-- Cart Drawer -->

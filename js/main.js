@@ -1198,6 +1198,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Заполняем поисковую строку и фильтруем
           const searchInput = document.getElementById('nav-search-input');
           if (searchInput) searchInput.value = urlSearch;
+          const catalogInput = document.getElementById('catalog-search-input');
+          if (catalogInput) catalogInput.value = urlSearch;
+
           const q = urlSearch.toLowerCase();
           document.querySelectorAll('.product-card').forEach(card => {
             const name = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
@@ -1526,6 +1529,19 @@ function applyCatalogFilters(cat, gender) {
   if (countEl) countEl.textContent = visible;
 }
 window.applyCatalogFilters = applyCatalogFilters;
+
+function catalogSearchFilter(q) {
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('.product-card').forEach(card => {
+    const name = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
+    const brand = card.querySelector('.product-brand')?.textContent.toLowerCase() || '';
+    card.style.display = (!q || name.includes(q) || brand.includes(q)) ? '' : 'none';
+  });
+  const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
+  const countEl = document.querySelector('.catalog-count strong');
+  if (countEl) countEl.textContent = visible;
+}
+window.catalogSearchFilter = catalogSearchFilter;
 
 function setCategoryFilter(cat) {
   // Подсвечиваем активную кнопку
