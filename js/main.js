@@ -1113,11 +1113,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
       );
       const orders = await ordersRes.json();
-
-      // После получения orders добавь:
       console.log('Заказов найдено:', orders.length);
-      console.log('productCount:', productCount);
-      console.log('topArticles:', topArticles);      
+      console.log('Первый заказ items:', JSON.stringify(orders[0]?.items));      
 
       // Считаем сколько раз каждый товар заказывали
       const productCount = {};
