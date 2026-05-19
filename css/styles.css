@@ -1932,7 +1932,7 @@ footer .footer-inner { max-width: 1400px; margin: 0 auto; }
 .collections-side-label {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  justify-content: flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
