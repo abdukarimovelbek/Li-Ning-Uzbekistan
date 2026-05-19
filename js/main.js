@@ -1139,15 +1139,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Загружаем топ товары по article
         const articlesParam = topArticles.map(a => `"${a}"`).join(',');
         const res = await fetch(
-          `${SB_URL}/rest/v1/products?article=in.(${topArticles.join(',')})&is_active=eq.true&limit=8`,
+          `${SB_URL}/rest/v1/products?id=in.(${topArticles.join(',')})&is_active=eq.true&limit=8`,
           { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
         );
         products = await res.json();
 
         // Сортируем в том же порядке что и topArticles
         products.sort((a, b) => {
-          const ai = topArticles.indexOf(a.article);
-          const bi = topArticles.indexOf(b.article);
+          const ai = topArticles.indexOf(a.id);
+          const bi = topArticles.indexOf(b.id);
           return ai - bi;
         });
       }
