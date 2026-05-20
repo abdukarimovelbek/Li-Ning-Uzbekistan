@@ -126,17 +126,23 @@
 
       <li class="nav-item-mega">
         <a href="catalog.html?category=accessories">Аксессуары</a>
-        <div class="mega-menu" style="grid-template-columns: repeat(2,1fr)">
+        <div class="mega-menu" style="grid-template-columns: 1fr">
           <div class="mega-col">
             <h4>Все аксессуары</h4>
             <ul>
-              <li><a href="catalog.html?category=accessories">Носки</a></li>
-              <li><a href="catalog.html?category=accessories">Кепки и шапки</a></li>
-              <li><a href="catalog.html?category=accessories">Мячи</a></li>
-              <li><a href="catalog.html?category=accessories">Перчатки</a></li>
-              <li><a href="catalog.html?category=accessories">Рюкзаки и сумки</a></li>
-              <li><a href="catalog.html?category=accessories">Повязки и напульсники</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=caps">Кепки и шапки</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=balls">Мячи</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=socks">Носки</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=gloves">Перчатки</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=bands">Повязки и напульсники</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=bags">Рюкзаки и сумки</a></li>
             </ul>
+            <a href="catalog.html?category=accessories" 
+              style="display:inline-block;margin-top:1.2rem;padding:.6rem 1.4rem;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;color:var(--gray-700);transition:all var(--transition)"
+              onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
+              onmouseout="this.style.borderColor='var(--gray-300)';this.style.color='var(--gray-700)'">
+              Посмотреть все товары →
+            </a>
           </div>
         </div>
       </li>

@@ -856,15 +856,27 @@ const Navbar = (() => {
     const params = new URLSearchParams(window.location.search);
     const gender = params.get('gender');
 
-    document.querySelectorAll('.nav-links a').forEach(link => {
+    const urlCategory = params.get('category');
+
+    document.querySelectorAll('.nav-links > li > a').forEach(link => {
       const href = link.getAttribute('href') || '';
       const linkParams = new URLSearchParams(href.split('?')[1] || '');
       const linkGender = linkParams.get('gender');
+      const linkCategory = linkParams.get('category');
       const linkPage = href.split('?')[0];
 
-      if (gender && linkGender === gender && linkPage === currentPage) {
+      link.classList.remove('active');
+
+      // Аксессуары
+      if (urlCategory === 'accessories' && linkCategory === 'accessories' && !linkGender) {
         link.classList.add('active');
-      } else if (!gender && href === currentPage) {
+      }
+      // Мужчины / Женщины / Дети по gender
+      else if (gender && linkGender === gender && !linkCategory && linkPage === currentPage) {
+        link.classList.add('active');
+      }
+      // Прямое совпадение (Новинки, Распродажа)
+      else if (!gender && !urlCategory && href === currentPage) {
         link.classList.add('active');
       }
     });
@@ -1485,7 +1497,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const genderLabels = { male: 'Мужчины', female: 'Женщины', uni: 'Унисекс' };
   const catLabels = { shoes: 'Обувь', clothing: 'Одежда', running: 'Бег', training: 'Тренировка', accessories: 'Аксессуары' };
   const extra = document.getElementById('breadcrumb-extra');
-  const subcatLabels = { sneakers: 'Кроссовки', slippers: 'Сланцы / Сабо', sneakers_low: 'Кеды', sandals: 'Сандали', tshirts: 'Футболки', shorts: 'Шорты', pants: 'Брюки', longsleeves: 'Лонгсливы' };
+  const subcatLabels = {
+    sneakers: 'Кроссовки',
+    slippers: 'Сланцы / Сабо',
+    sneakers_low: 'Кеды',
+    sandals: 'Сандали',
+    tshirts: 'Футболки',
+    shorts: 'Шорты',
+    pants: 'Брюки',
+    longsleeves: 'Лонгсливы',
+    bags: 'Рюкзаки и сумки',
+    caps: 'Кепки и шапки',
+    socks: 'Носки',
+    balls: 'Мячи',
+    gloves: 'Перчатки',
+    bands: 'Повязки и напульсники'
+  };
   const subcategory = params.get('subcategory');
 
   if (extra) {
