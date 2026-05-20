@@ -1517,9 +1517,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (extra) {
     let html = '';
-    if (gender) html += `<span>/</span><a href="catalog.html?gender=${gender}">${genderLabels[gender] || gender}</a>`;
-    if (cat)    html += `<span>/</span><a href="catalog.html?gender=${gender||''}&category=${cat}">${catLabels[cat] || cat}</a>`;
-    if (subcategory) html += `<span>/</span><span>${subcatLabels[subcategory] || subcategory}</span>`;
+    if (gender) html += `<span>/ </span><a href="catalog.html?gender=${gender}">${genderLabels[gender] || gender}</a>`;
+    if (cat)    html += `<span>/ </span><a href="catalog.html?gender=${gender||''}&category=${cat}">${catLabels[cat] || cat}</a>`;
+    if (subcategory) html += `<span>/ </span><span>${subcatLabels[subcategory] || subcategory}</span>`;
     extra.innerHTML = html;
   }
 
