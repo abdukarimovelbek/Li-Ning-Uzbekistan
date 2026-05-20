@@ -1526,7 +1526,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Заголовок
   const pageTitle = document.getElementById('catalog-page-title');
   if (pageTitle) {
-    if (subcategory) pageTitle.textContent = `${genderLabels[gender]||''} — ${subcatLabels[subcategory]||subcategory}`.trim();
+    if (subcategory) {
+      const genderPart = genderLabels[gender] || '';
+      const subcatPart = subcatLabels[subcategory] || subcategory;
+      pageTitle.textContent = genderPart ? `${genderPart} — ${subcatPart}` : subcatPart;
+    }
     else if (gender && cat) pageTitle.textContent = `${genderLabels[gender]} — ${catLabels[cat]}`;
     else if (gender) pageTitle.textContent = genderLabels[gender] || 'Каталог';
     else if (cat)    pageTitle.textContent = catLabels[cat] || 'Каталог';
