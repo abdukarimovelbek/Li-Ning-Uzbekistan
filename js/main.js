@@ -1061,6 +1061,7 @@ const buildCard = (p) => {
       data-category="${p.category||''}"
       data-gender="${p.gender||'uni'}"
       data-subcategory="${p.subcategory||''}"
+      data-collection="${p.collection||''}"
       data-href="product.html?id=${p.id}"
       onclick="if(!event.target.closest('button')) window.location.href='product.html?id=${p.id}'">
       <div class="product-img-wrap">
@@ -1205,14 +1206,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const urlCat = urlParams.get('category');
         const urlGender = urlParams.get('gender');
         const urlSearch = urlParams.get('search');
+        const urlCollection = urlParams.get('collection');
 
         if (urlSearch) {
-          // Заполняем поисковую строку и фильтруем
           const searchInput = document.getElementById('nav-search-input');
           if (searchInput) searchInput.value = urlSearch;
           const catalogInput = document.getElementById('catalog-search-input');
           if (catalogInput) catalogInput.value = urlSearch;
-
           const q = urlSearch.toLowerCase();
           document.querySelectorAll('.product-card').forEach(card => {
             const name = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
@@ -1222,6 +1222,24 @@ document.addEventListener('DOMContentLoaded', async () => {
           const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
           const countEl = document.querySelector('.catalog-count strong');
           if (countEl) countEl.textContent = visible;
+        } 
+        else if (urlCollection) {
+          document.querySelectorAll('.product-card').forEach(card => {
+          const cardCollection = card.dataset.collection || '';
+          let show = false;
+          if (urlCollection === 'Sportlife') {
+          show = ['Sportlife', 'Professional Sport', 'Extreme Sports'].includes(cardCollection);
+        } 
+        else {
+          show = cardCollection === urlCollection;
+        }
+        card.style.display = show ? '' : 'none';
+        });
+          const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
+          const countEl = document.querySelector('.catalog-count strong');
+          if (countEl) countEl.textContent = visible;
+          const pageTitle = document.getElementById('catalog-page-title');
+          if (pageTitle) pageTitle.textContent = urlCollection.toUpperCase();
         } else if (urlCat || urlGender) {
           applyCatalogFilters(urlCat, urlGender);
         } else {
