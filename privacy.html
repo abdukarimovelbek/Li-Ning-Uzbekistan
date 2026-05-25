@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Политика конфиденциальности</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .privacy-wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+    }
+    .privacy-intro {
+      background: var(--black);
+      color: var(--white);
+      padding: 3rem 2rem;
+      margin-bottom: 3rem;
+    }
+    .privacy-intro h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: 3px;
+      margin-bottom: 0.5rem;
+    }
+    .privacy-intro p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+      letter-spacing: 1px;
+    }
+    .privacy-toc {
+      background: var(--cream-dark);
+      border: 1px solid var(--gray-100);
+      padding: 1.5rem 2rem;
+      margin-bottom: 3rem;
+      border-radius: var(--radius-sm);
+    }
+    .privacy-toc h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+    }
+    .privacy-toc ol {
+      padding-left: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .privacy-toc ol li {
+      font-size: 0.82rem;
+      color: var(--gray-700);
+      line-height: 1.6;
+    }
+    .privacy-toc ol li a {
+      color: var(--red);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .privacy-toc ol li a:hover { opacity: 0.7; }
+
+    .privacy-section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 100px;
+    }
+    .privacy-section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .privacy-section h2 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--gray-900);
+      margin: 0;
+    }
+    .privacy-section p {
+      font-size: 0.9rem;
+      color: var(--gray-700);
+      line-height: 1.9;
+      margin-bottom: 0.8rem;
+    }
+    .privacy-section ul, .privacy-section ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .privacy-section ul li, .privacy-section ol li {
+      font-size: 0.9rem;
+      color: var(--gray-700);
+      line-height: 1.9;
+      margin-bottom: 0.3rem;
+    }
+    .privacy-highlight {
+      background: rgba(196,30,58,0.05);
+      border-left: 3px solid var(--red);
+      padding: 1rem 1.2rem;
+      margin: 1rem 0;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.88rem;
+      color: var(--gray-700);
+      line-height: 1.7;
+    }
+    .privacy-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+    }
+    .privacy-table th {
+      background: var(--black);
+      color: var(--white);
+      padding: 0.7rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .privacy-table td {
+      padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-700);
+      vertical-align: top;
+    }
+    .privacy-table tr:last-child td { border-bottom: none; }
+    .privacy-table tr:nth-child(even) td { background: var(--cream); }
+    .privacy-contact-box {
+      background: var(--black);
+      color: var(--white);
+      padding: 2rem;
+      border-radius: var(--radius-sm);
+      margin-top: 3rem;
+    }
+    .privacy-contact-box h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+      color: var(--white);
+    }
+    .privacy-contact-box p {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 2;
+      margin: 0;
+    }
+    .privacy-contact-box a { color: var(--red); }
+    @media (max-width: 768px) {
+      .privacy-toc ol { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ВСТАВЬ НАВБАР СЮДА -->
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <img src="logo.jpg" alt="Li-Ning">
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="nav-no-active">Новинки</a></li>
+
+      <li class="nav-item-mega">
+        <a href="catalog.html?gender=male">Мужчины</a>
+        <div class="mega-menu">
+          <div class="mega-col">
+            <h4><a href="catalog.html?gender=male&category=shoes" style="color:var(--black);display:block">Обувь</a></h4>
+            <ul>
+              <li><a href="catalog.html?gender=male&category=shoes&subcategory=sneakers">Кроссовки</a></li>
+              <li><a href="catalog.html?gender=male&category=shoes&subcategory=slippers">Сланцы / Сабо</a></li>
+              <li><a href="catalog.html?gender=male&category=shoes&subcategory=sneakers_low">Кеды</a></li>
+              <li><a href="catalog.html?gender=male&category=shoes&subcategory=sandals">Сандали</a></li>
+            </ul>
+          </div>
+          <div class="mega-col">
+            <h4><a href="catalog.html?gender=male&category=clothing" style="color:var(--black);display:block">Одежда</a></h4>
+            <ul>
+              <li><a href="catalog.html?gender=male&category=clothing&subcategory=tshirts">Футболки</a></li>
+              <li><a href="catalog.html?gender=male&category=clothing&subcategory=shorts">Шорты</a></li>
+              <li><a href="catalog.html?gender=male&category=clothing&subcategory=pants">Брюки</a></li>
+            </ul>
+          </div>
+          <div class="mega-col">
+            <h4>Аксессуары</h4>
+            <ul>
+              <li><a href="catalog.html?gender=male&category=accessories">Рюкзаки</a></li>
+              <li><a href="catalog.html?gender=male&category=accessories">Кепки</a></li>
+            </ul>
+          </div>
+        </div>
+      </li>
+
+      <li class="nav-item-mega">
+        <a href="catalog.html?gender=female">Женщины</a>
+        <div class="mega-menu">
+          <div class="mega-col">
+            <h4><a href="catalog.html?gender=female&category=shoes" style="color:var(--black);display:block">Обувь</a></h4>
+            <ul>
+              <li><a href="catalog.html?gender=female&category=shoes&subcategory=sneakers">Кроссовки</a></li>
+              <li><a href="catalog.html?gender=female&category=shoes&subcategory=slippers">Сланцы / Сабо</a></li>
+              <li><a href="catalog.html?gender=female&category=shoes&subcategory=sneakers_low">Кеды</a></li>
+              <li><a href="catalog.html?gender=female&category=shoes&subcategory=sandals">Сандали</a></li>
+            </ul>
+          </div>
+          <div class="mega-col">
+            <h4><a href="catalog.html?gender=female&category=clothing" style="color:var(--black);display:block">Одежда</a></h4>
+            <ul>
+              <li><a href="catalog.html?gender=female&category=clothing&subcategory=tshirts">Футболки</a></li>
+              <li><a href="catalog.html?gender=female&category=clothing&subcategory=longsleeves">Лонгсливы</a></li>
+              <li><a href="catalog.html?gender=female&category=clothing&subcategory=pants">Брюки</a></li>
+            </ul>
+          </div>
+          <div class="mega-col">
+            <h4>Аксессуары</h4>
+            <ul>
+              <li><a href="catalog.html?gender=female&category=accessories">Сумки</a></li>
+              <li><a href="catalog.html?gender=female&category=accessories">Кепки</a></li>
+            </ul>
+          </div>
+        </div>
+      </li>
+
+      <li class="nav-item-mega">
+        <a href="catalog.html">Дети</a>
+        <div class="mega-menu" style="grid-template-columns: repeat(3,1fr)">
+          <div class="mega-col">
+            <h4>Мальчики</h4>
+            <ul>
+              <li><a href="shoes.html">Обувь</a></li>
+              <li><a href="clothing.html">Одежда</a></li>
+              <li><a href="catalog.html">Аксессуары</a></li>
+            </ul>
+          </div>
+          <div class="mega-col">
+            <h4>Девочки</h4>
+            <ul>
+              <li><a href="shoes.html">Обувь</a></li>
+              <li><a href="clothing.html">Одежда</a></li>
+              <li><a href="catalog.html">Аксессуары</a></li>
+            </ul>
+          </div>
+          <div class="mega-col">
+            <h4>Малыши</h4>
+            <ul>
+              <li><a href="shoes.html">Обувь</a></li>
+              <li><a href="clothing.html">Одежда</a></li>
+            </ul>
+          </div>
+        </div>
+      </li>
+
+      <li class="nav-item-mega">
+        <a href="catalog.html?category=accessories">Аксессуары</a>
+        <div class="mega-menu" style="grid-template-columns: 1fr">
+          <div class="mega-col">
+            <h4>Все аксессуары</h4>
+            <ul>
+              <li><a href="catalog.html?category=accessories&subcategory=caps">Кепки и шапки</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=balls">Мячи</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=socks">Носки</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=gloves">Перчатки</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=bands">Повязки и напульсники</a></li>
+              <li><a href="catalog.html?category=accessories&subcategory=bags">Рюкзаки и сумки</a></li>
+            </ul>
+            <a href="catalog.html?category=accessories" 
+              style="display:inline-block;margin-top:1.2rem;padding:.6rem 1.4rem;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;color:var(--gray-700);transition:all var(--transition)"
+              onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
+              onmouseout="this.style.borderColor='var(--gray-300)';this.style.color='var(--gray-700)'">
+              Посмотреть все товары →
+            </a>
+          </div>
+        </div>
+      </li>
+
+      <li><a href="sale.html" style="color:var(--red);font-weight:700">Распродажа</a></li>
+      <li class="nav-item-mega">
+        <a href="#">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:block">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </a>
+        <div class="mega-menu" style="grid-template-columns: repeat(3,1fr)">
+          <div class="mega-col">
+            <h4>Информация</h4>
+            <ul>
+              <li><a href="#">Магазины</a></li>
+              <li><a href="#">Вакансии</a></li>
+              <li><a href="#">Обмен и возврат</a></li>
+              <li><a href="#">Доставка и оплата</a></li>
+              <li><a href="#">Публичная оферта</a></li>
+              <li><a href="#">Политика конфиденциальности</a></li>
+            </ul>
+          </div>
+          <div class="mega-col">
+            <h4>Контакты</h4>
+            <ul>
+              <li><a href="#">Ташкент, Чиланзар</a></li>
+              <li><a href="tel:+998901234567">+998 90 123 45 67</a></li>
+              <li><a href="mailto:info@lining.uz">info@lining.uz</a></li>
+              <li><a href="#">Instagram</a></li>
+              <li><a href="#">Telegram</a></li>
+            </ul>
+          </div>
+          <div class="mega-col">
+            <h4>Программа лояльности</h4>
+            <ul>
+              <li><a href="#">О программе</a></li>
+              <li><a href="#">Условия участия</a></li>
+              <li><a href="#">Бонусные баллы</a></li>
+            </ul>
+          </div>
+        </div>
+      </li>
+      <li class="nav-item-mega" id="city-menu">
+        <a href="#" onclick="openCityModal();return false;" style="display:flex;align-items:center;gap:.4rem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span id="selected-city">Ташкент</span>
+        </a>
+      </li>      
+    </ul>
+    <div class="nav-actions">
+      <button class="nav-icon-btn" onclick="toggleSearch()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" id="auth-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn"  onclick="openWishlist()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn cart-btn" style="position:relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <span class="cart-count" style="display:none">0</span>
+      </button>
+      <button class="mobile-menu-btn">☰</button>
+    </div>
+  </div>
+  <div class="mobile-nav">
+    <a href="catalog.html">Каталог</a>
+    <a href="shoes.html">Обувь</a>
+    <a href="clothing.html">Одежда</a>
+    <a href="running.html">Бег</a>
+    <a href="training.html">Тренировка</a>
+    <a href="sale.html">Скидки</a>
+  </div>
+</nav>
+
+
+<div class="privacy-intro">
+  <div style="max-width:900px;margin:0 auto;padding:0 2rem">
+    <div style="font-size:0.7rem;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:0.8rem">Юридические документы</div>
+    <h1>ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ</h1>
+    <p>Редакция от 25 мая 2026 г. &nbsp;|&nbsp; Вступает в силу с момента публикации</p>
+  </div>
+</div>
+
+<div class="privacy-wrap">
+
+  <!-- Вступительный раздел -->
+  <div class="privacy-section">
+    <div class="privacy-section-header">
+      <h2>Политика конфиденциальности</h2>
+    </div>
+    <p> Настоящая Политика конфиденциальности (далее — «<strong>Политика</strong>») определяет порядок обработки и 
+        защиты персональных данных пользователей сайта <strong>lining-sport.uz</strong> (далее — «<strong>Сайт</strong>»).</p>
+    <p> Политика разработана в соответствии с требованиями Закона Республики Узбекистан «О персональных данных» № ЗРУ-547 
+        от 2 июля 2019 года и иных законодательных и нормативных правовых актов Республики Узбекистан в сфере защиты информации.
+        Политика определяет требования к обработке и обеспечению безопасности персональных данных 
+        Совместным предприятием Обществом с ограниченной ответственностью <strong>«ADMIX SPORT»</strong> (далее - СП ООО «ADMIX SPORT» или «<strong>Оператор</strong>»), 
+        ИНН 311055527, юридический адрес: г. Ташкент, Сергелийский район, махаллинский сход граждан Сохибкирон, Сергели 8.</p>
+    <p> Политика конфиденциальности является неотъемлемой частью Публичного договора-оферты № 1 от «25» Мая 2026 г. (далее – «Договор-оферта»).
+        Действующая редакция Политики конфиденциальности доступна на Сайте по адресу: https://lining-sport.uz/privacy/</p>    
+    
+    <div class="privacy-highlight">
+      В случае несогласия пользователя Сайта с настоящей Политикой или с каким-либо из её положений 
+      он должен воздержаться от дальнейшего использования Сайта.
+    </div>
+  </div>
+
+  <!-- Раздел 1 -->
+  <div class="privacy-section" id="s1">
+    <div class="privacy-section-header">
+      <h2>1. Термины и определения</h2>
+    </div>
+    <p>В настоящей Политике используются следующие термины:</p>
+    <ul>
+      <li><strong>Автоматизированная обработка Персональных данных</strong> - 
+                  обработка Персональных данных с помощью информационных технологий и технических средств.</li>
+      <li><strong>Блокирование Персональных данных</strong> - 
+                  временное прекращение обработки Персональных данных (за исключением случаев, 
+                  если обработка необходима для уточнения Персональных данных).</li>
+      <li><strong>Договор</strong> - 
+                  договор розничной купли-продажи Товаров дистанционным способом, заключенный или заключаемый посредством Сайта.</li>
+      <li><strong>Заказ</strong> - должным образом оформленный на Сайте запрос Покупателя на покупку выбранного им Товара.</li>
+      <li><strong>Законодельство</strong> - действующее законодательство Республики Узбекистан.</li>
+      <li><strong>Информационная система Персональных данных</strong> - совокупность содержащихся в базах данных Оператора 
+                  Персональных данных и обеспечивающих их обработку информационных технологий и технических средств.</li>
+      <li><strong>Конфиденциальность Персональных данных</strong> - обязанность Оператора Персональных данных не раскрывать третьим лицам и 
+                  не распространять Персональные данные без согласия Субъекта Персональных данных, если иное не предусмотрено Законодательством.</li>                                                                               
+      <li><strong>Обезличивание Персональных данных</strong> - действие, в результате которых становится невозможным без использования
+                  дополнительной информации определить принадлежность Персональных данных конкретному субъекту Персональных данных.</li>      
+      <li><strong>Обработка Персональных данных</strong> — любое действие (операция) или совокупность действий (операций), 
+                  совершаемых с использованием средств автоматизации или без использования таких средств с Персональными данными, включая сбор, 
+                  запись, систематизацию, накопление, хранение, уточнение (обновление, изменение), извлечение, использование, 
+                  передачу(распространение, предоставление, доступ), обезличивание, блокирование, удаление, уничтожение.</li>
+      <li><strong>Оператор / Оператор Персональных данных</strong> — СП ООО ADMIX SPORT», ИНН 311055527, юридический адрес: г. Ташкент, 
+                  Сергелийский район, махаллинский сход граждан Сохибкирон, Сергели 8, самостоятельно или совместно с другими лицами 
+                  организующее и (или) осуществляющее обработку Персональных данных, а также определяющее цели обработки Персональных данных, 
+                  состав Персональных данных, подлежащих обработке, действия (операции), совершаемые с Персональными данными.</li>
+      <li><strong>Персональные данные</strong> — любая информация, относящаяся к прямо или косвенно определённому или 
+                  определяемому физическому лицу (субъекту персональных данных).</li>
+      <li><strong>Предоставление Персональных данных</strong> — действия, направленные на раскрытие Персональных данных 
+                  определенному лицу или определенному кругу лиц.</li>
+      <li><strong>Распространение Персональных данных</strong> — действия, направленные на раскрытие Персональных данных 
+                  неопределенному кругу лиц.</li>                  
+      <li><strong>Пользователь</strong> — физическое лицо, использующее Сайт.</li>
+      <li><strong>Сайт</strong> — веб-сайт Оператора, расположенный в сети Интернет по адресу: https://lining-sport.uz.</li>
+      <li><strong>Субъект Персональных данных</strong> — физическое лицо, которое прямо или косвенно определено или
+                  определяемо с помощью Персональных данных, предоставляемых им на Сайте.</li>
+      <li><strong>Товар / Товары</strong> — спортивные товары Li-Ning в ассортименте, представленном на Сайте, 
+                  предлагаемые к покупке физическими лицами исключительно для личных нужд, 
+                  не связанных с осуществлением предпринимательской деятельности.</li>
+      <li><strong>Уничтожение Персональных данных</strong> — действия, в результате котроых становится невозможным восстановить
+                  содержание Персональных данных в информационной системе Персональных данных и (или) в результате которых 
+                  уничтожаются материальные носители Персональных данных</li>                  
+      <li><strong>Файлы Cookie</strong> — небольшой фрагмент данных, который принимается и обрабатывается устройством, 
+                  которое Субъект Персональных данных использует для доступа к Сайту</li>
+    </ul>
+  </div>
+
+  <!-- Раздел 2 -->
+  <div class="privacy-section" id="s2">
+    <div class="privacy-section-header">
+      <h2>2. Предмет политики конфиденциальности</h2>
+    </div>
+    <ul>
+      <li>2.1. Настоящая Политика устанавливает обязательства Оператора по неразглашению и обеспечению режима 
+          защиты конфиденциальности Персональных данных, которые Пользователь предоставляет по запросу Оператора 
+          при регистрации на Сайта или при оформлении Заказа для приобретения Товара.</li>
+      <li>2.2. Персональные данные, разрешённые к обработке в рамках настоящей Политики конфиденциальности и 
+          в соответствии с действующим законодательством Республики Узбекистан, предоставляются Пользователем 
+          путём заполнения регистрационной формы на lining-sport.uz, а также во всех физических торговых точках 
+          Оператора путем заполнения анкетных бланков и включают в себя следующую информацию:</li>
+      <ul>
+        <li>2.2.1. фамилию, имя, отчество Пользователя;</li>
+        <li>2.2.2. контактный телефон Пользователя;</li>
+        <li>2.2.3. адрес электронной почты (e-mail);</li>
+        <li>2.2.4. адрес доставки Товара;</li>
+        <li>2.2.5. место жительство Пользователя;</li>
+        <li>2.2.6. контактные данные любого другого лица, который получит Товар вместо Покупателя, в случае отсутствия Покупателя;</li>
+      </ul>
+      <li>2.3. Оператор защищает Персональные данные, которые автоматически передаются в процессе просмотра рекламных блоков и при посещении страниц,
+          на которых установлен статистический скрипт системы («пиксель»):</li>
+      <ul>
+        <li>·  IP адрес;</li>
+        <li>·  информация из cookies;</li>
+        <li>·  информация о браузере (или иной программе, которая осуществляет доступ к показу рекламы);</li>
+        <li>·  время доступа;</li>
+        <li>·  адрес страницы, на которой расположен рекламный блок;</li>
+        <li>·  реферер (адрес предыдущей страницы).</li>
+      </ul>
+      <li>2.3.1. Отключение Cookies может повлечь невозможность доступа к частям lining-sport.uz, требующим авторизации.</li>
+      <li>2.3.2. Интернет-магазин осуществляет сбор статистики об IP-адресах своих посетителей. 
+          Данная информация используется с целью выявления и решения технических проблем,
+          для контроля законности проводимых финансовых платежей.</li>
+      <li>2.4. Любая иная персональная конфиденциальная информация неоговоренная выше (история покупок, 
+          используемые браузеры и операционные системы и т.д.) подлежит надежному хранению и нераспространению, 
+          за исключением случаев, предусмотренных в п.п. 5.2. и 5.3. настоящей Политики конфиденциальности.</li>    
+    </ul>
+    <p>Мы можем собирать следующие категории данных:</p>
+    <table class="privacy-table">
+      <thead>
+        <tr>
+          <th>Категория данных</th>
+          <th>Конкретные данные</th>
+          <th>Способ получения</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Идентификационные данные</td>
+          <td>Имя, фамилия</td>
+          <td>Регистрация, оформление заказа</td>
+        </tr>
+        <tr>
+          <td>Контактные данные</td>
+          <td>Номер телефона, email-адрес</td>
+          <td>Регистрация, оформление заказа</td>
+        </tr>
+        <tr>
+          <td>Адресные данные</td>
+          <td>Адрес доставки, город</td>
+          <td>Оформление заказа</td>
+        </tr>
+        <tr>
+          <td>Технические данные</td>
+          <td>IP-адрес, тип браузера, устройство, ОС, страницы посещения, время визита</td>
+          <td>Автоматически при посещении Сайта</td>
+        </tr>
+        <tr>
+          <td>Данные о покупках</td>
+          <td>История заказов, просмотренные товары, избранное</td>
+          <td>Действия пользователя на Сайте</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>Мы не собираем специальные категории персональных данных (сведения о расе, национальности, политических взглядах, состоянии здоровья и т.п.).</p>
+  </div>
+
+  <!-- Раздел 3 -->
+  <div class="privacy-section" id="s3">
+    <div class="privacy-section-header">
+      <h2>3. Цели сбора и обработки персональных данных</h2>
+    </div>
+    <p>3.1. Персональные данные Пользователя обрабатываются Оператором исключительно в следующих целях:</p>
+    <ul>
+      <li>3.1.1. идентификации Пользователя, зарегистрированного на lining-sport.uz, для оформления Заказа и (или) 
+          заключения Публичного договора-оферты о купле-продаже товаров через Сайт;</li>
+      <li>3.1.2. создания учетной записи для совершения покупок, в случае если Пользователь дал согласие на создание учетной записи;</li>     
+      <li>3.1.3. предоставления Пользователю доступа к ресурсам Сайта;</li>
+      <li>3.1.4. установления с Пользователем обратной связи, включая направление уведомлений, запросов, 
+          касающихся использования Сайта, оказания услуг, обработка запросов и заявок от Пользователя;</li>
+      <li>3.1.5. улучшения качества работы Сайта и пользовательского опыта;</li>
+      <li>3.1.6. анализа посещаемости Сайта и поведения Пользователей (какие карточки товаров просматривались чаще всего, сколько раз
+          Пользователи посещали страницы товаров, какие товары добавлялись в раздел "Избранное" Пользователями, 
+          количество Пользователей переходящих по ссылкам на контакты Оператора и т.п.);</li>
+      <li>3.1.7. определения места нахождения Пользователя для улучшения предоставляемых Оператором услуг по доставке Товара;</li>  
+      <li>3.1.8. уведомления Пользователя Оператором о состоянии его Заказа путем отправления письменного сообщения на контактный номер телефона
+          и/или на почтовый адрес Пользователя, указанного им при регистрации;</li>
+      <li>3.1.9. обрабокти и получения платежей за Товары и услуги доставки, если Пользователь оформил Заказ и указал 
+          способ получения товара доставкой</li>      
+    </ul>
+    <div class="privacy-highlight">
+      Оператор не использует Персональные данные Пользователей для автоматизированного принятия решений или профилирования, 
+      которое существенно влияет на права и законные интересы Пользователей.
+    </div>
+  </div>
+
+<!-- Раздел 4 -->
+  <div class="privacy-section" id="s4">
+    <div class="privacy-section-header">
+      <h2>4. СПОСОБЫ И СРОКИ ОБРАБОКТИ ПЕРСОНАЛЬНЫХ ДАННЫХ / КОНФИДЕНЦИАЛЬНОЙ ИНФОРМАЦИИ</h2>
+    </div>
+    <ul>
+      <li>4.1. Обработка Персональных данных Пользователя осуществляется в соответствии с действующим законодательством Республики Узбекистан, 
+          любым законным способом, в том числе в информационных системах (баз) Персональных данных с использованием средств автоматизации или без использования таких средств.</li>
+      <li>4.2. Пользователь соглашается с тем, что Оператор вправе передавать Персональные данные третьим лицам, в частности, курьерским службам, 
+          операторам связи и другим, исключительно в целях выполнения Заказа Пользователя, оформленного на Сайте, включая доставку Товара.</li>
+      <li>4.3. Персональные данные Пользователя могут быть переданы уполномоченным государственным органам Республики Узбекистан 
+          только по основаниям и в порядке, установленным действующим законодательством Республики Узбекистан.</li>
+      <li>4.4. При утрате или разглашении Персональных данных не по вине Оператора, Оператор информирует незамедлительно 
+          Пользователя об утрате или разглашении Персональных данных.</li>
+      <li>4.5. Оператор принимает необходимые организационные и технические меры для защиты Персональных данных / Конфиденциальной информации 
+          Пользователя от неправомерного или случайного доступа, уничтожения, изменения, блокирования, копирования, распространения, 
+          а также от иных неправомерных действий третьих лиц.</li>
+      <li>4.6. Оператор совместно с Пользователем принимает все необходимые меры по предотвращению убытков или 
+          иных отрицательных последствий, вызванных утратой или разглашением Персональных данных Пользователя.</li>
+    </ul>
+  </div>  
+
+  <!-- Раздел 5 -->
+  <div class="privacy-section" id="s5">
+    <div class="privacy-section-header">
+      <h2>5. ПРАВА И ОБЯЗАННОСТИ ОПЕРАТОРА ПЕРСОНАЛЬНЫХ ДАННЫХ</h2>
+    </div>
+    <p>Ваши персональные данные обрабатываются исключительно в следующих целях:</p>
+    <ul>
+      <li>5.1. Оператор обязуется соблюдать законодательство Республики Узбекистан о Персональных данных.</li>      
+      <li>5.2. Оператор обязуется обрабатывать Персональные данные в соответствии с настоящей Политикой, Законодательством и 
+          внутренними положениями Оператора (при наличии).</li>
+      <li>5.3. Оператор, получивший доступ к Персональным данным, обязан соблюдать конфиденциальность Персональных данных - 
+          не раскрывать третьим лицам и не распространять Персональные данные без согласия субъекта Персональных данных, 
+          если иное не предусмотрено Законом Республики Узбекистан «О персональных данных» №ЗРУ-547 от 2 июля 2019 года.</li>
+      <li>5.4. Оператор обязан предоставлять Субъекту персональных данных по обращению Субъекта информацию 
+          касательно обработки его персональных данных.</li>    
+      <li>5.5. При сборе Персональных данных Оператор обязан обеспечить запись, систематизацию, накопление, хранение, 
+          уточнение (обновление, изменение), извлечение Персональных данных Субъектов Персональных данных 
+          с использованием баз данных, находящихся на территории Республики Узбекистан.</li>
+      <li>5.6. В случае выявления неправомерной обработки Персональных данных, Оператор обязан прекратить обработку таких Персональных данных. 
+          В случае, если обеспечить правомерность обработки Персональных данных невозможно, Оператор обязан уничтожить или 
+          обеспечить уничтожение таких Персональных данных в порядке и сроки, установленные Законодательством.</li>
+      <li>5.7. В случае выявления факта неточности персональных данных, Оператор обязан осуществить или обеспечить блокирование 
+          таких Персональных данных и уточнить или обеспечить их уточнение в порядке и сроки, установленные Законодательством.</li>
+      <li>5.8. Оператор имеет право передавать Персональные данные Субъекта Персональных данных третьим лицам 
+          с согласия Субъекта Персональных данных. Исключение составляют следующие случаи:
+          <ul>
+            <li>5.8.1. передача необходима в целях исполнения Договора;</li>
+            <li>5.8.2. передача осуществляется государственным органам, в том числе 
+                органам дознания и следствия, и органам местного самоуправления по их мотивированному и 
+                соответствующему Законодательству запросу;</li>
+            <li>5.8.3. в иных случаях, прямо предусмотренных Законодательством.</li>
+          </ul>
+        </li>
+    </ul>
+  </div>
+
+
+
+  <!-- Раздел 5 -->
+  <div class="privacy-section" id="s5">
+    <div class="privacy-section-header">
+      <div class="privacy-section-num">5</div>
+      <h2>Файлы Cookie и аналитика</h2>
+    </div>
+    <p>Наш Сайт использует файлы cookie и аналогичные технологии для обеспечения работы Сайта и сбора аналитических данных.</p>
+    <p><strong>Мы используем следующие виды cookie:</strong></p>
+    <table class="privacy-table">
+      <thead>
+        <tr><th>Тип cookie</th><th>Назначение</th><th>Срок хранения</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Необходимые</td>
+          <td>Корзина покупок, сессия авторизации, выбранный город</td>
+          <td>До закрытия браузера / 30 дней</td>
+        </tr>
+        <tr>
+          <td>Аналитические</td>
+          <td>Google Analytics — статистика посещений, поведение пользователей</td>
+          <td>До 26 месяцев</td>
+        </tr>
+        <tr>
+          <td>Функциональные</td>
+          <td>Запоминание предпочтений пользователя</td>
+          <td>До 12 месяцев</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><strong>Google Analytics.</strong> Сайт использует сервис Google Analytics компании Google LLC. Этот сервис собирает анонимизированные данные о посещении страниц, источниках трафика, типах устройств и времени на Сайте. Google не связывает эти данные с вашей личностью.</p>
+    <p>Вы можете отказаться от использования Google Analytics, установив <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" style="color:var(--red)">официальное расширение для браузера</a> или отключив cookie в настройках браузера.</p>
+    <div class="privacy-highlight">
+      Продолжая пользоваться Сайтом, вы даёте согласие на использование cookie в соответствии с настоящей Политикой. Вы можете в любой момент изменить настройки cookie в своём браузере.
+    </div>
+  </div>
+
+  <!-- Раздел 6 -->
+  <div class="privacy-section" id="s6">
+    <div class="privacy-section-header">
+      <div class="privacy-section-num">6</div>
+      <h2>Передача данных третьим лицам</h2>
+    </div>
+    <p>Мы не продаём, не передаём и не раскрываем ваши персональные данные третьим лицам без вашего согласия, за исключением следующих случаев:</p>
+    <table class="privacy-table">
+      <thead>
+        <tr><th>Получатель</th><th>Передаваемые данные</th><th>Цель</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Supabase Inc. (США)</td>
+          <td>Данные аккаунта, заказов, корзины, избранного</td>
+          <td>Хранение и обработка данных Сайта</td>
+        </tr>
+        <tr>
+          <td>Google LLC (США)</td>
+          <td>Анонимизированные данные о посещении</td>
+          <td>Веб-аналитика (Google Analytics)</td>
+        </tr>
+        <tr>
+          <td>Службы доставки</td>
+          <td>Имя, телефон, адрес доставки</td>
+          <td>Доставка оформленного заказа</td>
+        </tr>
+        <tr>
+          <td>Государственные органы РУз</td>
+          <td>Данные по запросу</td>
+          <td>Исполнение требований законодательства</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>При передаче данных за рубеж (Supabase, Google) мы обеспечиваем надлежащий уровень защиты в соответствии со статьёй 22 Закона РУз «О персональных данных».</p>
+  </div>
+
+  <!-- Раздел 7 -->
+  <div class="privacy-section" id="s7">
+    <div class="privacy-section-header">
+      <div class="privacy-section-num">7</div>
+      <h2>Хранение и защита данных</h2>
+    </div>
+    <p>Мы применяем разумные технические и организационные меры для защиты ваших персональных данных:</p>
+    <ul>
+      <li>Шифрование соединения по протоколу HTTPS (SSL/TLS)</li>
+      <li>Хранение паролей в зашифрованном виде (bcrypt)</li>
+      <li>Ограниченный доступ к данным — только уполномоченные сотрудники</li>
+      <li>Регулярный аудит систем безопасности</li>
+    </ul>
+    <p><strong>Сроки хранения данных:</strong></p>
+    <ul>
+      <li>Данные аккаунта — до момента удаления пользователем</li>
+      <li>Данные заказов — 3 года с момента выполнения заказа</li>
+      <li>Данные Google Analytics — 26 месяцев</li>
+      <li>Технические логи — 30 дней</li>
+    </ul>
+    <p>По истечении указанных сроков данные удаляются или обезличиваются.</p>
+  </div>
+
+  <!-- Раздел 8 -->
+  <div class="privacy-section" id="s8">
+    <div class="privacy-section-header">
+      <div class="privacy-section-num">8</div>
+      <h2>Права пользователей</h2>
+    </div>
+    <p>В соответствии с Законом РУз «О персональных данных» вы имеете право:</p>
+    <ul>
+      <li><strong>Доступ</strong> — получить информацию о том, какие ваши данные мы обрабатываем</li>
+      <li><strong>Исправление</strong> — потребовать исправления неточных или устаревших данных</li>
+      <li><strong>Удаление</strong> — потребовать удаления ваших персональных данных («право быть забытым»)</li>
+      <li><strong>Ограничение обработки</strong> — потребовать приостановления обработки ваших данных</li>
+      <li><strong>Отзыв согласия</strong> — в любой момент отозвать согласие на обработку данных</li>
+      <li><strong>Жалоба</strong> — подать жалобу в уполномоченный орган по защите персональных данных РУз</li>
+    </ul>
+    <div class="privacy-highlight">
+      Для реализации ваших прав направьте запрос на электронную почту: <strong>info@lining.uz</strong> с указанием вашего имени и сути обращения. Мы ответим в течение 10 рабочих дней.
+    </div>
+  </div>
+
+  <!-- Раздел 9 -->
+  <div class="privacy-section" id="s9">
+    <div class="privacy-section-header">
+      <div class="privacy-section-num">9</div>
+      <h2>Данные несовершеннолетних</h2>
+    </div>
+    <p>Наш Сайт не предназначен для лиц моложе 18 лет. Мы намеренно не собираем персональные данные несовершеннолетних. Если вам стало известно, что ребёнок предоставил нам свои данные без согласия родителей — пожалуйста, свяжитесь с нами, и мы незамедлительно удалим эти данные.</p>
+  </div>
+
+  <!-- Раздел 10 -->
+  <div class="privacy-section" id="s10">
+    <div class="privacy-section-header">
+      <div class="privacy-section-num">10</div>
+      <h2>Ссылки на сторонние ресурсы</h2>
+    </div>
+    <p>Сайт может содержать ссылки на страницы в социальных сетях (Instagram, Telegram) и другие внешние ресурсы. Переходя по таким ссылкам, вы покидаете наш Сайт и попадаете под действие политик конфиденциальности соответствующих платформ.</p>
+    <p>Мы не несём ответственности за содержание сторонних сайтов и их политику в отношении персональных данных.</p>
+  </div>
+
+  <!-- Раздел 11 -->
+  <div class="privacy-section" id="s11">
+    <div class="privacy-section-header">
+      <div class="privacy-section-num">11</div>
+      <h2>Изменение Политики</h2>
+    </div>
+    <p>Оператор оставляет за собой право вносить изменения в настоящую Политику в любое время. Актуальная версия всегда размещена на данной странице с указанием даты последнего обновления.</p>
+    <p>При существенных изменениях мы уведомим пользователей путём размещения соответствующего уведомления на Сайте. Продолжение использования Сайта после публикации изменений означает принятие обновлённой Политики.</p>
+  </div>
+
+  <!-- Раздел 12 -->
+  <div class="privacy-section" id="s12">
+    <div class="privacy-section-header">
+      <div class="privacy-section-num">12</div>
+      <h2>Применимое законодательство</h2>
+    </div>
+    <p>Настоящая Политика разработана и применяется в соответствии со следующими нормативными актами Республики Узбекистан:</p>
+    <ul>
+      <li>Конституция Республики Узбекистан</li>
+      <li>Закон РУз «О персональных данных» от 2 июля 2019 года № ЗРУ-547</li>
+      <li>Закон РУз «Об информатизации» от 11 декабря 2003 года № 560-II</li>
+      <li>Закон РУз «О принципах и гарантиях свободы информации» от 12 декабря 2002 года № 439-II</li>
+      <li>Постановление Кабинета Министров РУз «О мерах по реализации Закона РУз «О персональных данных»</li>
+    </ul>
+    <p>Все споры, связанные с настоящей Политикой, разрешаются в соответствии с законодательством Республики Узбекистан.</p>
+  </div>
+
+  <!-- Контакты -->
+  <div class="privacy-contact-box">
+    <h3>СВЯЗАТЬСЯ С НАМИ</h3>
+    <p>
+      По всем вопросам, связанным с обработкой персональных данных:<br><br>
+      <strong>Li Ning Store Uzbekistan</strong><br>
+      📧 Email: <a href="mailto:info@lining.uz">info@lining.uz</a><br>
+      📞 Телефон: <a href="tel:+998901234567">+998 90 123 45 67</a><br>
+      📍 Адрес: Республика Узбекистан, г. Ташкент<br><br>
+      Срок ответа на обращения — 10 рабочих дней.
+    </p>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-bottom" style="border-top:1px solid var(--gray-800);padding-top:2rem">
+      <span>© 2026 Li Ning Store Tashkent. Все права защищены.</span>
+      <span><a href="privacy.html" style="color:var(--gray-500)">Политика конфиденциальности</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
