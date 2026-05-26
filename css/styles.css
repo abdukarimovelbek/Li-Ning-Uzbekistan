@@ -1100,29 +1100,6 @@ button { font-family: var(--font-body); }
 .order-total-final span { font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; color: var(--gray-400); }
 .order-total-final strong { font-family: var(--font-display); font-size: 2rem; color: var(--white); }
 
-/* ─── Promo Banner ───────────────────────────── */
-.promo-banner {
-  background: var(--black);
-  padding: 5rem 4rem;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 3rem;
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--radius-lg);
-  margin: 0 2rem;
-}
-
-.promo-bg-text {
-  position: absolute; right: -1rem; top: 50%; transform: translateY(-50%);
-  font-family: var(--font-display); font-size: 18vw;
-  color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.04);
-  pointer-events: none; user-select: none; white-space: nowrap; line-height: 1;
-}
-.promo-label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
-.promo-title { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 5rem); color: var(--white); letter-spacing: 2px; line-height: 1; margin-bottom: 0.5rem; }
-.promo-sub { color: var(--gray-400); font-size: 1rem; margin-bottom: 2rem; }
 
 /* ─── Toast Notification ─────────────────────── */
 .toast-container {
@@ -1255,7 +1232,6 @@ footer .footer-inner {
   .categories-grid { grid-template-columns: repeat(2, 1fr); }
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
   .section { padding: 3.5rem 1.2rem; }
-  .promo-banner { grid-template-columns: 1fr; padding: 3rem 1.5rem; }
   .footer-top { grid-template-columns: 1fr; gap: 1.5rem; }
   .form-row { grid-template-columns: 1fr; }
   .reviews-grid { grid-template-columns: 1fr; }
