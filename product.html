@@ -759,7 +759,31 @@ function showSizeAlert() {
       <label class="auth-label">Пароль</label>
       <input id="reg-password" type="password" class="auth-input" placeholder="Минимум 6 символов" required autocomplete="new-password">
     </div>
+    
+    <!-- Согласия с политикой конфиденциальности -->
+    <div class="auth-field" style="gap:0.8rem;display:flex;flex-direction:column">
+      <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer">
+        <input type="checkbox" id="consent-data" required
+          style="margin-top:3px;accent-color:var(--red);flex-shrink:0;width:16px;height:16px">
+        <span style="font-size:0.78rem;color:var(--gray-700);line-height:1.5">
+          Я даю согласие на обработку персональных данных в соответствии с Законом РУз № ЗРУ-547
+        </span>
+      </label>
 
+      <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer">
+        <input type="checkbox" id="consent-policy" required
+          style="margin-top:3px;accent-color:var(--red);flex-shrink:0;width:16px;height:16px">
+        <span style="font-size:0.78rem;color:var(--gray-700);line-height:1.5">
+          Я ознакомлен(а) с 
+          <a href="privacy.html" target="_blank" 
+            style="color:var(--red);font-weight:600;text-decoration:underline">
+            Политикой конфиденциальности
+          </a>
+          и согласен(а) с её условиями
+        </span>
+      </label>
+    </div>
+    
     <button type="submit" class="auth-submit">Зарегистрироваться</button>
 
     <p class="auth-switch">
