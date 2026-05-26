@@ -170,10 +170,30 @@
       <div class="footer-col">
         <h4>Контакты</h4>
         <ul>
-          <li><a href="#">Ташкент, Чиланзар</a></li>
-          <li><a href="tel:+998901234567">+998 90 123 45 67</a></li>
+          <li><a href="#">Ташкент, ул. Турккургон, 10</a></li>
+          <li><a href="tel:+998901234567" onclick="trackEvent('click_phone',{location:'footer'})">+998 90 123 45 67</a></li>
           <li><a href="mailto:info@lining.uz">info@lining.uz</a></li>
-          <li><a href="#">Instagram</a></li>
+          <li style="display:flex;gap:.8rem;margin-top:.4rem">
+            <a href="https://instagram.com/lining.st.uzbekistan/" target="_blank"
+              onclick="trackEvent('click_instagram',{location:'footer'})"
+              title="Instagram"
+              class="footer-social-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+            </a>
+            <a href="https://t.me/liningstuzbekistan" target="_blank"
+              onclick="trackEvent('click_telegram',{location:'footer'})"
+              title="Telegram"
+              class="footer-social-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M22 2L11 13"/>
+                <path d="M22 2L15 22 11 13 2 9l20-7z"/>
+              </svg>
+            </a>
+          </li>
         </ul>
       </div>
     </div>

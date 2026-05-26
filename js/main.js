@@ -323,6 +323,12 @@ const Cart = (() => {
     updateUI(true);
     window.Toast?.show(`${product.name} добавлен в корзину`, 'В корзине: ' + items.reduce((s,i)=>s+i.qty,0) + ' товара', 'success');
     window.CartDrawer?.open();
+    // GA4 событие
+    trackEvent('add_to_cart', {
+      currency: 'UZS',
+      value: product.price,
+      items: [{ item_id: product.article || product.id, item_name: product.name, price: product.price }]
+    });
   };
 
   const remove = (id, size) => {
@@ -1646,4 +1652,12 @@ document.querySelectorAll('.nav-item-mega').forEach(item => {
   megaMenu.addEventListener('mouseenter', show);
   megaMenu.addEventListener('mouseleave', hide);
 });
+
+/* ─── GOOGLE ANALYTICS EVENTS ───────────────── */
+function trackEvent(eventName, params = {}) {
+  if (typeof gtag !== 'undefined') {
+    gtag('event', eventName, params);
+  }
+}
+window.trackEvent = trackEvent;
 

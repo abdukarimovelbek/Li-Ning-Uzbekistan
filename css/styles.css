@@ -1210,6 +1210,16 @@ footer .footer-inner {
 .footer-bottom a { color: var(--gray-500); transition: color var(--transition); }
 .footer-bottom a:hover { color: var(--white); }
 
+.footer-social-icon {
+  color: var(--gray-300);
+  transition: color var(--transition);
+  display: flex;
+  align-items: center;
+}
+.footer-social-icon:hover {
+  color: var(--red);
+}
+
 /* ─── Responsive ─────────────────────────────── */
 @media (max-width: 1100px) {
   .hero { grid-template-columns: 1fr; min-height: auto; }
