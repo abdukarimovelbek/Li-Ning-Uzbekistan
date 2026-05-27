@@ -10,6 +10,15 @@
 const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRneWlyZ2lucmVmdmpzYmhob29pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDUzNjgsImV4cCI6MjA5MzI4MTM2OH0.A-ueG5j_wcxZ7joJM645hrImLwFYjz_SM4ATLTc0cfU';
 
+/* ─── SITE FEATURE FLAGS ─────────────────────── */
+const _flags = JSON.parse(localStorage.getItem('site_flags') || '{}');
+const SITE_CONFIG = {
+  auth_enabled:     _flags.auth_enabled     ?? false,
+  cart_enabled:     _flags.cart_enabled     ?? false,
+  wishlist_enabled: _flags.wishlist_enabled ?? false,
+  orders_enabled:   _flags.orders_enabled   ?? false,
+};
+
 const CACHE_KEY = 'lining_products_cache';
 const CACHE_TTL = 5 * 60 * 1000;
 
@@ -249,6 +258,10 @@ const Auth = (() => {
     const btn = document.getElementById('auth-btn');
     if (!btn) return;
     btn.addEventListener('click', () => {
+      if (!SITE_CONFIG.auth_enabled) {
+        showFeatureDisabledModal('auth');
+        return;
+      }
       if (isLoggedIn()) {
         openModal('account');
       } else {
@@ -414,6 +427,10 @@ const CartDrawer = (() => {
   const closeBtns = document.querySelectorAll('.cart-close');
 
   const open = () => {
+    if (!SITE_CONFIG.cart_enabled) {
+      showFeatureDisabledModal('cart');
+      return;
+    }
     overlay?.classList.add('open');
     drawer?.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1620,6 +1637,10 @@ window.setCategoryFilter = setCategoryFilter;
 
 /* ─── WISHLIST NAV ───────────────────────────── */
 function openWishlist() {
+  if (!SITE_CONFIG.wishlist_enabled) {
+    showFeatureDisabledModal('wishlist');
+    return;
+  }
   if (window.Auth?.isLoggedIn()) {
     window.location.href = 'wishlist.html';
   } else {
@@ -1661,3 +1682,31 @@ function trackEvent(eventName, params = {}) {
 }
 window.trackEvent = trackEvent;
 
+/* ─── FEATURE DISABLED MODAL ────────────────── */
+function showFeatureDisabledModal(feature) {
+  document.getElementById('feature-modal')?.remove();
+  const messages = {
+    auth:     'Регистрация и вход пользователей',
+    cart:     'Корзина и оформление заказов',
+    wishlist: 'Список избранного',
+    orders:   'История заказов',
+  };
+  const overlay = document.createElement('div');
+  overlay.id = 'feature-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(2px)';
+  overlay.innerHTML = `
+    <div style="background:var(--white);max-width:460px;width:90%;padding:2.5rem 2rem;border-radius:var(--radius-lg);text-align:center;position:relative">
+      <button onclick="document.getElementById('feature-modal').remove()"
+        style="position:absolute;top:1rem;right:1rem;background:var(--gray-100);border:none;width:32px;height:32px;border-radius:50%;font-size:1rem;cursor:pointer">✕</button>
+      <div style="font-size:3rem;margin-bottom:1rem">🏪</div>
+      <div style="font-family:var(--font-display);font-size:1.6rem;letter-spacing:2px;margin-bottom:1rem;color:var(--gray-900)">РЕЖИМ КАТАЛОГА</div>
+      <p style="color:var(--gray-500);font-size:0.88rem;line-height:1.8;margin-bottom:1.5rem">
+        Сайт работает в режиме каталога для ознакомления с продукцией Li Ning.<br><br>
+        <strong style="color:var(--gray-700)">${messages[feature] || 'Эта функция'}</strong> будет доступна в ближайшее время.
+      </p>
+      <a href="catalog.html" class="btn btn-primary" style="display:inline-flex">Перейти в каталог →</a>
+    </div>`;
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+window.showFeatureDisabledModal = showFeatureDisabledModal;

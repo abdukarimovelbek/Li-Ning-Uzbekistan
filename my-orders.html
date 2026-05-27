@@ -310,6 +310,14 @@
 
 <script src="js/main.js"></script>
 <script>
+
+document.addEventListener('DOMContentLoaded', () => {
+  const flags = JSON.parse(localStorage.getItem('site_flags') || '{}');
+  if (!flags.orders_enabled) {
+    showFeatureDisabledModal('orders');
+  }
+});
+
 const statusMap = {
   'new':        { label: 'Новый',     cls: 'status-new' },
   'processing': { label: 'В работе',  cls: 'status-processing' },
