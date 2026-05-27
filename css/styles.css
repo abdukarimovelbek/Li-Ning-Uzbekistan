@@ -1211,7 +1211,7 @@ footer .footer-inner {
 .footer-bottom a:hover { color: var(--white); }
 
 .footer-social-icon {
-  color: var(--gray-290);
+  color: var(--gray-300);
   transition: color var(--transition);
   display: flex;
   align-items: center;
