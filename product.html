@@ -567,6 +567,23 @@ function fillProduct(p) {
     value: p.price,
     items: [{ item_id: p.article || p.id, item_name: p.name, price: p.price, item_category: p.category }]
   });
+
+  // Отслеживание времени на странице товара
+  window._productViewStart = Date.now();
+  window._currentArticle = p.article || p.id;
+  window._currentName = p.name;
+
+  // Отправляем время при уходе со страницы
+  window.addEventListener('beforeunload', () => {
+    const timeSpent = Math.round((Date.now() - window._productViewStart) / 1000);
+    if (timeSpent > 2) {
+      trackEvent('product_view_duration', {
+        item_id: window._currentArticle,
+        item_name: window._currentName,
+        duration_seconds: timeSpent
+      });
+    }
+  });
 }
 
 function switchImg(url, thumb) {

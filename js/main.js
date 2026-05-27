@@ -1086,7 +1086,7 @@ const buildCard = (p) => {
       data-subcategory="${p.subcategory||''}"
       data-collection="${p.collection||''}"
       data-href="product.html?id=${p.id}"
-      onclick="if(!event.target.closest('button')) window.location.href='product.html?id=${p.id}'">
+      onclick="if(!event.target.closest('button')){trackEvent('view_product_card',{item_id:'${p.article||p.id}',item_name:'${p.name.replace(/'/g,'')}',item_category:'${p.category||''}',currency:'UZS',value:${p.price}});window.location.href='product.html?id=${p.id}'}"
       <div class="product-img-wrap">
         ${badge}
         <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
@@ -1338,6 +1338,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') {
       const q = input.value.trim();
       if (q.length > 0) {
+        trackEvent('search', { search_term: q.toLowerCase() });
         window.location.href = `catalog.html?search=${encodeURIComponent(q)}`;
       }
     }
@@ -1604,6 +1605,9 @@ window.applyCatalogFilters = applyCatalogFilters;
 
 function catalogSearchFilter(q) {
   q = q.toLowerCase().trim();
+  if (q.length >= 2) {
+    trackEvent('search', { search_term: q, search_location: 'catalog_sidebar' });
+  }
   document.querySelectorAll('.product-card').forEach(card => {
     const name = card.querySelector('.product-name')?.textContent.toLowerCase() || '';
     const brand = card.querySelector('.product-brand')?.textContent.toLowerCase() || '';
