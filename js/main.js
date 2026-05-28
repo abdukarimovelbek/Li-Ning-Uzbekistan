@@ -1086,7 +1086,7 @@ const buildCard = (p) => {
       data-subcategory="${p.subcategory||''}"
       data-collection="${p.collection||''}"
       data-href="product.html?id=${p.id}"
-      onclick="if(!event.target.closest('button')){trackEvent('view_product_card',{item_id:'${p.article||p.id}',item_name:'${p.name.replace(/'/g,'')}',item_category:'${p.category||''}',currency:'UZS',value:${p.price}});window.location.href='product.html?id=${p.id}'}"
+      onclick="if(!event.target.closest('button')){trackEvent('view_product_card',{item_id:'${p.article||p.id}',item_name:'${p.name.replace(/'/g,'')}',item_category:'${p.category||''}',currency:'UZS',value:${p.price}});window.location.href='product.html?id=${p.id}'}">
       <div class="product-img-wrap">
         ${badge}
         <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
