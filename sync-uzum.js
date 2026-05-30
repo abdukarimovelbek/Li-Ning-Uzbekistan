@@ -96,7 +96,7 @@ async function getProductDetails(productId) {
       return null;
     }
     const data = await res.json();
-    if (productId === 1530792) {
+    if (productId === 5032478) {
       console.log('ДЕТАЛИ:', JSON.stringify(data).substring(0, 800));
     }
     return data?.payload || data;
@@ -168,7 +168,7 @@ function mapUzumToSupabase(uzumProduct) {
   return {
     article,
     name,
-    description: null,
+    description: p.description || p.fullDescription || p.skuList?.[0]?.description || null,
     category,
     gender,
     brand: 'Li Ning',
