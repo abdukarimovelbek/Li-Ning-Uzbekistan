@@ -346,54 +346,8 @@
       </div>
       <a href="catalog.html" class="see-all">Весь каталог →</a>
     </div>
-    <div class="products-grid" style="grid-template-columns:repeat(4,1fr)">
-      <div class="product-card" data-product-id="ln-002" data-price="650000" data-brand="li ning" data-sizes="38,39,40,41,42,43" data-href="product.html">
-        <div class="product-img-wrap">
-          <span class="product-badge badge-sale">−25%</span>
-          <div class="product-img">🥾</div>
-              <button class="btn-wishlist" data-wished="false">♡</button></div>
-        <div class="product-info">
-          <div class="product-brand">Li Ning</div>
-          <div class="product-name">Li Ning Saga Trail</div>
-          <div class="product-footer"><div class="product-price"><span class="old-price">870 000</span>650 000 сум</div></div>
-        </div>
-      </div>
-      <div class="product-card" data-product-id="ln-004" data-price="750000" data-brand="li ning" data-sizes="40,41,42,43,44,45" data-href="product.html">
-        <div class="product-img-wrap">
-          <span class="product-badge badge-hot">HOT</span>
-          <div class="product-img">⚡</div>
-          <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-        </div>
-        <div class="product-info">
-          <div class="product-brand">Li Ning</div>
-          <div class="product-name">Li Ning Speed Boost</div>
-          <div class="product-footer"><div class="product-price">750 000 сум</div></div>
-        </div>
-      </div>
-      <div class="product-card" data-product-id="ln-007" data-price="1200000" data-brand="li ning" data-sizes="38,39,40,41,42,43,44,45" data-href="product.html">
-        <div class="product-img-wrap">
-          <span class="product-badge badge-hot">ТОП</span>
-          <div class="product-img">🌟</div>
-          <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-        </div>
-        <div class="product-info">
-          <div class="product-brand">Li Ning</div>
-          <div class="product-name">Li Ning Flying Rabbit Elite</div>
-          <div class="product-footer"><div class="product-price">1 200 000 сум</div></div>
-        </div>
-      </div>
-      <div class="product-card" data-product-id="ad-001" data-price="980000" data-brand="adidas" data-sizes="39,40,41,42,43" data-href="product.html">
-        <div class="product-img-wrap">
-          <span class="product-badge badge-sale">−20%</span>
-          <div class="product-img">🏃</div>
-          <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-        </div>
-        <div class="product-info">
-          <div class="product-brand">Adidas</div>
-          <div class="product-name">Adidas Ultraboost 23</div>
-          <div class="product-footer"><div class="product-price"><span class="old-price">1 225 000</span>980 000 сум</div></div>
-        </div>
-      </div>
+    <div class="products-grid" style="grid-template-columns:repeat(4,1fr)" id="related-products">
+      <div style="padding:2rem;text-align:center;color:#aaa">Загрузка...</div>
     </div>
   </div>
 </section>
@@ -584,7 +538,35 @@ function fillProduct(p) {
       });
     }
   });
+  // Загружаем похожие товары
+  loadRelatedProducts(p.category, p.id);
 }
+
+async function loadRelatedProducts(category, currentId) {
+  if (!category) return;
+  const grid = document.getElementById('related-products');
+  if (!grid) return;
+
+  try {
+    const res = await fetch(
+      `${SB_URL}/rest/v1/products?category=eq.${category}&is_active=eq.true&id=neq.${currentId}&limit=4&order=created_at.desc`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    );
+    const products = await res.json();
+
+    if (products.length === 0) {
+      grid.innerHTML = '<div style="padding:2rem;text-align:center;color:#aaa">Похожих товаров пока нет</div>';
+      return;
+    }
+
+    grid.innerHTML = products.map(p => buildCard(p)).join('');
+    window.ProductCards?.init();
+    highlightWishlist();
+  } catch(e) {
+    console.error(e);
+    grid.innerHTML = '<div style="padding:2rem;text-align:center;color:#aaa">Ошибка загрузки</div>';
+  }
+} 
 
 function switchImg(url, thumb) {
   document.querySelector('.gallery-main').innerHTML =
