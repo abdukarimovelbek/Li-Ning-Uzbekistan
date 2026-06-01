@@ -1219,6 +1219,9 @@ footer .footer-inner {
 .footer-social-icon:hover {
   color: var(--red);
 }
+.footer-social-icon:hover img {
+  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(300deg) !important;
+}
 
 /* ─── Responsive ─────────────────────────────── */
 @media (max-width: 1100px) {
