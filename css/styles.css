@@ -1211,16 +1211,25 @@ footer .footer-inner {
 .footer-bottom a:hover { color: var(--white); }
 
 .footer-social-icon {
-  color: var(--gray-300);
-  transition: color var(--transition);
+  background: var(--white);
+  border-radius: 6px;
+  padding: 5px;
+  transition: background var(--transition);
   display: flex;
   align-items: center;
+  justify-content: center;
+}
+.footer-social-icon img {
+  filter: brightness(0);
+  transition: filter var(--transition);
+  width: 20px;
+  height: 20px;
 }
 .footer-social-icon:hover {
   color: var(--red);
 }
 .footer-social-icon:hover img {
-  filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(300deg) !important;
+  filter: brightness(0) invert(1);
 }
 
 /* ─── Responsive ─────────────────────────────── */

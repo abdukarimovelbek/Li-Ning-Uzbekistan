@@ -369,7 +369,7 @@
   <div class="stores-map-side" id="map-side">
     <iframe
       id="stores-map"
-      src="https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=Tashkent+City+Mall,Tashkent&zoom=12"
+      src="https://maps.google.com/maps?q=Tashkent+City+Mall,Tashkent&output=embed&z=15"
       allowfullscreen
       loading="lazy"
       referrerpolicy="no-referrer-when-downgrade">
@@ -573,7 +573,7 @@ function showStore(card, query) {
 
   // Обновляем карту
   const map = document.getElementById('stores-map');
-  map.src = `https://www.google.com/maps/embed/v1/place?key=AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY&q=${encodeURIComponent(query)}&zoom=15`;
+  map.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&output=embed&z=15`;
 }
 </script>
 
