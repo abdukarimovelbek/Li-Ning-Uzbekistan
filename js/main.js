@@ -1706,7 +1706,7 @@ function showFeatureDisabledModal(feature) {
       <div style="font-family:var(--font-display);font-size:1.6rem;letter-spacing:2px;margin-bottom:1rem;color:var(--gray-900)">РЕЖИМ КАТАЛОГА</div>
       <p style="color:var(--gray-500);font-size:0.88rem;line-height:1.8;margin-bottom:1.5rem">
         Сайт работает в режиме каталога для ознакомления с продукцией Li Ning.<br><br>
-        <strong style="color:var(--gray-700)">${messages[feature] || 'Эта функция'}</strong> будет доступна в ближайшее время.
+        <strong style="color:var(--gray-700)">${messages[feature] || 'Эта функция'}</strong> будут доступны в ближайшее время.
       </p>
       <a href="catalog.html" class="btn btn-primary" style="display:inline-flex">Перейти в каталог →</a>
     </div>`;
