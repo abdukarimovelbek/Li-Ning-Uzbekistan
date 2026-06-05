@@ -23,6 +23,12 @@ async function loadComponents() {
     const res = await fetch(c.file);
     el.innerHTML = await res.text();
   }
+  // После загрузки всех компонентов — инициализируем навбар
+  initNavbar();
+  initAuthBtn();
+  CartDrawer.init();
+  updateCartCount();
+  highlightWishlist();
 }
 loadComponents();
 
