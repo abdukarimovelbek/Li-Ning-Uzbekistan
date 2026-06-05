@@ -1210,26 +1210,20 @@ footer .footer-inner {
 .footer-bottom a { color: var(--gray-500); transition: color var(--transition); }
 .footer-bottom a:hover { color: var(--white); }
 
-.footer-social-icon {
-  background: var(--white);
+.footer-social-icon img {
+  width: 32px;
+  height: 32px;
   border-radius: 6px;
-  padding: 5px;
-  transition: background var(--transition);
+  display: block;
+  transition: opacity var(--transition);
+}
+.footer-social-icon {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.footer-social-icon img {
-  filter: brightness(0);
-  transition: filter var(--transition);
-  width: 20px;
-  height: 20px;
-}
-.footer-social-icon:hover {
-  color: var(--red);
-}
 .footer-social-icon:hover img {
-  filter: brightness(0) invert(1);
+  opacity: 0.75;
 }
 
 /* ─── Responsive ─────────────────────────────── */
