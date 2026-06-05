@@ -10,6 +10,22 @@
 const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRneWlyZ2lucmVmdmpzYmhob29pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDUzNjgsImV4cCI6MjA5MzI4MTM2OH0.A-ueG5j_wcxZ7joJM645hrImLwFYjz_SM4ATLTc0cfU';
 
+/* ─── LOAD COMPONENTS ───────────────────────── */
+async function loadComponents() {
+  const components = [
+    { id: 'navbar-placeholder', file: 'components/navbar.html' },
+    { id: 'footer-placeholder', file: 'components/footer.html' },
+    { id: 'modals-placeholder', file: 'components/modals.html' },
+  ];
+  for (const c of components) {
+    const el = document.getElementById(c.id);
+    if (!el) continue;
+    const res = await fetch(c.file);
+    el.innerHTML = await res.text();
+  }
+}
+loadComponents();
+
 /* ─── SITE FEATURE FLAGS ─────────────────────── */
 const _flags = JSON.parse(localStorage.getItem('site_flags') || '{}');
 const SITE_CONFIG = {
