@@ -233,25 +233,6 @@
 
   let deliveryPrice = 20000;
 
-  function selectDelivery(el) {
-    document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-    el.querySelector('input').checked = true;
-    deliveryPrice = parseInt(el.dataset.price) || 0;
-    updateTotal();
-  }
-
-  function updateTotal() {
-    const items = getCart();
-    const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-    const total = subtotal + deliveryPrice;
-
-    document.getElementById('order-subtotal').textContent = subtotal.toLocaleString('ru-RU') + ' сум';
-    document.getElementById('order-delivery-price').textContent = deliveryPrice === 0 ? 'Бесплатно' : deliveryPrice.toLocaleString('ru-RU') + ' сум';
-    document.getElementById('order-total-final').textContent = total.toLocaleString('ru-RU') + ' сум';
-    document.getElementById('order-qty').textContent = items.reduce((s, i) => s + i.qty, 0);
-  }
-
   function renderOrderItems() {
     const items = getCart();
     const container = document.getElementById('order-items-list');
@@ -334,7 +315,6 @@
   <!-- CITY MODAL -->
   <div id="modals-placeholder"></div>
 
-  <script src="js/main.js"></script>
   <script>
 
   function selectDelivery(el, type) {
@@ -363,24 +343,6 @@
       }
     }
   }
-
-  document.querySelectorAll('.store-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
-
-      // Берём название и адрес выбранного магазина
-      const name = opt.querySelector('.store-option-name').textContent;
-      const addr = opt.querySelector('.store-option-addr').textContent;
-
-      // Обновляем текст в блоке самовывоза
-      document.getElementById('pickup-label').innerHTML =
-        `<strong>${name}</strong> · <span style="color:var(--gray-500);font-size:0.78rem">${addr}</span>`;
-
-      // Закрываем список
-      document.getElementById('store-list').classList.remove('open');
-    });
-  });
 
   document.querySelectorAll('.store-option').forEach(opt => {
     opt.addEventListener('click', () => {
