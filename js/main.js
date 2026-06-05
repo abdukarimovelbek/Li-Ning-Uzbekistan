@@ -29,6 +29,7 @@ async function loadComponents() {
   CartDrawer.init();
   Cart.updateUI();
   highlightWishlist();
+  window._updateMegaTop?.();
 }
 loadComponents();
 
@@ -1535,19 +1536,21 @@ const HeroSlider = (() => {
 
 // Мегаменю top — динамически под navbar
 (function() {
-  const navbar = document.querySelector('.navbar');
-  const style  = document.createElement('style');
+  const style = document.createElement('style');
   document.head.appendChild(style);
 
   function updateMegaTop() {
-    const navBottom = navbar ? navbar.getBoundingClientRect().bottom : 96;
+    const navbar = document.querySelector('.navbar');
+    const navBottom = navbar ? navbar.getBoundingClientRect().bottom : 68;
     style.textContent = `.mega-menu { top: ${navBottom}px !important; }`;
   }
 
   updateMegaTop();
   window.addEventListener('scroll', updateMegaTop, { passive: true });
   window.addEventListener('resize', updateMegaTop);
+  window._updateMegaTop = updateMegaTop;
 })();
+
 
 // Читаем категорию из URL при загрузке каталога
 document.addEventListener('DOMContentLoaded', () => {

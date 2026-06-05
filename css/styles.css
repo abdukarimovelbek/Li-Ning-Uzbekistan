@@ -81,7 +81,8 @@ button { font-family: var(--font-body); }
 
 /* ─── Navigation ─────────────────────────────── */
 .navbar {
-  position: sticky; top: 0; z-index: 100;
+  position: relative; 
+  z-index: 100;
   background: transparent;
   border-bottom: 1px solid transparent;
   height: var(--nav-h);
@@ -2036,4 +2037,10 @@ footer .footer-inner {
     border-right: none;
     border-bottom: 1px solid rgba(255,255,255,0.08);
   }
+}
+
+#navbar-placeholder {
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
