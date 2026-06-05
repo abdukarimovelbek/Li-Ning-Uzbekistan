@@ -30,6 +30,7 @@ async function loadComponents() {
   Cart.updateUI();
   highlightWishlist();
   window._updateMegaTop?.();
+  initNavbarScroll();
 }
 loadComponents();
 
@@ -1518,21 +1519,32 @@ const HeroSlider = (() => {
   window.prevSlide = () => { goTo(current - 1); startTimer(); };
 })();
 
-(function() {
+function initNavbarScroll() {
   const nav = document.querySelector('.navbar');
   if (!nav) return;
-  const hasSlider = !!document.querySelector('.hero-slider');
 
+  const isTransparentPage =
+    document.getElementById('navbar-placeholder')?.dataset.transparent === 'true';
+
+  if (!isTransparentPage) return; // остальные страницы — всегда чёрный, ничего не делаем
+
+  // Главная страница: прозрачный → чёрный при скролле
   function updateNav() {
-    if (hasSlider && window.scrollY < nav.offsetHeight) {
-      nav.classList.remove('scrolled');
-    } else {
+    if (window.scrollY > 50) {
       nav.classList.add('scrolled');
+      nav.classList.remove('is-transparent');
+    } else {
+      nav.classList.remove('scrolled');
+      nav.classList.add('is-transparent');
     }
   }
+
+  nav.classList.add('is-transparent');
   updateNav();
   window.addEventListener('scroll', updateNav, { passive: true });
-})();
+}
+window.initNavbarScroll = initNavbarScroll;
+
 
 // Мегаменю top — динамически под navbar
 (function() {
