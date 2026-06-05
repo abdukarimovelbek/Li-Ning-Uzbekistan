@@ -25,9 +25,9 @@ async function loadComponents() {
   }
   // После загрузки всех компонентов — инициализируем навбар
   initMegaMenu();
-  initAuthBtn();
+  window.Auth?.initAuthBtn();
   CartDrawer.init();
-  updateCartCount();
+  Cart.updateUI();
   highlightWishlist();
 }
 loadComponents();
@@ -310,7 +310,7 @@ const Auth = (() => {
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   });
 
-  window.Auth = { getUser, isLoggedIn, requireAuth, signOut, openModal, closeModal };
+  window.Auth = { getUser, isLoggedIn, requireAuth, signOut, openModal, closeModal, initAuthBtn };
   return { getUser, isLoggedIn, requireAuth };
 })();
 
@@ -443,35 +443,43 @@ const Cart = (() => {
 
 /* ─── 3. CART DRAWER ────────────────────────── */
 const CartDrawer = (() => {
-  const overlay = document.querySelector('.cart-overlay');
-  const drawer  = document.querySelector('.cart-drawer');
-  const openBtns  = document.querySelectorAll('.cart-btn, [data-open-cart]');
-  const closeBtns = document.querySelectorAll('.cart-close');
+  let overlay, drawer;
 
   const open = () => {
     if (!SITE_CONFIG.cart_enabled) {
       showFeatureDisabledModal('cart');
       return;
     }
+    overlay = overlay || document.querySelector('.cart-overlay');
+    drawer  = drawer  || document.querySelector('.cart-drawer');
     overlay?.classList.add('open');
     drawer?.classList.add('open');
     document.body.style.overflow = 'hidden';
   };
 
   const close = () => {
+    overlay = overlay || document.querySelector('.cart-overlay');
+    drawer  = drawer  || document.querySelector('.cart-drawer');
     overlay?.classList.remove('open');
     drawer?.classList.remove('open');
     document.body.style.overflow = '';
   };
 
-  openBtns.forEach(btn => btn.addEventListener('click', open));
-  closeBtns.forEach(btn => btn.addEventListener('click', close));
-  overlay?.addEventListener('click', close);
+  const init = () => {
+    overlay = document.querySelector('.cart-overlay');
+    drawer  = document.querySelector('.cart-drawer');
+    document.querySelectorAll('.cart-btn, [data-open-cart]')
+      .forEach(btn => btn.addEventListener('click', open));
+    document.querySelectorAll('.cart-close')
+      .forEach(btn => btn.addEventListener('click', close));
+    overlay?.addEventListener('click', close);
+  };
 
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 
-  window.CartDrawer = { open, close };
+  window.CartDrawer = { open, close, init };
 })();
+
 
 
 /* ─── 4. TOAST NOTIFICATIONS ────────────────── */
@@ -844,7 +852,6 @@ const OrderForm = (() => {
         delivery_type:   document.querySelector('.delivery-option.selected input')?.value || null,
         pickup_store:    document.querySelector('input[name=pickup_store]:checked')?.value || null, // ← добавь
         address:         document.getElementById('address').value.trim(),
-        address:         document.getElementById('address').value.trim(),
         city:            document.getElementById('city').value.trim(),
         comment:         document.getElementById('comment')?.value.trim() || null,
         payment_method:  document.querySelector('.pay-option.selected input')?.value || null,
@@ -1055,7 +1062,6 @@ async function fetchProducts(filter = '') {
     if (cached) {
       const { data, time } = JSON.parse(cached);
       if (Date.now() - time < CACHE_TTL) {
-        console.log('Из кэша ⚡');
         return data;
       }
     }
@@ -1171,8 +1177,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
       );
       const orders = await ordersRes.json();
-      console.log('Заказов найдено:', orders.length);
-      console.log('Первый заказ items:', JSON.stringify(orders[0]?.items));
 
       // Считаем сколько раз каждый товар заказывали
       const productCount = {};
@@ -1184,9 +1188,6 @@ document.addEventListener('DOMContentLoaded', async () => {
           productCount[id] = (productCount[id] || 0) + (item.quantity || 1);
         });
       });
-      
-      console.log('productCount:', JSON.stringify(productCount));
-      console.log('topArticles:', Object.entries(productCount).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>id));
 
       // Сортируем по количеству заказов
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -1200,7 +1201,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (topArticles.length > 0) {
         // Загружаем топ товары по article
-        const articlesParam = topArticles.map(a => `"${a}"`).join(',');
         const res = await fetch(
           `${SB_URL}/rest/v1/products?article=in.(${topArticles.join(',')})&is_active=eq.true&limit=8`,
           { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }

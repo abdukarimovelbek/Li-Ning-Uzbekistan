@@ -7,6 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <title>Оформление заказа — Li Ning Store</title>
   <link rel="stylesheet" href="css/styles.css">
+  
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8K29V08VJM"></script>
   <script>
@@ -16,857 +17,397 @@
     gtag('config', 'G-8K29V08VJM');
   </script>  
 </head>
+
 <body>
+  <!-- NAVBAR -->
+  <div id="navbar-placeholder"></div>
 
-<div class="ticker">
-  <div class="ticker-track">
-    <span class="ticker-item">Безопасная оплата</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Доставка по всему Узбекистану</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Поддержка 24/7</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Безопасная оплата</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Доставка по всему Узбекистану</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Поддержка 24/7</span><span class="ticker-sep">✦</span>
-  </div>
-</div>
-
-<nav class="navbar">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <img src="logo.jpg" alt="Li-Ning">
-    </a>
-    <ul class="nav-links">
-      <li><a href="index.html" class="nav-no-active">Новинки</a></li>
-
-      <li class="nav-item-mega">
-        <a href="catalog.html?gender=male">Мужчины</a>
-        <div class="mega-menu">
-          <div class="mega-col">
-            <h4><a href="catalog.html?gender=male&category=shoes" style="color:var(--black);display:block">Обувь</a></h4>
-            <ul>
-              <li><a href="catalog.html?gender=male&category=shoes&subcategory=sneakers">Кроссовки</a></li>
-              <li><a href="catalog.html?gender=male&category=shoes&subcategory=slippers">Сланцы / Сабо</a></li>
-              <li><a href="catalog.html?gender=male&category=shoes&subcategory=sneakers_low">Кеды</a></li>
-              <li><a href="catalog.html?gender=male&category=shoes&subcategory=sandals">Сандали</a></li>
-            </ul>
-          </div>
-          <div class="mega-col">
-            <h4><a href="catalog.html?gender=male&category=clothing" style="color:var(--black);display:block">Одежда</a></h4>
-            <ul>
-              <li><a href="catalog.html?gender=male&category=clothing&subcategory=tshirts">Футболки</a></li>
-              <li><a href="catalog.html?gender=male&category=clothing&subcategory=shorts">Шорты</a></li>
-              <li><a href="catalog.html?gender=male&category=clothing&subcategory=pants">Брюки</a></li>
-            </ul>
-          </div>
-          <div class="mega-col">
-            <h4>Аксессуары</h4>
-            <ul>
-              <li><a href="catalog.html?gender=male&category=accessories">Рюкзаки</a></li>
-              <li><a href="catalog.html?gender=male&category=accessories">Кепки</a></li>
-            </ul>
-          </div>
-        </div>
-      </li>
-
-      <li class="nav-item-mega">
-        <a href="catalog.html?gender=female">Женщины</a>
-        <div class="mega-menu">
-          <div class="mega-col">
-            <h4><a href="catalog.html?gender=female&category=shoes" style="color:var(--black);display:block">Обувь</a></h4>
-            <ul>
-              <li><a href="catalog.html?gender=female&category=shoes&subcategory=sneakers">Кроссовки</a></li>
-              <li><a href="catalog.html?gender=female&category=shoes&subcategory=slippers">Сланцы / Сабо</a></li>
-              <li><a href="catalog.html?gender=female&category=shoes&subcategory=sneakers_low">Кеды</a></li>
-              <li><a href="catalog.html?gender=male&category=shoes&subcategory=sandals">Сандали</a></li>
-            </ul>
-          </div>
-          <div class="mega-col">
-            <h4><a href="catalog.html?gender=female&category=clothing" style="color:var(--black);display:block">Одежда</a></h4>
-            <ul>
-              <li><a href="catalog.html?gender=female&category=clothing&subcategory=tshirts">Футболки</a></li>
-              <li><a href="catalog.html?gender=female&category=clothing&subcategory=longsleeves">Лонгсливы</a></li>
-              <li><a href="catalog.html?gender=female&category=clothing&subcategory=pants">Брюки</a></li>
-            </ul>
-          </div>
-          <div class="mega-col">
-            <h4>Аксессуары</h4>
-            <ul>
-              <li><a href="catalog.html?gender=female&category=accessories">Сумки</a></li>
-              <li><a href="catalog.html?gender=female&category=accessories">Кепки</a></li>
-            </ul>
-          </div>
-        </div>
-      </li>
-
-      <li class="nav-item-mega">
-        <a href="catalog.html">Дети</a>
-        <div class="mega-menu" style="grid-template-columns: repeat(3,1fr)">
-          <div class="mega-col">
-            <h4>Мальчики</h4>
-            <ul>
-              <li><a href="shoes.html">Обувь</a></li>
-              <li><a href="clothing.html">Одежда</a></li>
-              <li><a href="catalog.html">Аксессуары</a></li>
-            </ul>
-          </div>
-          <div class="mega-col">
-            <h4>Девочки</h4>
-            <ul>
-              <li><a href="shoes.html">Обувь</a></li>
-              <li><a href="clothing.html">Одежда</a></li>
-              <li><a href="catalog.html">Аксессуары</a></li>
-            </ul>
-          </div>
-          <div class="mega-col">
-            <h4>Малыши</h4>
-            <ul>
-              <li><a href="shoes.html">Обувь</a></li>
-              <li><a href="clothing.html">Одежда</a></li>
-            </ul>
-          </div>
-        </div>
-      </li>
-
-      <li class="nav-item-mega">
-        <a href="catalog.html?category=accessories">Аксессуары</a>
-        <div class="mega-menu" style="grid-template-columns: 1fr">
-          <div class="mega-col">
-            <h4>Все аксессуары</h4>
-            <ul>
-              <li><a href="catalog.html?category=accessories&subcategory=caps">Кепки и шапки</a></li>
-              <li><a href="catalog.html?category=accessories&subcategory=balls">Мячи</a></li>
-              <li><a href="catalog.html?category=accessories&subcategory=socks">Носки</a></li>
-              <li><a href="catalog.html?category=accessories&subcategory=gloves">Перчатки</a></li>
-              <li><a href="catalog.html?category=accessories&subcategory=bands">Повязки и напульсники</a></li>
-              <li><a href="catalog.html?category=accessories&subcategory=bags">Рюкзаки и сумки</a></li>
-            </ul>
-            <a href="catalog.html?category=accessories" 
-              style="display:inline-block;margin-top:1.2rem;padding:.6rem 1.4rem;border:1.5px solid var(--gray-300);border-radius:var(--radius-sm);font-size:.78rem;font-weight:600;color:var(--gray-700);transition:all var(--transition)"
-              onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
-              onmouseout="this.style.borderColor='var(--gray-300)';this.style.color='var(--gray-700)'">
-              Посмотреть все товары →
-            </a>
-          </div>
-        </div>
-      </li>
-
-      <li><a href="sale.html" style="color:var(--red);font-weight:700">Распродажа</a></li>
-      <li class="nav-item-mega">
-        <a href="#">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:block">
-            <rect x="3" y="3" width="7" height="7" rx="1"/>
-            <rect x="14" y="3" width="7" height="7" rx="1"/>
-            <rect x="3" y="14" width="7" height="7" rx="1"/>
-            <rect x="14" y="14" width="7" height="7" rx="1"/>
-          </svg>
-        </a>
-        <div class="mega-menu" style="grid-template-columns: repeat(3,1fr)">
-          <div class="mega-col">
-            <h4>Информация</h4>
-            <ul>
-              <li><a href="stores.html">Магазины</a></li>
-              <li><a href="#">Вакансии</a></li>
-              <li><a href="#">Обмен и возврат</a></li>
-              <li><a href="#">Доставка и оплата</a></li>
-              <li><a href="#">Публичная оферта</a></li>
-              <li><a href="#">Политика конфиденциальности</a></li>
-            </ul>
-          </div>
-          <div class="mega-col">
-            <h4>Контакты</h4>
-            <ul>
-              <li><a href="#">Ташкент, Чиланзар</a></li>
-              <li><a href="tel:+998901234567">+998 90 123 45 67</a></li>
-              <li><a href="mailto:info@lining.uz">info@lining.uz</a></li>
-              <li><a href="#">Instagram</a></li>
-              <li><a href="#">Telegram</a></li>
-            </ul>
-          </div>
-          <div class="mega-col">
-            <h4>Программа лояльности</h4>
-            <ul>
-              <li><a href="#">О программе</a></li>
-              <li><a href="#">Условия участия</a></li>
-              <li><a href="#">Бонусные баллы</a></li>
-            </ul>
-          </div>
-        </div>
-      </li>
-      <li class="nav-item-mega" id="city-menu">
-        <a href="#" onclick="openCityModal();return false;" style="display:flex;align-items:center;gap:.4rem">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-          </svg>
-          <span id="selected-city">Ташкент</span>
-        </a>
-      </li>      
-    </ul>
-    <div class="nav-actions">
-      <button class="nav-icon-btn" onclick="toggleSearch()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-      </button>
-      <button class="nav-icon-btn" id="auth-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-        </svg>
-      </button>
-      <button class="nav-icon-btn" onclick="openWishlist()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-        </svg>
-      </button>
-      <button class="nav-icon-btn cart-btn" style="position:relative">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
-        </svg>
-        <span class="cart-count" style="display:none">0</span>
-      </button>
-      <button class="mobile-menu-btn">☰</button>
-    </div>
-  </div>
-</nav>
-
-<div class="nav-search-bar" id="nav-search-bar">
-  <input 
-    type="text" 
-    class="nav-search" 
-    placeholder="Искать среди товаров Li-Ning..." 
-    id="nav-search-input"
-    onkeydown="if(event.key==='Escape') toggleSearch()">
-      <button onclick="
-        const q = document.getElementById('nav-search-input').value.trim();
-        if(q) window.location.href='catalog.html?search='+encodeURIComponent(q);
-        " style="background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0">
-        <svg class="nav-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-      </button>
-</div>
-
-<div class="cart-overlay"></div>
-<div class="cart-drawer">
-  <div class="cart-header"><h2>КОРЗИНА</h2><button class="cart-close">✕</button></div>
-  <div class="cart-body"></div>
-  <div class="cart-footer">
-    <div class="cart-total"><span>Итого</span><strong>0 сум</strong></div>
-    <button class="btn-checkout" onclick="window.location.href='order.html'">Оформить заказ →</button>
-  </div>
-</div>
-
-<div class="page-header">
-  <div class="page-header-inner">
-    <div class="breadcrumb" data-manual="true">
-      <a href="index.html">Главная</a><span>/</span>
-      <a href="catalog.html">Каталог</a><span>/</span>
-      <span>Оформление заказа</span>
-    </div>
-    <h1>ОФОРМЛЕНИЕ<br>ЗАКАЗА</h1>
-  </div>
-</div>
-
-<div class="order-page">
-  <div class="order-inner">
-
-    <!-- Order Form -->
-    <form id="order-form" novalidate>
-
-      <!-- Personal Info -->
-      <div class="form-section">
-        <div class="form-section-title">
-          <span class="step-num">1</span>
-          Личные данные
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="first-name">Имя *</label>
-            <input class="form-input" id="first-name" type="text" placeholder="Азиз" required>
-            <div class="form-error"></div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="last-name">Фамилия *</label>
-            <input class="form-input" id="last-name" type="text" placeholder="Мирзаев" required>
-            <div class="form-error"></div>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="phone">Телефон *</label>
-            <input class="form-input" id="phone" type="tel" placeholder="+998 90 123 45 67" required>
-            <div class="form-error"></div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="email">Email</label>
-            <input class="form-input" id="email" type="email" placeholder="email@mail.ru">
-            <div class="form-error"></div>
-          </div>
-        </div>
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="breadcrumb" data-manual="true">
+        <a href="index.html">Главная</a><span>/</span>
+        <a href="catalog.html">Каталог</a><span>/</span>
+        <span>Оформление заказа</span>
       </div>
+      <h1>ОФОРМЛЕНИЕ<br>ЗАКАЗА</h1>
+    </div>
+  </div>
 
-      <!-- Delivery -->
-      <div class="form-section">
-        <div class="form-section-title">
-          <span class="step-num">2</span>
-          Способ доставки
+  <div class="order-page">
+    <div class="order-inner">
+
+      <!-- Order Form -->
+      <form id="order-form" novalidate>
+
+        <!-- Personal Info -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <span class="step-num">1</span>
+            Личные данные
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="first-name">Имя *</label>
+              <input class="form-input" id="first-name" type="text" placeholder="Азиз" required>
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="last-name">Фамилия *</label>
+              <input class="form-input" id="last-name" type="text" placeholder="Мирзаев" required>
+              <div class="form-error"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="phone">Телефон *</label>
+              <input class="form-input" id="phone" type="tel" placeholder="+998 90 123 45 67" required>
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="email">Email</label>
+              <input class="form-input" id="email" type="email" placeholder="email@mail.ru">
+              <div class="form-error"></div>
+            </div>
+          </div>
         </div>
-        <div class="delivery-options">
-          <div class="delivery-option selected" data-price="20000" onclick="selectDelivery(this, 'delivery')">
-            <input type="radio" name="delivery" value="courier" checked>
+
+        <!-- Delivery -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <span class="step-num">2</span>
+            Способ доставки
+          </div>
+          <div class="delivery-options">
+            <div class="delivery-option selected" data-price="20000" onclick="selectDelivery(this, 'delivery')">
+              <input type="radio" name="delivery" value="courier" checked>
+                <div class="delivery-label">
+                  <strong>🚚 Курьерская доставка</strong>
+                  <span>Доставка по Ташкенту — 1-2 рабочих дня</span>
+                </div>
+                <div class="delivery-price">20 000 сум</div>
+            </div>
+            <div class="delivery-option" onclick="selectDelivery(this, 'pickup')">
+              <input type="radio" name="delivery" value="pickup" id="delivery-pickup">
               <div class="delivery-label">
-                <strong>🚚 Курьерская доставка</strong>
-                <span>Доставка по Ташкенту — 1-2 рабочих дня</span>
+                <strong>Самовывоз</strong>
+                <span id="pickup-label">Бесплатно · Выберите магазин ниже</span>
               </div>
-              <div class="delivery-price">20 000 сум</div>
-          </div>
-          <div class="delivery-option" onclick="selectDelivery(this, 'pickup')">
-            <input type="radio" name="delivery" value="pickup" id="delivery-pickup">
-            <div class="delivery-label">
-              <strong>Самовывоз</strong>
-              <span id="pickup-label">Бесплатно · Выберите магазин ниже</span>
+              <div class="delivery-price">Бесплатно</div>
+              <button type="button" onclick="event.stopPropagation();document.getElementById('store-list').classList.toggle('open')" 
+                style="font-size:0.72rem;color:var(--red);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0">
+                Выбрать магазин
+              </button>
             </div>
-            <div class="delivery-price">Бесплатно</div>
-            <button type="button" onclick="event.stopPropagation();document.getElementById('store-list').classList.toggle('open')" 
-              style="font-size:0.72rem;color:var(--red);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0">
-              Выбрать магазин
-            </button>
-          </div>
 
-          <div class="store-list" id="store-list">
-            <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);font-weight:600;padding:0.3rem 0.2rem">Ташкент</div>
+            <div class="store-list" id="store-list">
+              <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);font-weight:600;padding:0.3rem 0.2rem">Ташкент</div>
 
-            <label class="store-option"><input type="radio" name="pickup_store" value="Tashkent City Mall"><div class="store-option-info"><div class="store-option-name">Tashkent City Mall</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Eco Park"><div class="store-option-info"><div class="store-option-name">Eco Park</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Alayskiy"><div class="store-option-info"><div class="store-option-name">Alayskiy</div><div class="store-option-addr">Yahyo Gulyamov ko'chasi 7, Ташкент</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Magic City"><div class="store-option-info"><div class="store-option-name">Magic City</div><div class="store-option-addr">Bobur ko'chasi 174, Ташкент</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Atlas Chimgan"><div class="store-option-info"><div class="store-option-name">Atlas Chimgan</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="High Town Plaza"><div class="store-option-info"><div class="store-option-name">High Town Plaza</div><div class="store-option-addr">Yangi Shahar ko'chasi 67, Ташкент</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Malika"><div class="store-option-info"><div class="store-option-name">Malika</div><div class="store-option-addr">Buz Bozor ko'chasi, Ташкент</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Novza"><div class="store-option-info"><div class="store-option-name">Novza</div><div class="store-option-addr">Mukimi Street 25/1, Ташкент</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Yunusabad Gallery"><div class="store-option-info"><div class="store-option-name">Yunusabad Gallery</div><div class="store-option-addr">Юнусабад, Ташкент</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Shota Rustavely"><div class="store-option-info"><div class="store-option-name">Shota Rustavely</div><div class="store-option-addr">Shota Rustaveli ko'chasi, Ташкент</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="Scopus Mall"><div class="store-option-info"><div class="store-option-name">Scopus Mall</div><div class="store-option-addr">Чиланзар, Ташкент</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Tashkent City Mall"><div class="store-option-info"><div class="store-option-name">Tashkent City Mall</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Eco Park"><div class="store-option-info"><div class="store-option-name">Eco Park</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Alayskiy"><div class="store-option-info"><div class="store-option-name">Alayskiy</div><div class="store-option-addr">Yahyo Gulyamov ko'chasi 7, Ташкент</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Magic City"><div class="store-option-info"><div class="store-option-name">Magic City</div><div class="store-option-addr">Bobur ko'chasi 174, Ташкент</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Atlas Chimgan"><div class="store-option-info"><div class="store-option-name">Atlas Chimgan</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="High Town Plaza"><div class="store-option-info"><div class="store-option-name">High Town Plaza</div><div class="store-option-addr">Yangi Shahar ko'chasi 67, Ташкент</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Malika"><div class="store-option-info"><div class="store-option-name">Malika</div><div class="store-option-addr">Buz Bozor ko'chasi, Ташкент</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Novza"><div class="store-option-info"><div class="store-option-name">Novza</div><div class="store-option-addr">Mukimi Street 25/1, Ташкент</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Yunusabad Gallery"><div class="store-option-info"><div class="store-option-name">Yunusabad Gallery</div><div class="store-option-addr">Юнусабад, Ташкент</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Shota Rustavely"><div class="store-option-info"><div class="store-option-name">Shota Rustavely</div><div class="store-option-addr">Shota Rustaveli ko'chasi, Ташкент</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Scopus Mall"><div class="store-option-info"><div class="store-option-name">Scopus Mall</div><div class="store-option-addr">Чиланзар, Ташкент</div></div></label>
 
-            <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);font-weight:600;padding:0.6rem 0.2rem 0.3rem">Самарканд</div>
+              <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);font-weight:600;padding:0.6rem 0.2rem 0.3rem">Самарканд</div>
 
-            <label class="store-option"><input type="radio" name="pickup_store" value="Family Park Samarkand"><div class="store-option-info"><div class="store-option-name">Family Park</div><div class="store-option-addr">Narpayskaya Ulitsa 76, Самарканд</div></div></label>
-            <label class="store-option"><input type="radio" name="pickup_store" value="M. Baraka Samarkand"><div class="store-option-info"><div class="store-option-name">M. Baraka</div><div class="store-option-addr">Mir Said Baraka Street 2, Самарканд</div></div></label>
-          </div>
-          <div class="delivery-option" data-price="40000" onclick="selectDelivery(this, 'delivery')">
-            <input type="radio" name="delivery" value="express">
-            <div class="delivery-label">
-              <strong>⚡ Экспресс-доставка</strong>
-              <span>Доставка в течение 3 часов</span>
+              <label class="store-option"><input type="radio" name="pickup_store" value="Family Park Samarkand"><div class="store-option-info"><div class="store-option-name">Family Park</div><div class="store-option-addr">Narpayskaya Ulitsa 76, Самарканд</div></div></label>
+              <label class="store-option"><input type="radio" name="pickup_store" value="M. Baraka Samarkand"><div class="store-option-info"><div class="store-option-name">M. Baraka</div><div class="store-option-addr">Mir Said Baraka Street 2, Самарканд</div></div></label>
             </div>
-            <div class="delivery-price">40 000 сум</div>
+            <div class="delivery-option" data-price="40000" onclick="selectDelivery(this, 'delivery')">
+              <input type="radio" name="delivery" value="express">
+              <div class="delivery-label">
+                <strong>⚡ Экспресс-доставка</strong>
+                <span>Доставка в течение 3 часов</span>
+              </div>
+              <div class="delivery-price">40 000 сум</div>
+            </div>
           </div>
-        </div>
-        <div class="form-group" style="margin-top:1rem">
-          <label class="form-label" for="address">Адрес доставки *</label>
-          <input class="form-input" id="address" type="text" placeholder="Ташкент, Чиланзар, ул. Катартал, дом 15, кв. 3" required>
-          <div class="form-error"></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="city">Город *</label>
-            <select class="form-select form-input" id="city" required>
-              <option value="">Выберите город</option>
-              <option value="tashkent" selected>Ташкент</option>
-              <option value="samarkand">Самарканд</option>
-              <option value="bukhara">Бухара</option>
-              <option value="namangan">Наманган</option>
-              <option value="andijan">Андижан</option>
-            </select>
+          <div class="form-group" style="margin-top:1rem">
+            <label class="form-label" for="address">Адрес доставки *</label>
+            <input class="form-input" id="address" type="text" placeholder="Ташкент, Чиланзар, ул. Катартал, дом 15, кв. 3" required>
             <div class="form-error"></div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="comment">Комментарий к заказу</label>
-            <input class="form-input" id="comment" type="text" placeholder="Домофон не работает, позвоните">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="city">Город *</label>
+              <select class="form-select form-input" id="city" required>
+                <option value="">Выберите город</option>
+                <option value="tashkent" selected>Ташкент</option>
+                <option value="samarkand">Самарканд</option>
+                <option value="bukhara">Бухара</option>
+                <option value="namangan">Наманган</option>
+                <option value="andijan">Андижан</option>
+              </select>
+              <div class="form-error"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="comment">Комментарий к заказу</label>
+              <input class="form-input" id="comment" type="text" placeholder="Домофон не работает, позвоните">
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Payment -->
-      <div class="form-section">
-        <div class="form-section-title">
-          <span class="step-num">3</span>
-          Способ оплаты
-        </div>
-        <div class="payment-options">
-          <div class="pay-option selected">
-            <input type="radio" name="payment" value="cash" checked style="display:none">
-            <div class="pay-icon">💵</div>
-            <div class="pay-name">Наличными</div>
+        <!-- Payment -->
+        <div class="form-section">
+          <div class="form-section-title">
+            <span class="step-num">3</span>
+            Способ оплаты
           </div>
-          <div class="pay-option">
-            <input type="radio" name="payment" value="card" style="display:none">
-            <div class="pay-icon">💳</div>
-            <div class="pay-name">Карта / Uzcard</div>
+          <div class="payment-options">
+            <div class="pay-option selected">
+              <input type="radio" name="payment" value="cash" checked style="display:none">
+              <div class="pay-icon">💵</div>
+              <div class="pay-name">Наличными</div>
+            </div>
+            <div class="pay-option">
+              <input type="radio" name="payment" value="card" style="display:none">
+              <div class="pay-icon">💳</div>
+              <div class="pay-name">Карта / Uzcard</div>
+            </div>
+            <div class="pay-option">
+              <input type="radio" name="payment" value="click" style="display:none">
+              <div class="pay-icon">📱</div>
+              <div class="pay-name">Click / Payme</div>
+            </div>
+            <div class="pay-option">
+              <input type="radio" name="payment" value="installment" style="display:none">
+              <div class="pay-icon">📆</div>
+              <div class="pay-name">Рассрочка</div>
+            </div>
           </div>
-          <div class="pay-option">
-            <input type="radio" name="payment" value="click" style="display:none">
-            <div class="pay-icon">📱</div>
-            <div class="pay-name">Click / Payme</div>
+        </div>
+
+        <button type="submit" class="submit-order">Подтвердить заказ →</button>
+        <p style="font-size:.75rem;color:var(--gray-500);margin-top:.8rem;text-align:center">
+          Нажимая кнопку, вы соглашаетесь с <a href="#" style="color:var(--red)">условиями обработки данных</a>
+        </p>
+      </form>
+
+      <!-- Order Summary Panel -->
+      <div class="order-summary-panel">
+        <h3>ВАШ ЗАКАЗ</h3>
+
+        <!-- Товары из корзины -->
+        <div id="order-items-list">
+          <div style="color:var(--gray-500);font-size:.85rem">Загрузка...</div>
+        </div>
+
+        <hr class="order-divider">
+
+        <div class="order-totals">
+          <div class="order-total-row">
+            <span>Товары (<span id="order-qty">0</span> шт.)</span>
+            <span id="order-subtotal">0 сум</span>
           </div>
-          <div class="pay-option">
-            <input type="radio" name="payment" value="installment" style="display:none">
-            <div class="pay-icon">📆</div>
-            <div class="pay-name">Рассрочка</div>
+          <div class="order-total-row">
+            <span>Доставка</span>
+            <span id="order-delivery-price">0 сум</span>
           </div>
         </div>
-      </div>
 
-      <button type="submit" class="submit-order">Подтвердить заказ →</button>
-      <p style="font-size:.75rem;color:var(--gray-500);margin-top:.8rem;text-align:center">
-        Нажимая кнопку, вы соглашаетесь с <a href="#" style="color:var(--red)">условиями обработки данных</a>
-      </p>
-    </form>
-
-    <!-- Order Summary Panel -->
-    <div class="order-summary-panel">
-      <h3>ВАШ ЗАКАЗ</h3>
-
-      <!-- Товары из корзины -->
-      <div id="order-items-list">
-        <div style="color:var(--gray-500);font-size:.85rem">Загрузка...</div>
-      </div>
-
-      <hr class="order-divider">
-
-      <div class="order-totals">
-        <div class="order-total-row">
-          <span>Товары (<span id="order-qty">0</span> шт.)</span>
-          <span id="order-subtotal">0 сум</span>
+        <div class="order-total-final">
+          <span>ИТОГО</span>
+          <strong id="order-total-final">0 сум</strong>
+          </div>
         </div>
-        <div class="order-total-row">
-          <span>Доставка</span>
-          <span id="order-delivery-price">0 сум</span>
-        </div>
-      </div>
 
-      <div class="order-total-final">
-        <span>ИТОГО</span>
-        <strong id="order-total-final">0 сум</strong>
-        </div>
       </div>
-
-    </div>
-</div>
-
-<!-- Footer -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div>
-        <div class="footer-logo">
-          <a href="index.html">
-          <img src="logo.jpg" alt="Li-Ning" style="height:48px;width:auto;filter:invert(1);display:block">
-          </a>
-          <div style="font-size:.65rem;letter-spacing:3px;color:var(--red);margin-top:.5rem">ANYTHING IS POSSIBLE</div>
-        </div>
-        <div class="footer-tagline">Официальный дистрибьютор бренда Li Ning в Узбекистане. Спортивная одежда и обувь мирового уровня.</div>
-      </div>
-      <div class="footer-col">
-        <h4>Магазин</h4>
-        <ul>
-          <li><a href="catalog.html">Весь каталог</a></li>
-          <li><a href="catalog.html?category=shoes">Обувь</a></li>
-          <li><a href="catalog.html?category=clothing">Одежда</a></li>
-          <li><a href="sale.html">Скидки</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Информация</h4>
-        <ul>
-          <li><a href="about.html">О нас</a></li>
-          <li><a href="#">Доставка</a></li>
-          <li><a href="#">Возврат</a></li>
-          <li><a href="#">Размерная сетка</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Контакты</h4>
-        <ul>
-          <li><a href="#">Ташкент, ул. Турккургон, 10</a></li>
-          <li><a href="stores.html" onclick="trackEvent('click_stores',{location:'footer'})">Связаться с нами</a></li>
-          <li style="display:flex;gap:.8rem;margin-top:.4rem">
-            <a href="https://instagram.com/lining.st.uzbekistan/" target="_blank"
-              onclick="trackEvent('click_instagram',{location:'footer'})"
-              title="Instagram"
-              class="footer-social-icon">
-              <img src="images/instagram.png" alt="Instagram" width="32" height="32">
-            </a>
-            <a href="https://t.me/liningstuzbekistan" target="_blank"
-              onclick="trackEvent('click_telegram',{location:'footer'})"
-              title="Telegram"
-              class="footer-social-icon">
-              <img src="images/telegram.png" alt="Telegram" width="32" height="32">
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2025 Li Ning Store Tashkent. Все права защищены.</span>
-      <span><a href="privacy.html">Политика конфиденциальности</a> · <a href="#">Условия использования</a></span>
-    </div>
   </div>
-</footer>
 
-<script src="js/main.js"></script>
-<script>
-// Получаем корзину
-function getCart() {
-  try { return JSON.parse(localStorage.getItem('lining_cart') || '[]'); }
-  catch(e) { return []; }
-}
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
 
-let deliveryPrice = 20000;
+  <script src="js/main.js"></script>
+  <script>
+  // Получаем корзину
+  function getCart() {
+    try { return JSON.parse(localStorage.getItem('lining_cart') || '[]'); }
+    catch(e) { return []; }
+  }
 
-function selectDelivery(el) {
-  document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  el.querySelector('input').checked = true;
-  deliveryPrice = parseInt(el.dataset.price) || 0;
-  updateTotal();
-}
+  let deliveryPrice = 20000;
 
-function updateTotal() {
-  const items = getCart();
-  const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
-  const total = subtotal + deliveryPrice;
-
-  document.getElementById('order-subtotal').textContent = subtotal.toLocaleString('ru-RU') + ' сум';
-  document.getElementById('order-delivery-price').textContent = deliveryPrice === 0 ? 'Бесплатно' : deliveryPrice.toLocaleString('ru-RU') + ' сум';
-  document.getElementById('order-total-final').textContent = total.toLocaleString('ru-RU') + ' сум';
-  document.getElementById('order-qty').textContent = items.reduce((s, i) => s + i.qty, 0);
-}
-
-function renderOrderItems() {
-  const items = getCart();
-  const container = document.getElementById('order-items-list');
-
-  if (!container) return;
-
-  if (items.length === 0) {
-    container.innerHTML = `
-      <div style="text-align:center;padding:2rem 0;color:var(--gray-500)">
-        <div style="font-size:2rem;margin-bottom:.5rem">🛒</div>
-        <p style="font-size:.85rem">Корзина пуста</p>
-        <a href="catalog.html" style="color:var(--red);font-size:.82rem">← В каталог</a>
-      </div>`;
+  function selectDelivery(el) {
+    document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input').checked = true;
+    deliveryPrice = parseInt(el.dataset.price) || 0;
     updateTotal();
-    return;
   }
 
-  container.innerHTML = items.map(item => `
-    <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--gray-800)">
-      <div style="width:56px;height:56px;background:var(--gray-800);flex-shrink:0;overflow:hidden">
-        ${item.image
-          ? `<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`
-          : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem">👟</div>'}
-      </div>
-      <div style="flex:1">
-        <div style="font-size:.85rem;font-weight:500;color:var(--white)">${item.name}</div>
-        <div style="font-size:.72rem;color:var(--gray-500);margin-top:.15rem">
-          Размер: ${item.size} · Кол-во: ${item.qty}
-        </div>
-        <div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem">
-          <button onclick="changeQty('${item.id}','${item.size}',-1)" style="width:22px;height:22px;background:var(--gray-800);border:none;color:var(--white);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
-          <span style="font-size:.82rem;color:var(--white);min-width:16px;text-align:center">${item.qty}</span>
-          <button onclick="changeQty('${item.id}','${item.size}',1)" style="width:22px;height:22px;background:var(--gray-800);border:none;color:var(--white);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
-        </div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--white);white-space:nowrap">
-          ${(item.price * item.qty).toLocaleString('ru-RU')}
-        </div>
-        <button onclick="removeItem('${item.id}','${item.size}')" style="background:none;border:none;color:var(--gray-500);font-size:.75rem;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:color .2s" onmouseover="this.style.color='#cc0000'" onmouseout="this.style.color='var(--gray-500)'">
-          ✕ Удалить
-        </button>
-      </div>
-    </div>
-  `).join('');
+  function updateTotal() {
+    const items = getCart();
+    const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
+    const total = subtotal + deliveryPrice;
 
-  updateTotal();
-}
+    document.getElementById('order-subtotal').textContent = subtotal.toLocaleString('ru-RU') + ' сум';
+    document.getElementById('order-delivery-price').textContent = deliveryPrice === 0 ? 'Бесплатно' : deliveryPrice.toLocaleString('ru-RU') + ' сум';
+    document.getElementById('order-total-final').textContent = total.toLocaleString('ru-RU') + ' сум';
+    document.getElementById('order-qty').textContent = items.reduce((s, i) => s + i.qty, 0);
+  }
 
-function removeItem(id, size) {
-  let items = getCart();
-  items = items.filter(i => !(i.id === id && i.size === size));
-  localStorage.setItem('lining_cart', JSON.stringify(items));
-  renderOrderItems();
-}
+  function renderOrderItems() {
+    const items = getCart();
+    const container = document.getElementById('order-items-list');
 
-function changeQty(id, size, delta) {
-  let items = getCart();
-  const item = items.find(i => i.id === id && i.size === size);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) {
+    if (!container) return;
+
+    if (items.length === 0) {
+      container.innerHTML = `
+        <div style="text-align:center;padding:2rem 0;color:var(--gray-500)">
+          <div style="font-size:2rem;margin-bottom:.5rem">🛒</div>
+          <p style="font-size:.85rem">Корзина пуста</p>
+          <a href="catalog.html" style="color:var(--red);font-size:.82rem">← В каталог</a>
+        </div>`;
+      updateTotal();
+      return;
+    }
+
+    container.innerHTML = items.map(item => `
+      <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--gray-800)">
+        <div style="width:56px;height:56px;background:var(--gray-800);flex-shrink:0;overflow:hidden">
+          ${item.image
+            ? `<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`
+            : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem">👟</div>'}
+        </div>
+        <div style="flex:1">
+          <div style="font-size:.85rem;font-weight:500;color:var(--white)">${item.name}</div>
+          <div style="font-size:.72rem;color:var(--gray-500);margin-top:.15rem">
+            Размер: ${item.size} · Кол-во: ${item.qty}
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem">
+            <button onclick="changeQty('${item.id}','${item.size}',-1)" style="width:22px;height:22px;background:var(--gray-800);border:none;color:var(--white);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
+            <span style="font-size:.82rem;color:var(--white);min-width:16px;text-align:center">${item.qty}</span>
+            <button onclick="changeQty('${item.id}','${item.size}',1)" style="width:22px;height:22px;background:var(--gray-800);border:none;color:var(--white);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--white);white-space:nowrap">
+            ${(item.price * item.qty).toLocaleString('ru-RU')}
+          </div>
+          <button onclick="removeItem('${item.id}','${item.size}')" style="background:none;border:none;color:var(--gray-500);font-size:.75rem;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:color .2s" onmouseover="this.style.color='#cc0000'" onmouseout="this.style.color='var(--gray-500)'">
+            ✕ Удалить
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    updateTotal();
+  }
+
+  function removeItem(id, size) {
+    let items = getCart();
     items = items.filter(i => !(i.id === id && i.size === size));
+    localStorage.setItem('lining_cart', JSON.stringify(items));
+    renderOrderItems();
   }
-  localStorage.setItem('lining_cart', JSON.stringify(items));
-  renderOrderItems();
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderOrderItems();
-
-  // При отправке заказа очищаем корзину
-  document.querySelector('#order-form')?.addEventListener('submit', e => {
-    e.preventDefault();
-    // Валидация уже есть в main.js
-  });
-});
-</script>
-<!-- CITY MODAL -->
-<div class="city-modal-overlay" id="city-modal-overlay" onclick="closeCityModal()"></div>
-<div class="city-modal" id="city-modal">
-  <div class="city-modal-header">
-    <h2>Выберите свой город</h2>
-    <button onclick="closeCityModal()" class="city-modal-close">✕</button>
-  </div>
-  <div class="city-search-wrap">
-    <input type="text" id="city-search-input" placeholder="Поиск по городам" oninput="filterCities(this.value)">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-    </svg>
-  </div>
-  <div class="city-list" id="city-list">
-    <div class="city-region">
-      <div class="city-region-title">Популярные города</div>
-      <div class="city-grid">
-        <span class="city-item active" onclick="selectCity(this)">Ташкент</span>
-        <span class="city-item" onclick="selectCity(this)">Самарканд</span>
-        <span class="city-item" onclick="selectCity(this)">Бухара</span>
-        <span class="city-item" onclick="selectCity(this)">Наманган</span>
-        <span class="city-item" onclick="selectCity(this)">Андижан</span>
-        <span class="city-item" onclick="selectCity(this)">Фергана</span>
-      </div>
-    </div>
-    <div class="city-region">
-      <div class="city-region-title">Все города</div>
-      <div class="city-grid" id="all-cities">
-        <span class="city-item" onclick="selectCity(this)">Нукус</span>
-        <span class="city-item" onclick="selectCity(this)">Термез</span>
-        <span class="city-item" onclick="selectCity(this)">Карши</span>
-        <span class="city-item" onclick="selectCity(this)">Гулистан</span>
-        <span class="city-item" onclick="selectCity(this)">Джизак</span>
-        <span class="city-item" onclick="selectCity(this)">Навои</span>
-        <span class="city-item" onclick="selectCity(this)">Ургенч</span>
-        <span class="city-item" onclick="selectCity(this)">Хива</span>
-        <span class="city-item" onclick="selectCity(this)">Коканд</span>
-        <span class="city-item" onclick="selectCity(this)">Маргилан</span>
-        <span class="city-item" onclick="selectCity(this)">Чирчик</span>
-        <span class="city-item" onclick="selectCity(this)">Ангрен</span>
-        <span class="city-item" onclick="selectCity(this)">Алмалык</span>
-        <span class="city-item" onclick="selectCity(this)">Бекабад</span>
-        <span class="city-item" onclick="selectCity(this)">Янгиер</span>
-        <span class="city-item" onclick="selectCity(this)">Газалкент</span>
-        <span class="city-item" onclick="selectCity(this)">Шахрисабз</span>
-        <span class="city-item" onclick="selectCity(this)">Денов</span>
-        <span class="city-item" onclick="selectCity(this)">Шерабад</span>
-        <span class="city-item" onclick="selectCity(this)">Муйнак</span>
-        <span class="city-item" onclick="selectCity(this)">Тахиаташ</span>
-        <span class="city-item" onclick="selectCity(this)">Китаб</span>
-        <span class="city-item" onclick="selectCity(this)">Учкудук</span>
-        <span class="city-item" onclick="selectCity(this)">Зарафшан</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════
-     AUTH MODAL — вставить перед </body> в index.html
-     (и во все другие страницы сайта)
-     ═══════════════════════════════════════════════ -->
-
-<!-- Оверлей -->
-<div id="auth-overlay" class="auth-overlay"></div>
-
-<!-- Модал -->
-<div id="auth-modal" class="auth-modal" style="display:none">
-  <button id="auth-modal-close" class="auth-modal-close">✕</button>
-
-  <!-- Логотип -->
-  <div class="auth-logo">
-    <img src="logo.jpg" alt="Li-Ning" style="height:36px;filter:invert(0)">
-  </div>
-
-  <!-- Табы: Вход / Регистрация / Кабинет -->
-  <div class="auth-tabs">
-    <button class="auth-tab active" data-tab="login">Войти</button>
-    <button class="auth-tab" data-tab="register">Регистрация</button>
-  </div>
-
-  <!-- ── ФОРМА ВХОДА ── -->
-  <form id="auth-form-login" class="auth-form active">
-    <div class="auth-error" style="display:none"></div>
-
-    <div class="auth-field">
-      <label class="auth-label">Email</label>
-      <input id="login-email" type="email" class="auth-input" placeholder="you@example.com" required autocomplete="email">
-    </div>
-
-    <div class="auth-field">
-      <label class="auth-label">Пароль</label>
-      <input id="login-password" type="password" class="auth-input" placeholder="••••••••" required autocomplete="current-password">
-    </div>
-
-    <button type="submit" class="auth-submit">Войти</button>
-
-    <p class="auth-switch">
-      Нет аккаунта?
-      <a href="#" onclick="document.querySelector('.auth-tab[data-tab=register]').click();return false">Зарегистрироваться</a>
-    </p>
-  </form>
-
-  <!-- ── ФОРМА РЕГИСТРАЦИИ ── -->
-  <form id="auth-form-register" class="auth-form">
-    <div class="auth-error" style="display:none"></div>
-
-    <div class="auth-field">
-      <label class="auth-label">Имя</label>
-      <input id="reg-name" type="text" class="auth-input" placeholder="Ваше имя" required autocomplete="name">
-    </div>
-
-    <div class="auth-field">
-      <label class="auth-label">Email</label>
-      <input id="reg-email" type="email" class="auth-input" placeholder="you@example.com" required autocomplete="email">
-    </div>
-
-    <div class="auth-field">
-      <label class="auth-label">Пароль</label>
-      <input id="reg-password" type="password" class="auth-input" placeholder="Минимум 6 символов" required autocomplete="new-password">
-    </div>
-
-    <!-- Согласия с политикой конфиденциальности -->
-    <div class="auth-field" style="gap:0.8rem;display:flex;flex-direction:column">
-      <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer">
-        <input type="checkbox" id="consent-data" required
-          style="margin-top:3px;accent-color:var(--red);flex-shrink:0;width:16px;height:16px">
-        <span style="font-size:0.78rem;color:var(--gray-700);line-height:1.5">
-          Я даю согласие на обработку персональных данных в соответствии с Законом РУз № ЗРУ-547
-        </span>
-      </label>
-
-      <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer">
-        <input type="checkbox" id="consent-policy" required
-          style="margin-top:3px;accent-color:var(--red);flex-shrink:0;width:16px;height:16px">
-        <span style="font-size:0.78rem;color:var(--gray-700);line-height:1.5">
-          Я ознакомлен(а) с 
-          <a href="privacy.html" target="_blank" 
-            style="color:var(--red);font-weight:600;text-decoration:underline">
-            Политикой конфиденциальности
-          </a>
-          и согласен(а) с её условиями
-        </span>
-      </label>
-    </div>
-
-    <button type="submit" class="auth-submit">Зарегистрироваться</button>
-
-    <p class="auth-switch">
-      Уже есть аккаунт?
-      <a href="#" onclick="document.querySelector('.auth-tab[data-tab=login]').click();return false">Войти</a>
-    </p>
-  </form>
-
-  <!-- ── ЛИЧНЫЙ КАБИНЕТ (показывается когда вошёл) ── -->
-  <div id="auth-form-account" class="auth-form">
-    <div class="auth-account-avatar" id="auth-avatar-big">?</div>
-    <div class="auth-account-name" id="auth-account-name">Пользователь</div>
-    <div class="auth-account-email" id="auth-account-email"></div>
-
-    <div class="auth-account-links">
-      <a href="my-orders.html" class="auth-account-link">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-        Мои заказы
-      </a>
-      <a href="#" onclick="window.CartDrawer?.open();window.Auth?.closeModal();return false" class="auth-account-link">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
-        Корзина
-      </a>
-    </div>
-
-    <button id="auth-signout-btn" class="auth-signout">Выйти из аккаунта</button>
-  </div>
-</div>
-
-<script src="js/main.js"></script>
-<script>
-
-function selectDelivery(el, type) {
-  document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-  el.querySelector('input[type=radio]').checked = true;
-
-  const storeList = document.getElementById('store-list');
-  const addressInput = document.getElementById('address');
-
-  if (type === 'pickup') {
-    storeList.classList.add('open');
-  } else {
-    storeList.classList.remove('open');
-    document.querySelectorAll('input[name=pickup_store]').forEach(r => r.checked = false);
-    document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
-    document.getElementById('pickup-label').textContent = 'Бесплатно · Выберите магазин ниже';
-
-    // ── Разблокируем поле адреса ──
-    if (addressInput) {
-      addressInput.value = '';
-      addressInput.readOnly = false;
-      addressInput.style.background = '';
-      addressInput.style.color = '';
-      addressInput.style.cursor = '';
+  function changeQty(id, size, delta) {
+    let items = getCart();
+    const item = items.find(i => i.id === id && i.size === size);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) {
+      items = items.filter(i => !(i.id === id && i.size === size));
     }
+    localStorage.setItem('lining_cart', JSON.stringify(items));
+    renderOrderItems();
   }
-}
 
-document.querySelectorAll('.store-option').forEach(opt => {
-  opt.addEventListener('click', () => {
-    document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
-    opt.classList.add('selected');
+  document.addEventListener('DOMContentLoaded', () => {
+    renderOrderItems();
 
-    // Берём название и адрес выбранного магазина
-    const name = opt.querySelector('.store-option-name').textContent;
-    const addr = opt.querySelector('.store-option-addr').textContent;
-
-    // Обновляем текст в блоке самовывоза
-    document.getElementById('pickup-label').innerHTML =
-      `<strong>${name}</strong> · <span style="color:var(--gray-500);font-size:0.78rem">${addr}</span>`;
-
-    // Закрываем список
-    document.getElementById('store-list').classList.remove('open');
+    // При отправке заказа очищаем корзину
+    document.querySelector('#order-form')?.addEventListener('submit', e => {
+      e.preventDefault();
+      // Валидация уже есть в main.js
+    });
   });
-});
+  </script>
 
-document.querySelectorAll('.store-option').forEach(opt => {
-  opt.addEventListener('click', () => {
-    document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
-    opt.classList.add('selected');
+  <!-- CITY MODAL -->
+  <div id="modals-placeholder"></div>
 
-    const name = opt.querySelector('.store-option-name').textContent;
-    const addr = opt.querySelector('.store-option-addr').textContent;
+  <script src="js/main.js"></script>
+  <script>
 
-    document.getElementById('pickup-label').innerHTML =
-      `<strong>${name}</strong> · <span style="color:var(--gray-500);font-size:0.78rem">${addr}</span>`;
+  function selectDelivery(el, type) {
+    document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    el.querySelector('input[type=radio]').checked = true;
 
-    document.getElementById('store-list').classList.remove('open');
-
-    // ── Автозаполняем поле адреса ──
+    const storeList = document.getElementById('store-list');
     const addressInput = document.getElementById('address');
-    if (addressInput) {
-      addressInput.value = addr;
-      addressInput.readOnly = true;
-      addressInput.style.background = 'var(--gray-100)';
-      addressInput.style.color = 'var(--gray-500)';
-      addressInput.style.cursor = 'not-allowed';
-    }
-  });
-});
 
-</script>
+    if (type === 'pickup') {
+      storeList.classList.add('open');
+    } else {
+      storeList.classList.remove('open');
+      document.querySelectorAll('input[name=pickup_store]').forEach(r => r.checked = false);
+      document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
+      document.getElementById('pickup-label').textContent = 'Бесплатно · Выберите магазин ниже';
+
+      // ── Разблокируем поле адреса ──
+      if (addressInput) {
+        addressInput.value = '';
+        addressInput.readOnly = false;
+        addressInput.style.background = '';
+        addressInput.style.color = '';
+        addressInput.style.cursor = '';
+      }
+    }
+  }
+
+  document.querySelectorAll('.store-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+
+      // Берём название и адрес выбранного магазина
+      const name = opt.querySelector('.store-option-name').textContent;
+      const addr = opt.querySelector('.store-option-addr').textContent;
+
+      // Обновляем текст в блоке самовывоза
+      document.getElementById('pickup-label').innerHTML =
+        `<strong>${name}</strong> · <span style="color:var(--gray-500);font-size:0.78rem">${addr}</span>`;
+
+      // Закрываем список
+      document.getElementById('store-list').classList.remove('open');
+    });
+  });
+
+  document.querySelectorAll('.store-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+
+      const name = opt.querySelector('.store-option-name').textContent;
+      const addr = opt.querySelector('.store-option-addr').textContent;
+
+      document.getElementById('pickup-label').innerHTML =
+        `<strong>${name}</strong> · <span style="color:var(--gray-500);font-size:0.78rem">${addr}</span>`;
+
+      document.getElementById('store-list').classList.remove('open');
+
+      // ── Автозаполняем поле адреса ──
+      const addressInput = document.getElementById('address');
+      if (addressInput) {
+        addressInput.value = addr;
+        addressInput.readOnly = true;
+        addressInput.style.background = 'var(--gray-100)';
+        addressInput.style.color = 'var(--gray-500)';
+        addressInput.style.cursor = 'not-allowed';
+      }
+    });
+  });
+
+  </script>
 
 </body>
 </html>

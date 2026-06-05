@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <title>Избранное — Li Ning Store</title>
+  <title>Избранное — Li Ning</title>
   <link rel="stylesheet" href="css/styles.css">
+  
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8K29V08VJM"></script>
   <script>
@@ -46,397 +47,183 @@
     }
   </style>
 </head>
+
 <body>
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
 
-<div class="ticker">
-  <div class="ticker-track">
-    <span class="ticker-item">Избранные товары</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Бесплатная доставка от 500 000 сум</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Li Ning — официальный партнёр</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Избранные товары</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Бесплатная доставка от 500 000 сум</span><span class="ticker-sep">✦</span>
-    <span class="ticker-item">Li Ning — официальный партнёр</span><span class="ticker-sep">✦</span>
-  </div>
-</div>
-
-<!-- Navbar (такой же как в index.html) -->
-<nav class="navbar">
-  <div class="nav-inner">
-    <a href="index.html" class="nav-logo">
-      <img src="logo.jpg" alt="Li-Ning">
-    </a>
-    <ul class="nav-links">
-      <li><a href="index.html" class="nav-no-active">Новинки</a></li>
-      <li class="nav-item-mega"><a href="catalog.html?gender=male">Мужчины</a><div class="mega-menu"></div></li>
-      <li class="nav-item-mega"><a href="catalog.html?gender=female">Женщины</a><div class="mega-menu"></div></li>
-      <li><a href="sale.html" style="color:var(--red);font-weight:700">Распродажа</a></li>
-    </ul>
-    <div class="nav-actions">
-      <button class="nav-icon-btn" onclick="toggleSearch()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      </button>
-      <button class="nav-icon-btn" id="auth-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </button>
-      <button class="nav-icon-btn" style="color:var(--red)" onclick="openWishlist()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      </button>
-      <button class="nav-icon-btn cart-btn" style="position:relative">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span class="cart-count" style="display:none">0</span>
-      </button>
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="breadcrumb">
+        <a href="index.html">Главная</a>
+        <span>/</span>
+        <span>Избранное</span>
+      </div>
+      <h1>ИЗБРАННОЕ</h1>
     </div>
   </div>
-</nav>
 
-<div class="nav-search-bar" id="nav-search-bar">
-  <input type="text" class="nav-search" placeholder="Искать среди товаров Li-Ning..." id="nav-search-input" onkeydown="if(event.key==='Escape') toggleSearch()">
-      <button onclick="
-        const q = document.getElementById('nav-search-input').value.trim();
-        if(q) window.location.href='catalog.html?search='+encodeURIComponent(q);
-        " style="background:none;border:none;cursor:pointer;display:flex;align-items:center;padding:0">
-        <svg class="nav-search-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-      </button>
-</div>
-
-<!-- Cart Drawer -->
-<div class="cart-overlay"></div>
-<div class="cart-drawer">
-  <div class="cart-header">
-    <h2>КОРЗИНА</h2>
-    <button class="cart-close">✕</button>
-  </div>
-  <div class="cart-body"></div>
-  <div class="cart-footer">
-    <div class="cart-total"><span>Итого</span><strong>0 сум</strong></div>
-    <button class="btn-checkout" onclick="window.Auth?.requireAuth(() => window.location.href='order.html')">Оформить заказ →</button>
-  </div>
-</div>
-
-<!-- Page Header -->
-<div class="page-header">
-  <div class="page-header-inner">
-    <div class="breadcrumb">
-      <a href="index.html">Главная</a>
-      <span>/</span>
-      <span>Избранное</span>
+  <!-- Wishlist Content -->
+  <div class="wishlist-page">
+    <div id="wishlist-container">
+      <!-- Загрузка -->
+      <div style="text-align:center;padding:4rem;color:var(--gray-500)">Загрузка...</div>
     </div>
-    <h1>ИЗБРАННОЕ</h1>
   </div>
-</div>
 
-<!-- Wishlist Content -->
-<div class="wishlist-page">
-  <div id="wishlist-container">
-    <!-- Загрузка -->
-    <div style="text-align:center;padding:4rem;color:var(--gray-500)">Загрузка...</div>
-  </div>
-</div>
+  <!-- Footer -->
+  <div id="footer-placeholder"></div>
 
-<!-- Footer -->
-<!-- Footer -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div>
-        <div class="footer-logo">
-          <a href="index.html">
-          <img src="logo.jpg" alt="Li-Ning" style="height:48px;width:auto;filter:invert(1);display:block">
-          </a>
-          <div style="font-size:.65rem;letter-spacing:3px;color:var(--red);margin-top:.5rem">ANYTHING IS POSSIBLE</div>
+  <!-- Auth Modal -->
+  <div id="modals-placeholder"></div>
+
+  <script src="js/main.js"></script>
+  <script>
+  /* ── WISHLIST PAGE LOGIC ── */
+  const SB_URL_W = 'https://dgyirginrefvjsbhhooi.supabase.co';
+  const SB_KEY_W = window.SB_KEY || 'ВСТАВЬ_СВОЙ_ANON_KEY';
+
+  // Ключи localStorage
+  const WISHLIST_KEY = 'lining_wishlist';
+
+  function getWishlist() {
+    return JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
+  }
+
+  function saveWishlist(ids) {
+    localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
+  }
+
+  function removeFromWishlist(productId) {
+    const ids = getWishlist().filter(id => id !== productId);
+    saveWishlist(ids);
+    renderWishlist();
+    window.Toast?.show('Убрано из избранного', '', '');
+  }
+
+  async function renderWishlist() {
+    const container = document.getElementById('wishlist-container');
+    const user = window.Auth?.getUser();
+    if (!user) return;
+
+    container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">Загружаем...</div>';
+
+    try {
+      const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+      const token = session?.access_token || SB_KEY;
+      
+      const res = await fetch(
+        `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&select=product_id`,
+        { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
+      );
+      const data = await res.json();
+      const productIds = data.map(w => w.product_id);
+
+      if (!productIds.length) {
+        container.innerHTML = `
+          <div class="wishlist-empty">
+            <div class="wishlist-empty-icon">♡</div>
+            <div class="wishlist-empty-title">СПИСОК ПУСТ</div>
+            <div class="wishlist-empty-sub">Добавляйте понравившиеся товары нажав ♡ на карточке</div>
+            <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог</a>
+          </div>`;
+        return;
+      }
+
+      const productsRes = await fetch(
+        `${SB_URL}/rest/v1/products?id=in.(${productIds.join(',')})&is_active=eq.true`,
+        { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
+      );
+      const products = await productsRes.json();
+
+      if (!products.length) {
+        container.innerHTML = `
+          <div class="wishlist-empty">
+            <div class="wishlist-empty-icon">♡</div>
+            <div class="wishlist-empty-title">СПИСОК ПУСТ</div>
+            <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог</a>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="wishlist-header">
+          <div class="section-label">Мои желания</div>
+          <div class="section-title">ИЗБРАННОЕ</div>
+          <div class="wishlist-count">${products.length} ${products.length === 1 ? 'товар' : products.length < 5 ? 'товара' : 'товаров'}</div>
         </div>
-        <div class="footer-tagline">Официальный дистрибьютор бренда Li Ning в Узбекистане. Спортивная одежда и обувь мирового уровня.</div>
-      </div>
-      <div class="footer-col">
-        <h4>Магазин</h4>
-        <ul>
-          <li><a href="catalog.html">Весь каталог</a></li>
-          <li><a href="catalog.html?category=shoes">Обувь</a></li>
-          <li><a href="catalog.html?category=clothing">Одежда</a></li>
-          <li><a href="sale.html">Скидки</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Информация</h4>
-        <ul>
-          <li><a href="about.html">О нас</a></li>
-          <li><a href="#">Доставка</a></li>
-          <li><a href="#">Возврат</a></li>
-          <li><a href="#">Размерная сетка</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Контакты</h4>
-        <ul>
-          <li><a href="#">Ташкент, ул. Турккургон, 10</a></li>
-          <li><a href="stores.html" onclick="trackEvent('click_stores',{location:'footer'})">Связаться с нами</a></li>
-          <li style="display:flex;gap:.8rem;margin-top:.4rem">
-            <a href="https://instagram.com/lining.st.uzbekistan/" target="_blank"
-              onclick="trackEvent('click_instagram',{location:'footer'})"
-              title="Instagram"
-              class="footer-social-icon">
-              <img src="images/instagram.png" alt="Instagram" width="32" height="32">
-            </a>
-            <a href="https://t.me/liningstuzbekistan" target="_blank"
-              onclick="trackEvent('click_telegram',{location:'footer'})"
-              title="Telegram"
-              class="footer-social-icon">
-              <img src="images/telegram.png" alt="Telegram" width="32" height="32">
-            </a>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2025 Li Ning Store Tashkent. Все права защищены.</span>
-      <span><a href="privacy.html">Политика конфиденциальности</a> · <a href="#">Условия использования</a></span>
-    </div>
-  </div>
-</footer>
+        <div class="wishlist-grid">
+          ${products.map(p => {
+            const images = Array.isArray(p.images) ? p.images : [];
+            const imgHtml = images[0]
+              ? `<img src="${images[0]}" style="width:100%;height:100%;object-fit:cover">`
+              : `<span style="font-size:5rem">👟</span>`;
+            const oldPrice = p.old_price
+              ? `<span class="old-price">${p.old_price.toLocaleString('ru-RU')}</span>` : '';
+            return `
+              <div class="product-card" style="position:relative" onclick="if(!event.target.closest('button')) window.location.href='product.html?id=${p.id}'">
+                <button class="wishlist-remove-btn" onclick="event.stopPropagation();removeFromWishlist('${p.id}')" title="Убрать из избранного">♥</button>
+                <div class="product-img-wrap">
+                  <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">${imgHtml}</div>
+                  <div class="product-actions">
+                    <button class="btn-addcart" onclick="event.stopPropagation();addToCartFromWishlist('${p.id}','${p.name}',${p.price},'${images[0]||''}')">+ В корзину</button>
+                  </div>
+                </div>
+                <div class="product-info">
+                  <div class="product-brand">${p.brand || 'Li Ning'}</div>
+                  <div class="product-name">${p.name}</div>
+                  <div class="product-footer">
+                    <div class="product-price">${oldPrice}${p.price.toLocaleString('ru-RU')} сум</div>
+                    <div class="product-rating">★★★★★</div>
+                  </div>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>`;
 
-<!-- Auth Modal -->
-<div id="auth-overlay" class="auth-overlay">
+    } catch(e) {
+      console.error(e);
+      container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500)">Ошибка загрузки</div>';
+    }
+  }
 
-</div>
-<div id="auth-modal" class="auth-modal" style="display:none">
-  <button id="auth-modal-close" class="auth-modal-close">✕</button>
-  <div class="auth-logo">
-    <img src="logo.jpg" alt="Li-Ning" style="height:36px">
-  </div>
-  <div class="auth-tabs">
-    <button class="auth-tab active" data-tab="login">Войти</button>
-    <button class="auth-tab" data-tab="register">Регистрация</button>
-  </div>
-  <form id="auth-form-login" class="auth-form active">
-    <div class="auth-error" style="display:none">
-
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">Email</label>
-      <input id="login-email" type="email" class="auth-input" placeholder="you@example.com" required autocomplete="email">
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">Пароль</label>
-      <input id="login-password" type="password" class="auth-input" placeholder="••••••••" required autocomplete="current-password">
-    </div>
-    <button type="submit" class="auth-submit">Войти</button>
-    <p class="auth-switch">Нет аккаунта? 
-      <a href="#" onclick="document.querySelector('.auth-tab[data-tab=register]').click();return false">Зарегистрироваться</a>
-    </p>
-  </form>
-  <form id="auth-form-register" class="auth-form">
-    <div class="auth-error" style="display:none">
-
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">Имя</label>
-      <input id="reg-name" type="text" class="auth-input" placeholder="Ваше имя" required>
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">Email</label>
-      <input id="reg-email" type="email" class="auth-input" placeholder="you@example.com" required>
-    </div>
-    <div class="auth-field">
-      <label class="auth-label">Пароль</label>
-      <input id="reg-password" type="password" class="auth-input" placeholder="Минимум 6 символов" required>
-    </div>
-
-    <!-- Согласия с политикой конфиденциальности -->
-    <div class="auth-field" style="gap:0.8rem;display:flex;flex-direction:column">
-      <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer">
-        <input type="checkbox" id="consent-data" required
-          style="margin-top:3px;accent-color:var(--red);flex-shrink:0;width:16px;height:16px">
-        <span style="font-size:0.78rem;color:var(--gray-700);line-height:1.5">
-          Я даю согласие на обработку персональных данных в соответствии с Законом РУз № ЗРУ-547
-        </span>
-      </label>
-
-      <label style="display:flex;align-items:flex-start;gap:0.6rem;cursor:pointer">
-        <input type="checkbox" id="consent-policy" required
-          style="margin-top:3px;accent-color:var(--red);flex-shrink:0;width:16px;height:16px">
-        <span style="font-size:0.78rem;color:var(--gray-700);line-height:1.5">
-          Я ознакомлен(а) с 
-          <a href="privacy.html" target="_blank" 
-            style="color:var(--red);font-weight:600;text-decoration:underline">
-            Политикой конфиденциальности
-          </a>
-          и согласен(а) с её условиями
-        </span>
-      </label>
-    </div>    
-
-    <button type="submit" class="auth-submit">Зарегистрироваться</button>
-
-    <p class="auth-switch">Уже есть аккаунт? 
-      <a href="#" onclick="document.querySelector('.auth-tab[data-tab=login]').click();return false">Войти</a>
-    </p>
-  </form>
-  <div id="auth-form-account" class="auth-form">
-    <div class="auth-account-avatar" id="auth-avatar-big">?</div>
-    <div class="auth-account-name" id="auth-account-name">Пользователь</div>
-    <div class="auth-account-email" id="auth-account-email"></div>
-    <div class="auth-account-links">
-      <a href="my-orders.html" class="auth-account-link">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-        Мои заказы
-      </a>
-      <a href="wishlist.html" class="auth-account-link" style="color:var(--red)">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        Избранное
-      </a>
-    </div>
-    <button id="auth-signout-btn" class="auth-signout">Выйти из аккаунта</button>
-  </div>
-</div>
-
-<script src="js/main.js"></script>
-<script>
-/* ── WISHLIST PAGE LOGIC ── */
-const SB_URL_W = 'https://dgyirginrefvjsbhhooi.supabase.co';
-const SB_KEY_W = window.SB_KEY || 'ВСТАВЬ_СВОЙ_ANON_KEY';
-
-// Ключи localStorage
-const WISHLIST_KEY = 'lining_wishlist';
-
-function getWishlist() {
-  return JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
-}
-
-function saveWishlist(ids) {
-  localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
-}
-
-function removeFromWishlist(productId) {
-  const ids = getWishlist().filter(id => id !== productId);
-  saveWishlist(ids);
-  renderWishlist();
-  window.Toast?.show('Убрано из избранного', '', '');
-}
-
-async function renderWishlist() {
-  const container = document.getElementById('wishlist-container');
-  const user = window.Auth?.getUser();
-  if (!user) return;
-
-  container.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--gray-500)">Загружаем...</div>';
-
-  try {
+  async function removeFromWishlist(productId) {
+    const user = window.Auth?.getUser();
+    if (!user) return;
     const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
     const token = session?.access_token || SB_KEY;
-    
-    const res = await fetch(
-      `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&select=product_id`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
+    await fetch(
+      `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&product_id=eq.${productId}`,
+      { method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
     );
-    const data = await res.json();
-    const productIds = data.map(w => w.product_id);
-
-    if (!productIds.length) {
-      container.innerHTML = `
-        <div class="wishlist-empty">
-          <div class="wishlist-empty-icon">♡</div>
-          <div class="wishlist-empty-title">СПИСОК ПУСТ</div>
-          <div class="wishlist-empty-sub">Добавляйте понравившиеся товары нажав ♡ на карточке</div>
-          <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог</a>
-        </div>`;
-      return;
-    }
-
-    const productsRes = await fetch(
-      `${SB_URL}/rest/v1/products?id=in.(${productIds.join(',')})&is_active=eq.true`,
-      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
-    );
-    const products = await productsRes.json();
-
-    if (!products.length) {
-      container.innerHTML = `
-        <div class="wishlist-empty">
-          <div class="wishlist-empty-icon">♡</div>
-          <div class="wishlist-empty-title">СПИСОК ПУСТ</div>
-          <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог</a>
-        </div>`;
-      return;
-    }
-
-    container.innerHTML = `
-      <div class="wishlist-header">
-        <div class="section-label">Мои желания</div>
-        <div class="section-title">ИЗБРАННОЕ</div>
-        <div class="wishlist-count">${products.length} ${products.length === 1 ? 'товар' : products.length < 5 ? 'товара' : 'товаров'}</div>
-      </div>
-      <div class="wishlist-grid">
-        ${products.map(p => {
-          const images = Array.isArray(p.images) ? p.images : [];
-          const imgHtml = images[0]
-            ? `<img src="${images[0]}" style="width:100%;height:100%;object-fit:cover">`
-            : `<span style="font-size:5rem">👟</span>`;
-          const oldPrice = p.old_price
-            ? `<span class="old-price">${p.old_price.toLocaleString('ru-RU')}</span>` : '';
-          return `
-            <div class="product-card" style="position:relative" onclick="if(!event.target.closest('button')) window.location.href='product.html?id=${p.id}'">
-              <button class="wishlist-remove-btn" onclick="event.stopPropagation();removeFromWishlist('${p.id}')" title="Убрать из избранного">♥</button>
-              <div class="product-img-wrap">
-                <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">${imgHtml}</div>
-                <div class="product-actions">
-                  <button class="btn-addcart" onclick="event.stopPropagation();addToCartFromWishlist('${p.id}','${p.name}',${p.price},'${images[0]||''}')">+ В корзину</button>
-                </div>
-              </div>
-              <div class="product-info">
-                <div class="product-brand">${p.brand || 'Li Ning'}</div>
-                <div class="product-name">${p.name}</div>
-                <div class="product-footer">
-                  <div class="product-price">${oldPrice}${p.price.toLocaleString('ru-RU')} сум</div>
-                  <div class="product-rating">★★★★★</div>
-                </div>
-              </div>
-            </div>`;
-        }).join('')}
-      </div>`;
-
-  } catch(e) {
-    console.error(e);
-    container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500)">Ошибка загрузки</div>';
+    window.Toast?.show('Убрано из избранного', '', '');
+    renderWishlist();
   }
-}
-
-async function removeFromWishlist(productId) {
-  const user = window.Auth?.getUser();
-  if (!user) return;
-  const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
-  const token = session?.access_token || SB_KEY;
-  await fetch(
-    `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&product_id=eq.${productId}`,
-    { method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
-  );
-  window.Toast?.show('Убрано из избранного', '', '');
-  renderWishlist();
-}
 
 
-function addToCartFromWishlist(id, name, price, image) {
-  window.Auth?.requireAuth(() => {
-    window.Cart?.add({ id, name, price, size: '42', image, brand: 'Li Ning' });
+  function addToCartFromWishlist(id, name, price, image) {
+    window.Auth?.requireAuth(() => {
+      window.Cart?.add({ id, name, price, size: '42', image, brand: 'Li Ning' });
+    });
+  }
+
+  // При загрузке — проверяем авторизацию
+  document.addEventListener('DOMContentLoaded', () => {
+    // Ждём инициализации Auth
+    setTimeout(() => {
+      if (!window.Auth?.isLoggedIn()) {
+        // Не вошёл — открываем модал, после входа остаёмся на этой странице
+        window.Auth?.openModal('login');
+      } else {
+        renderWishlist();
+      }
+    }, 100);
+
+    // Когда пользователь войдёт — рендерим список
+    const origOnLogin = window.Auth?._onLogin;
+    document.addEventListener('auth:login', () => renderWishlist());
   });
-}
-
-// При загрузке — проверяем авторизацию
-document.addEventListener('DOMContentLoaded', () => {
-  // Ждём инициализации Auth
-  setTimeout(() => {
-    if (!window.Auth?.isLoggedIn()) {
-      // Не вошёл — открываем модал, после входа остаёмся на этой странице
-      window.Auth?.openModal('login');
-    } else {
-      renderWishlist();
-    }
-  }, 100);
-
-  // Когда пользователь войдёт — рендерим список
-  const origOnLogin = window.Auth?._onLogin;
-  document.addEventListener('auth:login', () => renderWishlist());
-});
-</script>
+  </script>
 </body>
 </html>
