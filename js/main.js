@@ -24,7 +24,7 @@ async function loadComponents() {
     el.innerHTML = await res.text();
   }
   // После загрузки всех компонентов — инициализируем навбар
-  initNavbar();
+  initMegaMenu();
   initAuthBtn();
   CartDrawer.init();
   updateCartCount();
@@ -1678,27 +1678,30 @@ function openWishlist() {
 window.openWishlist = openWishlist;
 
 /* ── MEGA MENU FIX ── */
-document.querySelectorAll('.nav-item-mega').forEach(item => {
-  let hideTimer = null;
-  const megaMenu = item.querySelector('.mega-menu');
-  if (!megaMenu) return;
+function initMegaMenu() {
+  document.querySelectorAll('.nav-item-mega').forEach(item => {
+    let hideTimer = null;
+    const megaMenu = item.querySelector('.mega-menu');
+    if (!megaMenu) return;
 
-  const show = () => {
-    clearTimeout(hideTimer);
-    megaMenu.style.display = 'grid';
-  };
+    const show = () => {
+      clearTimeout(hideTimer);
+      megaMenu.style.display = 'grid';
+    };
 
-  const hide = () => {
-    hideTimer = setTimeout(() => {
-      megaMenu.style.display = '';
-    }, 200);
-  };
+    const hide = () => {
+      hideTimer = setTimeout(() => {
+        megaMenu.style.display = '';
+      }, 200);
+    };
 
-  item.addEventListener('mouseenter', show);
-  item.addEventListener('mouseleave', hide);
-  megaMenu.addEventListener('mouseenter', show);
-  megaMenu.addEventListener('mouseleave', hide);
-});
+    item.addEventListener('mouseenter', show);
+    item.addEventListener('mouseleave', hide);
+    megaMenu.addEventListener('mouseenter', show);
+    megaMenu.addEventListener('mouseleave', hide);
+  });
+}
+window.initMegaMenu = initMegaMenu;
 
 /* ─── GOOGLE ANALYTICS EVENTS ───────────────── */
 function trackEvent(eventName, params = {}) {
