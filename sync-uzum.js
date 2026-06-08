@@ -133,10 +133,9 @@ function mapUzumToSupabase(uzumProduct) {
     });
   }
 
-  const prices = p.skuList?.map(s => s.price).filter(Boolean) || [];
-  const price = prices.length > 0 ? Math.round(Math.min(...prices)) : 0;
-  const maxPrice = prices.length > 0 ? Math.round(Math.max(...prices)) : 0;
-  const oldPrice = maxPrice > price ? maxPrice : null;
+  const price = 0;
+  const oldPrice = null;
+
 
   const skuFull = p.skuList?.[0]?.skuFullTitle || '';
   const parts = skuFull.split('-');

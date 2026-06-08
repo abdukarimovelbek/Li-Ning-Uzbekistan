@@ -213,6 +213,7 @@
     .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
 
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -242,6 +243,10 @@
     <div class="nav-item" onclick="showSection('slides')">
       <span class="icon">🖼️</span> Слайдер
     </div>
+    <div class="nav-item" onclick="showSection('prices')">
+      <span class="icon">💰</span> Цены
+    </div>
+
 
     <div class="nav-section">Система</div>
     <div class="nav-item" onclick="showSection('settings')">
@@ -561,6 +566,45 @@
       </div>
     </div>
 
+    <!-- PRICES -->
+    <div class="section" id="section-prices">
+      <div class="settings-section">
+        <h3>Загрузка цен из Excel</h3>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem">
+          Загрузите Excel-файл с артикулами и ценами. Цены обновятся по артикулу товара (например AGLW005).
+        </p>
+
+        <div style="margin-bottom:1.8rem;padding:1rem 1.2rem;background:#f9f9f9;border:1px solid var(--border);border-radius:6px">
+          <div style="font-weight:600;font-size:.88rem;margin-bottom:.6rem">Шаг 1 — Скачайте шаблон</div>
+          <button onclick="downloadPriceTemplate()" style="background:var(--text);color:#fff;border:none;padding:.55rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:1px;cursor:pointer">⬇ Скачать шаблон Excel</button>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">Колонки: <strong>Артикул</strong> · <strong>Цена (сум)</strong> · <strong>Старая цена (сум)</strong></p>
+        </div>
+
+        <div style="margin-bottom:1.8rem;padding:1rem 1.2rem;background:#f9f9f9;border:1px solid var(--border);border-radius:6px">
+          <div style="font-weight:600;font-size:.88rem;margin-bottom:.6rem">Шаг 2 — Загрузите заполненный файл</div>
+          <div style="border:2px dashed var(--border);padding:1.5rem 2rem;text-align:center;cursor:pointer;transition:border-color .2s;background:#fff;position:relative"
+               onclick="document.getElementById('price-file').click()"
+               id="price-drop-zone">
+            <input type="file" id="price-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handlePriceFile(this)">
+            <div style="font-size:2rem;margin-bottom:.3rem">📊</div>
+            <p style="font-size:.85rem;font-weight:600;margin-bottom:.2rem">Нажмите для выбора файла</p>
+            <p style="font-size:.75rem;color:var(--muted)">Поддерживается: .xlsx, .xls, .csv</p>
+          </div>
+        </div>
+
+        <div id="price-preview" style="display:none;margin-bottom:1.5rem">
+          <div style="font-weight:600;font-size:.88rem;margin-bottom:.8rem" id="price-preview-title"></div>
+          <div id="price-preview-table" style="max-height:320px;overflow-y:auto;border:1px solid var(--border)"></div>
+          <div style="margin-top:1rem;display:flex;gap:.8rem;align-items:center">
+            <button class="btn-save" id="price-apply-btn" onclick="applyPrices()">✓ Применить цены</button>
+            <button class="btn-cancel" onclick="cancelPrices()">Отмена</button>
+          </div>
+        </div>
+
+        <div id="price-results" style="display:none"></div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="section" id="section-settings">
       <div class="settings-section">
@@ -835,859 +879,980 @@
   </div>
 </div>
 
-<!-- TOAST -->
-<div class="toast-wrap" id="toast-wrap"></div>
+  <!-- TOAST -->
+  <div class="toast-wrap" id="toast-wrap"></div>
 
-<script>
-const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
-const SB_KEY = 'sb_publishable_OJBupDTCJGVIJpkoV8q3gg_mcvRddQb';
+  <script>
+    const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
+    const SB_KEY = 'sb_publishable_OJBupDTCJGVIJpkoV8q3gg_mcvRddQb';
 
-// Форматирование цены с пробелами
-function formatPrice(input) {
-  let val = input.value.replace(/\D/g, '');
-  input.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-}
-
-// Получить чистое число из поля
-function getRawPrice(id) {
-  return parseInt(document.getElementById(id).value.replace(/\s/g, '')) || 0;
-}
-
-// Auth check
-if (sessionStorage.getItem('admin_logged_in') !== 'true') {
-  window.location.href = 'login.html';
-}
-
-// Init
-const adminLogin = sessionStorage.getItem('admin_login') || 'admin';
-document.getElementById('admin-name').textContent = adminLogin;
-document.getElementById('admin-avatar').textContent = adminLogin[0].toUpperCase();
-document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('ru-RU', {weekday:'long',day:'numeric',month:'long'});
-
-function logout() {
-  sessionStorage.clear();
-  window.location.href = 'login.html';
-}
-
-// API helper
-async function sbFetch(table, method='GET', body=null, query='') {
-  const opts = {
-    method,
-    headers: {
-      'apikey': SB_KEY,
-      'Authorization': `Bearer ${SB_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': method === 'POST' ? 'return=representation' : ''
+    // Форматирование цены с пробелами
+    function formatPrice(input) {
+      let val = input.value.replace(/\D/g, '');
+      input.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
     }
-  };
-  if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(`${SB_URL}/rest/v1/${table}${query}`, opts);
-  if (!res.ok) throw new Error(await res.text());
-  const text = await res.text();
-  return text ? JSON.parse(text) : [];
-}
 
-// SECTION NAVIGATION
-function showSection(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('section-' + name).classList.add('active');
-  event.currentTarget.classList.add('active');
-
-  const titles = {dashboard:'Dashboard',products:'Товары',orders:'Заказы',promotions:'Акции',settings:'Настройки'};
-  document.getElementById('topbar-title').textContent = titles[name] || name;
-  document.getElementById('topbar-add-btn').style.display = name === 'products' ? 'block' : 'none';
-
-  if (name === 'products') loadProducts();
-  if (name === 'orders') loadOrders();
-  if (name === 'dashboard') loadDashboard();
-  if (name === 'slides') loadSlides();
-}
-
-// DASHBOARD
-async function loadDashboard() {
-  try {
-    const orders = await sbFetch('orders', 'GET', null, '?select=id,total,status,created_at&order=created_at.desc');
-    const products = await sbFetch('products', 'GET', null, '?select=id,is_active');
-
-    document.getElementById('m-orders').textContent = orders.length;
-    const newOrders = orders.filter(o => o.status === 'new');
-    if (newOrders.length > 0) {
-      document.getElementById('m-orders-new').textContent = `⚡ ${newOrders.length} новых заказа!`;
-      document.getElementById('orders-badge').textContent = newOrders.length;
-      document.getElementById('orders-badge').style.display = 'inline';
+    // Получить чистое число из поля
+    function getRawPrice(id) {
+      return parseInt(document.getElementById(id).value.replace(/\s/g, '')) || 0;
     }
-    const revenue = orders.reduce((s, o) => s + (o.total || 0), 0);
-    document.getElementById('m-revenue').textContent = revenue.toLocaleString('ru-RU');
-    document.getElementById('m-products').textContent = products.length;
-    document.getElementById('m-active-products').textContent = `${products.filter(p => p.is_active).length} активных`;
 
-    // Recent orders table
-    const tbody = document.getElementById('recent-orders-table');
-    if (orders.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty"><div class="empty-icon">🛒</div><p>Заказов пока нет</p></td></tr>';
-      return;
+    // Auth check
+    if (sessionStorage.getItem('admin_logged_in') !== 'true') {
+      window.location.href = 'login.html';
     }
-    tbody.innerHTML = orders.slice(0,8).map(o => `
-      <tr>
-        <td style="color:var(--muted);font-size:.75rem">#${o.id.slice(0,8)}</td>
-        <td>${o.customer_name || '—'}</td>
-        <td>${o.phone || '—'}</td>
-        <td style="font-weight:600">${(o.total||0).toLocaleString('ru-RU')} сум</td>
-        <td><span class="status-badge status-${o.status||'new'}">${statusLabel(o.status)}</span></td>
-        <td style="color:var(--muted);font-size:.75rem">${new Date(o.created_at).toLocaleDateString('ru-RU')}</td>
-      </tr>`).join('');
-  // График заказов по дням
-    renderOrdersChart(orders);
 
-  } catch(e) { console.error(e); }
-}
+    // Init
+    const adminLogin = sessionStorage.getItem('admin_login') || 'admin';
+    document.getElementById('admin-name').textContent = adminLogin;
+    document.getElementById('admin-avatar').textContent = adminLogin[0].toUpperCase();
+    document.getElementById('topbar-date').textContent = new Date().toLocaleDateString('ru-RU', {weekday:'long',day:'numeric',month:'long'});
 
-function renderOrdersChart(orders) {
-  const chart = document.getElementById('orders-chart');
-  if (!chart) return;
-
-  // Последние 7 дней
-  const days = [];
-  const labels = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-  const today = new Date();
-
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date(today);
-    d.setDate(today.getDate() - i);
-    days.push({
-      date: d.toISOString().split('T')[0],
-      label: labels[d.getDay()],
-      count: 0,
-      isToday: i === 0
-    });
-  }
-
-  // Считаем заказы по дням
-  orders.forEach(o => {
-    const orderDate = o.created_at?.split('T')[0];
-    const day = days.find(d => d.date === orderDate);
-    if (day) day.count++;
-  });
-
-  const maxCount = Math.max(...days.map(d => d.count), 1);
-
-  chart.innerHTML = days.map(day => `
-    <div class="bar ${day.isToday ? 'highlight' : ''}"
-         style="height:${Math.max((day.count / maxCount) * 100, 4)}%"
-         title="${day.count} заказов">
-      ${day.count > 0 ? `<span style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:.6rem;color:var(--text);font-weight:600">${day.count}</span>` : ''}
-      <span class="bar-label">${day.label}</span>
-    </div>
-  `).join('');
-}
-
-// PRODUCTS
-let allProducts = [];
-async function loadProducts() {
-  const tbody = document.getElementById('products-table-body');
-  tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
-  try {
-    allProducts = await sbFetch('products', 'GET', null, '?order=created_at.desc');
-    renderProducts(allProducts);
-  } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty">Ошибка загрузки</td></tr>';
-  }
-}
-
-function renderProducts(products) {
-  const tbody = document.getElementById('products-table-body');
-  if (products.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty"><div class="empty-icon">📦</div><p>Товаров нет. Добавьте первый!</p></td></tr>';
-    return;
-  }
-  tbody.innerHTML = products.map(p => `
-    <tr>
-      <td><div class="product-row-img">${p.images && p.images[0] ? `<img src="${p.images[0]}" style="width:44px;height:44px;object-fit:cover">` : '👟'}</div></td>
-      <td>
-        <div class="product-name-cell">${p.name}</div>
-        <div class="product-article">${p.article || ''} · ${p.brand || 'Li Ning'}</div>
-      </td>
-      <td>
-        <strong>${(p.price||0).toLocaleString('ru-RU')} сум</strong>
-        ${p.old_price ? `<br><span style="font-size:.72rem;color:var(--muted);text-decoration:line-through">${p.old_price.toLocaleString('ru-RU')}</span>` : ''}
-      </td>
-      <td>${p.category || '—'}</td>
-      <td style="font-size:.75rem">${p.sizes ? (Array.isArray(p.sizes) ? p.sizes.join(', ') : JSON.stringify(p.sizes)) : '—'}</td>
-      <td><span class="active-dot ${p.is_active ? 'dot-green' : 'dot-red'}"></span>${p.is_active ? 'Активен' : 'Скрыт'}</td>
-      <td>
-        <div style="display:flex;gap:.3rem">
-          <button class="btn-sm btn-edit" onclick="editProduct('${p.id}')">✏️</button>
-          <button class="btn-sm btn-toggle" onclick="toggleProduct('${p.id}',${p.is_active})">${p.is_active ? '🙈' : '👁'}</button>
-          <button class="btn-sm btn-delete" onclick="deleteProduct('${p.id}')">🗑</button>
-        </div>
-      </td>
-    </tr>`).join('');
-}
-
-function filterProducts() {
-  const q = document.getElementById('product-search').value.toLowerCase();
-  const cat = document.getElementById('product-cat-filter').value;
-  const status = document.getElementById('product-status-filter').value;
-  const filtered = allProducts.filter(p => {
-    const matchQ = !q || p.name?.toLowerCase().includes(q) || p.article?.toLowerCase().includes(q);
-    const matchCat = !cat || p.category === cat;
-    const matchStatus = status === '' || String(p.is_active) === status;
-    return matchQ && matchCat && matchStatus;
-  });
-  renderProducts(filtered);
-}
-
-// ADD/EDIT PRODUCT MODAL
-let currentImages = [];
-function openAddModal() {
-  document.getElementById('modal-title').textContent = 'Добавить товар';
-  document.getElementById('edit-product-id').value = '';
-  document.getElementById('f-article').value = '';
-  document.getElementById('f-brand').value = 'Li Ning';
-  document.getElementById('f-name').value = '';
-  document.getElementById('f-description').value = '';
-  document.getElementById('f-price').value = '';
-  document.getElementById('f-old-price').value = '';
-  document.getElementById('f-badge').value = '';
-  document.getElementById('f-active').value = 'true';
-  document.getElementById('f-category').value = 'shoes';
-  document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
-  document.getElementById('colors-container').innerHTML = '';
-  document.getElementById('img-previews').innerHTML = '';
-  document.getElementById('image-urls').innerHTML = '';
-  currentImages = [];
-  document.getElementById('product-modal').classList.add('open');
-}
-
-function editProduct(id) {
-  const p = allProducts.find(x => x.id === id);
-  if (!p) return;
-  document.getElementById('modal-title').textContent = 'Редактировать товар';
-  document.getElementById('edit-product-id').value = p.id;
-  document.getElementById('f-article').value = p.article || '';
-  document.getElementById('f-brand').value = p.brand || 'Li Ning';
-  document.getElementById('f-name').value = p.name || '';
-  document.getElementById('f-description').value = p.description || '';
-  document.getElementById('f-price').value = p.price || '';
-  document.getElementById('f-old-price').value = p.old_price || '';
-  document.getElementById('f-badge').value = p.badge || '';
-  document.getElementById('f-active').value = String(p.is_active);
-  document.getElementById('f-category').value = p.category || 'shoes';
-
-  // Sizes
-  document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
-  const sizes = Array.isArray(p.sizes) ? p.sizes : (p.sizes || []);
-  sizes.forEach(s => {
-    const tag = document.querySelector(`.size-tag[data-size="${s}"]`);
-    if (tag) tag.classList.add('selected');
-  });
-
-  // Colors
-  document.getElementById('colors-container').innerHTML = '';
-  const colors = Array.isArray(p.colors) ? p.colors : (p.colors || []);
-  colors.forEach(c => addColorTag(c.name, c.hex));
-
-  // Images
-  currentImages = Array.isArray(p.images) ? p.images : (p.images || []);
-  document.getElementById('image-urls').innerHTML = currentImages.map((url, i) =>
-    `<div style="display:flex;align-items:center;gap:.5rem;font-size:.78rem;background:#f5f5f5;padding:.3rem .6rem">
-      <img src="${url}" style="height:24px;width:24px;object-fit:cover">
-      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</span>
-      <button onclick="removeImage(${i})" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button>
-    </div>`).join('');
-
-  document.getElementById('product-modal').classList.add('open');
-}
-
-async function saveProduct() {
-  const id = document.getElementById('edit-product-id').value;
-  const sizes = [...document.querySelectorAll('.size-tag.selected')].map(t => t.dataset.size);
-  const colors = [...document.querySelectorAll('#colors-container .color-item')].map(el => ({
-    name: el.dataset.name, hex: el.dataset.hex
-  }));
-
-  const data = {
-    article:     document.getElementById('f-article').value.trim(),
-    brand:       document.getElementById('f-brand').value.trim(),
-    name:        document.getElementById('f-name').value.trim(),
-    description: document.getElementById('f-description').value.trim(),
-    price:     getRawPrice('f-price'),
-    old_price: getRawPrice('f-old-price') || null,
-    category:    document.getElementById('f-category').value,
-    badge:       document.getElementById('f-badge').value,
-    is_active:   document.getElementById('f-active').value === 'true',
-    sizes, colors,
-    images: currentImages
-  };
-
-  if (!data.name || !data.price) { showToast('Заполните название и цену!', true); return; }
-
-  try {
-    if (id) {
-      await sbFetch('products', 'PATCH', data, `?id=eq.${id}`);
-      showToast('Товар обновлён ✓');
-    } else {
-      await sbFetch('products', 'POST', data);
-      showToast('Товар добавлен ✓');
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
     }
-    closeModal('product-modal');
-    loadProducts();
-  } catch(e) { showToast('Ошибка сохранения', true); console.error(e); }
-}
 
-async function deleteProduct(id) {
-  if (!confirm('Удалить товар? Это действие нельзя отменить.')) return;
-  try {
-    await sbFetch('products', 'DELETE', null, `?id=eq.${id}`);
-    showToast('Товар удалён');
-    loadProducts();
-  } catch(e) { showToast('Ошибка удаления', true); }
-}
-
-async function toggleProduct(id, current) {
-  try {
-    await sbFetch('products', 'PATCH', {is_active: !current}, `?id=eq.${id}`);
-    showToast(current ? 'Товар скрыт' : 'Товар активирован');
-    loadProducts();
-  } catch(e) { showToast('Ошибка', true); }
-}
-
-// SIZES
-function toggleSize(el) { el.classList.toggle('selected'); }
-function addCustomSize() {
-  const val = document.getElementById('custom-size-input').value.trim();
-  if (!val) return;
-  const tag = document.createElement('div');
-  tag.className = 'size-tag selected';
-  tag.dataset.size = val;
-  tag.textContent = val;
-  tag.onclick = () => tag.classList.toggle('selected');
-  document.getElementById('sizes-container').appendChild(tag);
-  document.getElementById('custom-size-input').value = '';
-}
-
-// COLORS
-function addColor() {
-  const name = document.getElementById('color-name-input').value.trim() || 'Цвет';
-  const hex  = document.getElementById('color-picker').value;
-  addColorTag(name, hex);
-  document.getElementById('color-name-input').value = '';
-}
-function addColorTag(name, hex) {
-  const div = document.createElement('div');
-  div.className = 'color-item';
-  div.dataset.name = name; div.dataset.hex = hex;
-  div.innerHTML = `<div class="color-swatch" style="background:${hex}"></div><span>${name}</span><button class="color-remove" onclick="this.parentElement.remove()">✕</button>`;
-  document.getElementById('colors-container').appendChild(div);
-}
-
-// IMAGES
-async function previewImages(input) {
-  const files = [...input.files];
-  
-  for (const file of files) {
-    const fileName = Date.now() + '_' + file.name.replace(/\s/g, '_');
-    
-    // Показываем превью сразу
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = document.createElement('img');
-      img.className = 'img-preview';
-      img.src = e.target.result;
-      document.getElementById('img-previews').appendChild(img);
-    };
-    reader.readAsDataURL(file);
-
-    try {
-      showToast('Загружаем фото...');
-      
-      const res = await fetch(
-        `${SB_URL}/storage/v1/object/product-images/${fileName}`,
-        {
-          method: 'POST',
-          headers: {
-            'apikey': SB_KEY,
-            'Authorization': `Bearer ${SB_KEY}`,
-            'Content-Type': file.type
-          },
-          body: file
+    // API helper
+    async function sbFetch(table, method='GET', body=null, query='') {
+      const opts = {
+        method,
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${SB_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': method === 'POST' ? 'return=representation' : ''
         }
-      );
-
-      if (res.ok) {
-        const publicUrl = `${SB_URL}/storage/v1/object/public/product-images/${fileName}`;
-        currentImages.push(publicUrl);
-        
-        // Показываем ссылку
-        const container = document.getElementById('image-urls');
-        const i = currentImages.length - 1;
-        const div = document.createElement('div');
-        div.style = 'display:flex;align-items:center;gap:.5rem;font-size:.78rem;background:#f0fff4;padding:.3rem .6rem;border-left:3px solid #22c55e';
-        div.innerHTML = `<img src="${publicUrl}" style="height:24px;width:24px;object-fit:cover"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${publicUrl}</span><button onclick="removeImage(${i});this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button>`;
-        container.appendChild(div);
-        
-        showToast('Фото загружено ✓', false);
-      } else {
-        const err = await res.text();
-        console.error(err);
-        showToast('Ошибка загрузки фото', true);
-      }
-    } catch(e) {
-      console.error(e);
-      showToast('Ошибка: ' + e.message, true);
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(`${SB_URL}/rest/v1/${table}${query}`, opts);
+      if (!res.ok) throw new Error(await res.text());
+      const text = await res.text();
+      return text ? JSON.parse(text) : [];
     }
-  }
-}
 
-function addImageUrl() {
-  const url = document.getElementById('img-url-input').value.trim();
-  if (!url) return;
-  currentImages.push(url);
-  const container = document.getElementById('image-urls');
-  const i = currentImages.length - 1;
-  const div = document.createElement('div');
-  div.style = 'display:flex;align-items:center;gap:.5rem;font-size:.78rem;background:#f5f5f5;padding:.3rem .6rem';
-  div.innerHTML = `<img src="${url}" style="height:24px;width:24px;object-fit:cover"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</span><button onclick="removeImage(${i});this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button>`;
-  container.appendChild(div);
-  document.getElementById('img-url-input').value = '';
-}
-function removeImage(i) { currentImages.splice(i, 1); }
+    // SECTION NAVIGATION
+    function showSection(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('section-' + name).classList.add('active');
+      event.currentTarget.classList.add('active');
 
-// ORDERS
-let allOrders = [];
-async function loadOrders() {
-  const tbody = document.getElementById('orders-table-body');
-  tbody.innerHTML = '<tr><td colspan="9" class="loading">Загрузка...</td></tr>';
-  try {
-    allOrders = await sbFetch('orders', 'GET', null, '?order=created_at.desc');
-    renderOrders(allOrders);
-  } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty">Ошибка загрузки</td></tr>';
-  }
-}
+      const titles = {dashboard:'Dashboard',products:'Товары',orders:'Заказы',promotions:'Акции',slides:'Слайдер',prices:'Цены',settings:'Настройки'};
+      document.getElementById('topbar-title').textContent = titles[name] || name;
+      document.getElementById('topbar-add-btn').style.display = name === 'products' ? 'block' : 'none';
 
-function renderOrders(orders) {
-  const tbody = document.getElementById('orders-table-body');
-  if (orders.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty"><div class="empty-icon">🛒</div><p>Заказов нет</p></td></tr>';
-    return;
-  }
-  tbody.innerHTML = orders.map(o => {
-    const items = Array.isArray(o.items) ? o.items : (o.items || []);
-    
-    // Формируем список товаров с артикулом и названием
-    const itemsHtml = items.length > 0
-      ? items.map(item => `
-          <div style="font-size:.75rem;margin-bottom:.3rem;line-height:1.3">
-            <span style="color:var(--muted);font-weight:600">${item.article || '—'}</span>
-            <span style="color:var(--text)"> · ${item.name || '—'}</span>
-            <span style="color:var(--muted)"> × ${item.quantity || 1}</span>
-          </div>`).join('')
-      : '<span style="color:var(--muted)">—</span>';
+      if (name === 'products') loadProducts();
+      if (name === 'orders') loadOrders();
+      if (name === 'dashboard') loadDashboard();
+      if (name === 'slides') loadSlides();
+    }
 
-    return `<tr>
-      <td style="color:var(--muted);font-size:.72rem">#${o.id.slice(0,8)}</td>
-      <td><strong>${o.first_name || o.customer_name || '—'} ${o.last_name || ''}</strong></td>
-      <td><a href="tel:${o.phone}" style="color:var(--red)">${o.phone || '—'}</a></td>
-      <td style="font-size:.78rem">${o.address || '—'}</td>
-      <td style="min-width:200px">${itemsHtml}</td>
-      <td><strong>${(o.total||0).toLocaleString('ru-RU')} сум</strong></td>
-      <td>
-        <select onchange="updateOrderStatus('${o.id}',this.value)" style="border:1px solid var(--border);padding:.25rem .4rem;font-size:.75rem;background:#fff">
-          <option value="new" ${o.status==='new'?'selected':''}>Новый</option>
-          <option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option>
-          <option value="delivered" ${o.status==='delivered'?'selected':''}>Доставлен</option>
-          <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option>
-        </select>
-      </td>
-      <td style="color:var(--muted);font-size:.72rem">${new Date(o.created_at).toLocaleDateString('ru-RU')}</td>
-      <td><button class="btn-sm btn-delete" onclick="deleteOrder('${o.id}')">🗑</button></td>
-    </tr>`;
-  }).join('');
-}
+    // DASHBOARD
+    async function loadDashboard() {
+      try {
+        const orders = await sbFetch('orders', 'GET', null, '?select=id,total,status,created_at&order=created_at.desc');
+        const products = await sbFetch('products', 'GET', null, '?select=id,is_active');
 
-function filterOrders(status, btn) {
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  const filtered = status === 'all' ? allOrders : allOrders.filter(o => o.status === status);
-  renderOrders(filtered);
-}
+        document.getElementById('m-orders').textContent = orders.length;
+        const newOrders = orders.filter(o => o.status === 'new');
+        if (newOrders.length > 0) {
+          document.getElementById('m-orders-new').textContent = `⚡ ${newOrders.length} новых заказа!`;
+          document.getElementById('orders-badge').textContent = newOrders.length;
+          document.getElementById('orders-badge').style.display = 'inline';
+        }
+        const revenue = orders.reduce((s, o) => s + (o.total || 0), 0);
+        document.getElementById('m-revenue').textContent = revenue.toLocaleString('ru-RU');
+        document.getElementById('m-products').textContent = products.length;
+        document.getElementById('m-active-products').textContent = `${products.filter(p => p.is_active).length} активных`;
 
-async function updateOrderStatus(id, status) {
-  try {
-    await sbFetch('orders', 'PATCH', {status}, `?id=eq.${id}`);
-    showToast('Статус обновлён ✓');
+        // Recent orders table
+        const tbody = document.getElementById('recent-orders-table');
+        if (orders.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="empty"><div class="empty-icon">🛒</div><p>Заказов пока нет</p></td></tr>';
+          return;
+        }
+        tbody.innerHTML = orders.slice(0,8).map(o => `
+          <tr>
+            <td style="color:var(--muted);font-size:.75rem">#${o.id.slice(0,8)}</td>
+            <td>${o.customer_name || '—'}</td>
+            <td>${o.phone || '—'}</td>
+            <td style="font-weight:600">${(o.total||0).toLocaleString('ru-RU')} сум</td>
+            <td><span class="status-badge status-${o.status||'new'}">${statusLabel(o.status)}</span></td>
+            <td style="color:var(--muted);font-size:.75rem">${new Date(o.created_at).toLocaleDateString('ru-RU')}</td>
+          </tr>`).join('');
+      // График заказов по дням
+        renderOrdersChart(orders);
+
+      } catch(e) { console.error(e); }
+    }
+
+    function renderOrdersChart(orders) {
+      const chart = document.getElementById('orders-chart');
+      if (!chart) return;
+
+      // Последние 7 дней
+      const days = [];
+      const labels = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+      const today = new Date();
+
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        days.push({
+          date: d.toISOString().split('T')[0],
+          label: labels[d.getDay()],
+          count: 0,
+          isToday: i === 0
+        });
+      }
+
+      // Считаем заказы по дням
+      orders.forEach(o => {
+        const orderDate = o.created_at?.split('T')[0];
+        const day = days.find(d => d.date === orderDate);
+        if (day) day.count++;
+      });
+
+      const maxCount = Math.max(...days.map(d => d.count), 1);
+
+      chart.innerHTML = days.map(day => `
+        <div class="bar ${day.isToday ? 'highlight' : ''}"
+            style="height:${Math.max((day.count / maxCount) * 100, 4)}%"
+            title="${day.count} заказов">
+          ${day.count > 0 ? `<span style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:.6rem;color:var(--text);font-weight:600">${day.count}</span>` : ''}
+          <span class="bar-label">${day.label}</span>
+        </div>
+      `).join('');
+    }
+
+    // PRODUCTS
+    let allProducts = [];
+    async function loadProducts() {
+      const tbody = document.getElementById('products-table-body');
+      tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
+      try {
+        allProducts = await sbFetch('products', 'GET', null, '?order=created_at.desc');
+        renderProducts(allProducts);
+      } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">Ошибка загрузки</td></tr>';
+      }
+    }
+
+    function renderProducts(products) {
+      const tbody = document.getElementById('products-table-body');
+      if (products.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty"><div class="empty-icon">📦</div><p>Товаров нет. Добавьте первый!</p></td></tr>';
+        return;
+      }
+      tbody.innerHTML = products.map(p => `
+        <tr>
+          <td><div class="product-row-img">${p.images && p.images[0] ? `<img src="${p.images[0]}" style="width:44px;height:44px;object-fit:cover">` : '👟'}</div></td>
+          <td>
+            <div class="product-name-cell">${p.name}</div>
+            <div class="product-article">${p.article || ''} · ${p.brand || 'Li Ning'}</div>
+          </td>
+          <td>
+            <strong>${(p.price||0).toLocaleString('ru-RU')} сум</strong>
+            ${p.old_price ? `<br><span style="font-size:.72rem;color:var(--muted);text-decoration:line-through">${p.old_price.toLocaleString('ru-RU')}</span>` : ''}
+          </td>
+          <td>${p.category || '—'}</td>
+          <td style="font-size:.75rem">${p.sizes ? (Array.isArray(p.sizes) ? p.sizes.join(', ') : JSON.stringify(p.sizes)) : '—'}</td>
+          <td><span class="active-dot ${p.is_active ? 'dot-green' : 'dot-red'}"></span>${p.is_active ? 'Активен' : 'Скрыт'}</td>
+          <td>
+            <div style="display:flex;gap:.3rem">
+              <button class="btn-sm btn-edit" onclick="editProduct('${p.id}')">✏️</button>
+              <button class="btn-sm btn-toggle" onclick="toggleProduct('${p.id}',${p.is_active})">${p.is_active ? '🙈' : '👁'}</button>
+              <button class="btn-sm btn-delete" onclick="deleteProduct('${p.id}')">🗑</button>
+            </div>
+          </td>
+        </tr>`).join('');
+    }
+
+    function filterProducts() {
+      const q = document.getElementById('product-search').value.toLowerCase();
+      const cat = document.getElementById('product-cat-filter').value;
+      const status = document.getElementById('product-status-filter').value;
+      const filtered = allProducts.filter(p => {
+        const matchQ = !q || p.name?.toLowerCase().includes(q) || p.article?.toLowerCase().includes(q);
+        const matchCat = !cat || p.category === cat;
+        const matchStatus = status === '' || String(p.is_active) === status;
+        return matchQ && matchCat && matchStatus;
+      });
+      renderProducts(filtered);
+    }
+
+    // ADD/EDIT PRODUCT MODAL
+    let currentImages = [];
+    function openAddModal() {
+      document.getElementById('modal-title').textContent = 'Добавить товар';
+      document.getElementById('edit-product-id').value = '';
+      document.getElementById('f-article').value = '';
+      document.getElementById('f-brand').value = 'Li Ning';
+      document.getElementById('f-name').value = '';
+      document.getElementById('f-description').value = '';
+      document.getElementById('f-price').value = '';
+      document.getElementById('f-old-price').value = '';
+      document.getElementById('f-badge').value = '';
+      document.getElementById('f-active').value = 'true';
+      document.getElementById('f-category').value = 'shoes';
+      document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
+      document.getElementById('colors-container').innerHTML = '';
+      document.getElementById('img-previews').innerHTML = '';
+      document.getElementById('image-urls').innerHTML = '';
+      currentImages = [];
+      document.getElementById('product-modal').classList.add('open');
+    }
+
+    function editProduct(id) {
+      const p = allProducts.find(x => x.id === id);
+      if (!p) return;
+      document.getElementById('modal-title').textContent = 'Редактировать товар';
+      document.getElementById('edit-product-id').value = p.id;
+      document.getElementById('f-article').value = p.article || '';
+      document.getElementById('f-brand').value = p.brand || 'Li Ning';
+      document.getElementById('f-name').value = p.name || '';
+      document.getElementById('f-description').value = p.description || '';
+      document.getElementById('f-price').value = p.price || '';
+      document.getElementById('f-old-price').value = p.old_price || '';
+      document.getElementById('f-badge').value = p.badge || '';
+      document.getElementById('f-active').value = String(p.is_active);
+      document.getElementById('f-category').value = p.category || 'shoes';
+
+      // Sizes
+      document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
+      const sizes = Array.isArray(p.sizes) ? p.sizes : (p.sizes || []);
+      sizes.forEach(s => {
+        const tag = document.querySelector(`.size-tag[data-size="${s}"]`);
+        if (tag) tag.classList.add('selected');
+      });
+
+      // Colors
+      document.getElementById('colors-container').innerHTML = '';
+      const colors = Array.isArray(p.colors) ? p.colors : (p.colors || []);
+      colors.forEach(c => addColorTag(c.name, c.hex));
+
+      // Images
+      currentImages = Array.isArray(p.images) ? p.images : (p.images || []);
+      document.getElementById('image-urls').innerHTML = currentImages.map((url, i) =>
+        `<div style="display:flex;align-items:center;gap:.5rem;font-size:.78rem;background:#f5f5f5;padding:.3rem .6rem">
+          <img src="${url}" style="height:24px;width:24px;object-fit:cover">
+          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</span>
+          <button onclick="removeImage(${i})" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button>
+        </div>`).join('');
+
+      document.getElementById('product-modal').classList.add('open');
+    }
+
+    async function saveProduct() {
+      const id = document.getElementById('edit-product-id').value;
+      const sizes = [...document.querySelectorAll('.size-tag.selected')].map(t => t.dataset.size);
+      const colors = [...document.querySelectorAll('#colors-container .color-item')].map(el => ({
+        name: el.dataset.name, hex: el.dataset.hex
+      }));
+
+      const data = {
+        article:     document.getElementById('f-article').value.trim(),
+        brand:       document.getElementById('f-brand').value.trim(),
+        name:        document.getElementById('f-name').value.trim(),
+        description: document.getElementById('f-description').value.trim(),
+        price:     getRawPrice('f-price'),
+        old_price: getRawPrice('f-old-price') || null,
+        category:    document.getElementById('f-category').value,
+        badge:       document.getElementById('f-badge').value,
+        is_active:   document.getElementById('f-active').value === 'true',
+        sizes, colors,
+        images: currentImages
+      };
+
+      if (!data.name || !data.price) { showToast('Заполните название и цену!', true); return; }
+
+      try {
+        if (id) {
+          await sbFetch('products', 'PATCH', data, `?id=eq.${id}`);
+          showToast('Товар обновлён ✓');
+        } else {
+          await sbFetch('products', 'POST', data);
+          showToast('Товар добавлен ✓');
+        }
+        closeModal('product-modal');
+        loadProducts();
+      } catch(e) { showToast('Ошибка сохранения', true); console.error(e); }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('Удалить товар? Это действие нельзя отменить.')) return;
+      try {
+        await sbFetch('products', 'DELETE', null, `?id=eq.${id}`);
+        showToast('Товар удалён');
+        loadProducts();
+      } catch(e) { showToast('Ошибка удаления', true); }
+    }
+
+    async function toggleProduct(id, current) {
+      try {
+        await sbFetch('products', 'PATCH', {is_active: !current}, `?id=eq.${id}`);
+        showToast(current ? 'Товар скрыт' : 'Товар активирован');
+        loadProducts();
+      } catch(e) { showToast('Ошибка', true); }
+    }
+
+    // SIZES
+    function toggleSize(el) { el.classList.toggle('selected'); }
+    function addCustomSize() {
+      const val = document.getElementById('custom-size-input').value.trim();
+      if (!val) return;
+      const tag = document.createElement('div');
+      tag.className = 'size-tag selected';
+      tag.dataset.size = val;
+      tag.textContent = val;
+      tag.onclick = () => tag.classList.toggle('selected');
+      document.getElementById('sizes-container').appendChild(tag);
+      document.getElementById('custom-size-input').value = '';
+    }
+
+    // COLORS
+    function addColor() {
+      const name = document.getElementById('color-name-input').value.trim() || 'Цвет';
+      const hex  = document.getElementById('color-picker').value;
+      addColorTag(name, hex);
+      document.getElementById('color-name-input').value = '';
+    }
+    function addColorTag(name, hex) {
+      const div = document.createElement('div');
+      div.className = 'color-item';
+      div.dataset.name = name; div.dataset.hex = hex;
+      div.innerHTML = `<div class="color-swatch" style="background:${hex}"></div><span>${name}</span><button class="color-remove" onclick="this.parentElement.remove()">✕</button>`;
+      document.getElementById('colors-container').appendChild(div);
+    }
+
+    // IMAGES
+    async function previewImages(input) {
+      const files = [...input.files];
+      
+      for (const file of files) {
+        const fileName = Date.now() + '_' + file.name.replace(/\s/g, '_');
+        
+        // Показываем превью сразу
+        const reader = new FileReader();
+        reader.onload = e => {
+          const img = document.createElement('img');
+          img.className = 'img-preview';
+          img.src = e.target.result;
+          document.getElementById('img-previews').appendChild(img);
+        };
+        reader.readAsDataURL(file);
+
+        try {
+          showToast('Загружаем фото...');
+          
+          const res = await fetch(
+            `${SB_URL}/storage/v1/object/product-images/${fileName}`,
+            {
+              method: 'POST',
+              headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${SB_KEY}`,
+                'Content-Type': file.type
+              },
+              body: file
+            }
+          );
+
+          if (res.ok) {
+            const publicUrl = `${SB_URL}/storage/v1/object/public/product-images/${fileName}`;
+            currentImages.push(publicUrl);
+            
+            // Показываем ссылку
+            const container = document.getElementById('image-urls');
+            const i = currentImages.length - 1;
+            const div = document.createElement('div');
+            div.style = 'display:flex;align-items:center;gap:.5rem;font-size:.78rem;background:#f0fff4;padding:.3rem .6rem;border-left:3px solid #22c55e';
+            div.innerHTML = `<img src="${publicUrl}" style="height:24px;width:24px;object-fit:cover"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${publicUrl}</span><button onclick="removeImage(${i});this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button>`;
+            container.appendChild(div);
+            
+            showToast('Фото загружено ✓', false);
+          } else {
+            const err = await res.text();
+            console.error(err);
+            showToast('Ошибка загрузки фото', true);
+          }
+        } catch(e) {
+          console.error(e);
+          showToast('Ошибка: ' + e.message, true);
+        }
+      }
+    }
+
+    function addImageUrl() {
+      const url = document.getElementById('img-url-input').value.trim();
+      if (!url) return;
+      currentImages.push(url);
+      const container = document.getElementById('image-urls');
+      const i = currentImages.length - 1;
+      const div = document.createElement('div');
+      div.style = 'display:flex;align-items:center;gap:.5rem;font-size:.78rem;background:#f5f5f5;padding:.3rem .6rem';
+      div.innerHTML = `<img src="${url}" style="height:24px;width:24px;object-fit:cover"><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</span><button onclick="removeImage(${i});this.parentElement.remove()" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button>`;
+      container.appendChild(div);
+      document.getElementById('img-url-input').value = '';
+    }
+    function removeImage(i) { currentImages.splice(i, 1); }
+
+    // ORDERS
+    let allOrders = [];
+    async function loadOrders() {
+      const tbody = document.getElementById('orders-table-body');
+      tbody.innerHTML = '<tr><td colspan="9" class="loading">Загрузка...</td></tr>';
+      try {
+        allOrders = await sbFetch('orders', 'GET', null, '?order=created_at.desc');
+        renderOrders(allOrders);
+      } catch(e) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty">Ошибка загрузки</td></tr>';
+      }
+    }
+
+    function renderOrders(orders) {
+      const tbody = document.getElementById('orders-table-body');
+      if (orders.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="empty"><div class="empty-icon">🛒</div><p>Заказов нет</p></td></tr>';
+        return;
+      }
+      tbody.innerHTML = orders.map(o => {
+        const items = Array.isArray(o.items) ? o.items : (o.items || []);
+        
+        // Формируем список товаров с артикулом и названием
+        const itemsHtml = items.length > 0
+          ? items.map(item => `
+              <div style="font-size:.75rem;margin-bottom:.3rem;line-height:1.3">
+                <span style="color:var(--muted);font-weight:600">${item.article || '—'}</span>
+                <span style="color:var(--text)"> · ${item.name || '—'}</span>
+                <span style="color:var(--muted)"> × ${item.quantity || 1}</span>
+              </div>`).join('')
+          : '<span style="color:var(--muted)">—</span>';
+
+        return `<tr>
+          <td style="color:var(--muted);font-size:.72rem">#${o.id.slice(0,8)}</td>
+          <td><strong>${o.first_name || o.customer_name || '—'} ${o.last_name || ''}</strong></td>
+          <td><a href="tel:${o.phone}" style="color:var(--red)">${o.phone || '—'}</a></td>
+          <td style="font-size:.78rem">${o.address || '—'}</td>
+          <td style="min-width:200px">${itemsHtml}</td>
+          <td><strong>${(o.total||0).toLocaleString('ru-RU')} сум</strong></td>
+          <td>
+            <select onchange="updateOrderStatus('${o.id}',this.value)" style="border:1px solid var(--border);padding:.25rem .4rem;font-size:.75rem;background:#fff">
+              <option value="new" ${o.status==='new'?'selected':''}>Новый</option>
+              <option value="confirmed" ${o.status==='confirmed'?'selected':''}>Подтверждён</option>
+              <option value="delivered" ${o.status==='delivered'?'selected':''}>Доставлен</option>
+              <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Отменён</option>
+            </select>
+          </td>
+          <td style="color:var(--muted);font-size:.72rem">${new Date(o.created_at).toLocaleDateString('ru-RU')}</td>
+          <td><button class="btn-sm btn-delete" onclick="deleteOrder('${o.id}')">🗑</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    function filterOrders(status, btn) {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+      const filtered = status === 'all' ? allOrders : allOrders.filter(o => o.status === status);
+      renderOrders(filtered);
+    }
+
+    async function updateOrderStatus(id, status) {
+      try {
+        await sbFetch('orders', 'PATCH', {status}, `?id=eq.${id}`);
+        showToast('Статус обновлён ✓');
+        loadDashboard();
+      } catch(e) { showToast('Ошибка', true); }
+    }
+
+    async function deleteOrder(id) {
+      if (!confirm('Удалить заказ?')) return;
+      try {
+        await sbFetch('orders', 'DELETE', null, `?id=eq.${id}`);
+        showToast('Заказ удалён');
+        loadOrders();
+      } catch(e) { showToast('Ошибка', true); }
+    }
+
+    // PROMOTIONS
+    function openPromoModal() { document.getElementById('promo-modal').classList.add('open'); }
+    async function savePromo() {
+      const data = {
+        name: document.getElementById('p-name').value,
+        type: document.getElementById('p-type').value,
+        discount: parseInt(document.getElementById('p-discount').value) || null,
+        starts_at: document.getElementById('p-start').value || null,
+        ends_at: document.getElementById('p-end').value || null,
+        is_active: true
+      };
+      if (!data.name) { showToast('Введите название акции', true); return; }
+      try {
+        await sbFetch('promotions', 'POST', data);
+        showToast('Акция создана ✓');
+        closeModal('promo-modal');
+      } catch(e) { showToast('Ошибка', true); }
+    }
+
+    function togglePromo(btn) {
+      const card = btn.closest('.promo-card');
+      const badge = card.querySelector('.promo-active');
+      const isOn = badge.classList.contains('promo-on');
+      badge.classList.toggle('promo-on', !isOn);
+      badge.classList.toggle('promo-off', isOn);
+      badge.textContent = isOn ? 'Выключена' : 'Активна';
+      btn.textContent = isOn ? 'Включить' : 'Выключить';
+      showToast(isOn ? 'Акция выключена' : 'Акция включена ✓');
+    }
+
+    // SETTINGS
+    async function saveSettings() {
+      const login    = document.getElementById('settings-login').value.trim();
+      const password = document.getElementById('settings-password').value.trim();
+      if (!login) { showToast('Введите логин', true); return; }
+      try {
+        const data = {login};
+        if (password) data.password = password;
+        await sbFetch('admins', 'PATCH', data, `?login=eq.${adminLogin}`);
+        sessionStorage.setItem('admin_login', login);
+        showToast('Настройки сохранены ✓');
+      } catch(e) { showToast('Ошибка сохранения', true); }
+    }
+
+    // MODAL HELPERS
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-overlay').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
+
+    // STATUS LABEL
+    function statusLabel(s) {
+      return {new:'Новый',confirmed:'Подтверждён',delivered:'Доставлен',cancelled:'Отменён'}[s] || s;
+    }
+
+    // TOAST
+    function showToast(msg, error=false) {
+      const wrap = document.getElementById('toast-wrap');
+      const t = document.createElement('div');
+      t.className = 'toast' + (error ? ' error' : '');
+      t.textContent = msg;
+      wrap.appendChild(t);
+      requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3000);
+    }
+
+    // LOAD INITIAL
     loadDashboard();
-  } catch(e) { showToast('Ошибка', true); }
-}
 
-async function deleteOrder(id) {
-  if (!confirm('Удалить заказ?')) return;
-  try {
-    await sbFetch('orders', 'DELETE', null, `?id=eq.${id}`);
-    showToast('Заказ удалён');
-    loadOrders();
-  } catch(e) { showToast('Ошибка', true); }
-}
-
-// PROMOTIONS
-function openPromoModal() { document.getElementById('promo-modal').classList.add('open'); }
-async function savePromo() {
-  const data = {
-    name: document.getElementById('p-name').value,
-    type: document.getElementById('p-type').value,
-    discount: parseInt(document.getElementById('p-discount').value) || null,
-    starts_at: document.getElementById('p-start').value || null,
-    ends_at: document.getElementById('p-end').value || null,
-    is_active: true
-  };
-  if (!data.name) { showToast('Введите название акции', true); return; }
-  try {
-    await sbFetch('promotions', 'POST', data);
-    showToast('Акция создана ✓');
-    closeModal('promo-modal');
-  } catch(e) { showToast('Ошибка', true); }
-}
-
-function togglePromo(btn) {
-  const card = btn.closest('.promo-card');
-  const badge = card.querySelector('.promo-active');
-  const isOn = badge.classList.contains('promo-on');
-  badge.classList.toggle('promo-on', !isOn);
-  badge.classList.toggle('promo-off', isOn);
-  badge.textContent = isOn ? 'Выключена' : 'Активна';
-  btn.textContent = isOn ? 'Включить' : 'Выключить';
-  showToast(isOn ? 'Акция выключена' : 'Акция включена ✓');
-}
-
-// SETTINGS
-async function saveSettings() {
-  const login    = document.getElementById('settings-login').value.trim();
-  const password = document.getElementById('settings-password').value.trim();
-  if (!login) { showToast('Введите логин', true); return; }
-  try {
-    const data = {login};
-    if (password) data.password = password;
-    await sbFetch('admins', 'PATCH', data, `?login=eq.${adminLogin}`);
-    sessionStorage.setItem('admin_login', login);
-    showToast('Настройки сохранены ✓');
-  } catch(e) { showToast('Ошибка сохранения', true); }
-}
-
-// MODAL HELPERS
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-});
-
-// STATUS LABEL
-function statusLabel(s) {
-  return {new:'Новый',confirmed:'Подтверждён',delivered:'Доставлен',cancelled:'Отменён'}[s] || s;
-}
-
-// TOAST
-function showToast(msg, error=false) {
-  const wrap = document.getElementById('toast-wrap');
-  const t = document.createElement('div');
-  t.className = 'toast' + (error ? ' error' : '');
-  t.textContent = msg;
-  wrap.appendChild(t);
-  requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
-  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3000);
-}
-
-// LOAD INITIAL
-loadDashboard();
-
-/* ─── SLIDES MANAGEMENT ─────────────────────── */
-async function loadSlides() {
-  const tbody = document.getElementById('slides-table-body');
-  if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
-  try {
-    const slides = await sbFetch('slides', 'GET', null, '?order=sort_order.asc');
-    if (!slides.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty">Слайдов нет</td></tr>';
-      return;
+    /* ─── SLIDES MANAGEMENT ─────────────────────── */
+    async function loadSlides() {
+      const tbody = document.getElementById('slides-table-body');
+      if (!tbody) return;
+      tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
+      try {
+        const slides = await sbFetch('slides', 'GET', null, '?order=sort_order.asc');
+        if (!slides.length) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty">Слайдов нет</td></tr>';
+          return;
+        }
+        tbody.innerHTML = slides.map(s => `
+          <tr>
+            <td><div style="width:40px;height:40px;background:${s.bg_color};border-radius:4px;${s.bg_image?`background-image:url(${s.bg_image});background-size:cover`:''}""></div></td>
+            <td><strong>${s.title||'—'}</strong></td>
+            <td style="font-size:.78rem;color:var(--muted)">${s.subtitle||'—'}</td>
+            <td style="font-size:.78rem">${s.button_text||'—'}</td>
+            <td style="text-align:center">${s.sort_order}</td>
+            <td><span class="active-dot ${s.is_active?'dot-green':'dot-red'}"></span>${s.is_active?'Активен':'Скрыт'}</td>
+            <td>
+              <div style="display:flex;gap:.3rem">
+                <button class="btn-sm btn-edit" onclick="editSlide('${s.id}')">✏️</button>
+                <button class="btn-sm btn-delete" onclick="deleteSlide('${s.id}')">🗑</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      } catch(e) { console.error(e); }
     }
-    tbody.innerHTML = slides.map(s => `
-      <tr>
-        <td><div style="width:40px;height:40px;background:${s.bg_color};border-radius:4px;${s.bg_image?`background-image:url(${s.bg_image});background-size:cover`:''}""></div></td>
-        <td><strong>${s.title||'—'}</strong></td>
-        <td style="font-size:.78rem;color:var(--muted)">${s.subtitle||'—'}</td>
-        <td style="font-size:.78rem">${s.button_text||'—'}</td>
-        <td style="text-align:center">${s.sort_order}</td>
-        <td><span class="active-dot ${s.is_active?'dot-green':'dot-red'}"></span>${s.is_active?'Активен':'Скрыт'}</td>
-        <td>
-          <div style="display:flex;gap:.3rem">
-            <button class="btn-sm btn-edit" onclick="editSlide('${s.id}')">✏️</button>
-            <button class="btn-sm btn-delete" onclick="deleteSlide('${s.id}')">🗑</button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
-  } catch(e) { console.error(e); }
-}
 
-let allSlides = [];
+    let allSlides = [];
 
-function slideClear() {
-  document.getElementById('slide-file').value = '';
-  document.getElementById('slide-bg-image').value = '';
-  document.getElementById('slide-ph').style.display = 'block';
-  document.getElementById('slide-prev').style.display = 'none';
-  document.getElementById('slide-prog').style.display = 'none';
-  document.getElementById('slide-prog-bar').style.width = '0%';
-  document.getElementById('slide-drop-zone').style.borderColor = 'var(--border)';
-}
-
-function slideOnDrop(e) {
-  e.preventDefault();
-  document.getElementById('slide-drop-zone').style.borderColor = 'var(--border)';
-  const f = e.dataTransfer.files[0];
-  if (f && f.type.startsWith('image/')) slideUpload(f);
-  else showToast('Выберите изображение', true);
-}
-
-async function slideUpload(file) {
-  // Показываем превью сразу
-  const reader = new FileReader();
-  reader.onload = e => {
-    document.getElementById('slide-prev-img').src = e.target.result;
-    document.getElementById('slide-prev-name').textContent = file.name;
-    document.getElementById('slide-ph').style.display = 'none';
-    document.getElementById('slide-prev').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
-
-  // Прогресс
-  document.getElementById('slide-prog').style.display = 'block';
-  document.getElementById('slide-prog-bar').style.width = '30%';
-  document.getElementById('slide-save-btn').disabled = true;
-
-  try {
-    const ext = file.name.split('.').pop();
-    const name = `slides/${Date.now()}.${ext}`;
-    const res = await fetch(`${SB_URL}/storage/v1/object/product-images/${name}`, {
-      method: 'POST',
-      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': file.type, 'x-upsert': 'true' },
-      body: file
-    });
-    document.getElementById('slide-prog-bar').style.width = '90%';
-    if (res.ok) {
-      const url = `${SB_URL}/storage/v1/object/public/product-images/${name}`;
-      document.getElementById('slide-bg-image').value = url;
-      document.getElementById('slide-prev-img').src = url;
-      document.getElementById('slide-prog-bar').style.width = '100%';
-      document.getElementById('slide-prog-txt').textContent = '✓ Загружено';
-      setTimeout(() => { document.getElementById('slide-prog').style.display = 'none'; }, 1500);
-      showToast('Фото загружено ✓');
-    } else {
-      showToast('Ошибка загрузки фото', true);
+    function slideClear() {
+      document.getElementById('slide-file').value = '';
+      document.getElementById('slide-bg-image').value = '';
+      document.getElementById('slide-ph').style.display = 'block';
+      document.getElementById('slide-prev').style.display = 'none';
       document.getElementById('slide-prog').style.display = 'none';
+      document.getElementById('slide-prog-bar').style.width = '0%';
+      document.getElementById('slide-drop-zone').style.borderColor = 'var(--border)';
     }
-  } catch(e) {
-    showToast('Ошибка: ' + e.message, true);
-    document.getElementById('slide-prog').style.display = 'none';
-  }
-  document.getElementById('slide-save-btn').disabled = false;
-}
 
-function openSlideModal() {
-  document.getElementById('slide-modal-title').textContent = 'Добавить слайд';
-  document.getElementById('slide-id').value = '';
-  document.getElementById('slide-title').value = '';
-  document.getElementById('slide-subtitle').value = '';
-  document.getElementById('slide-btn-text').value = '';
-  document.getElementById('slide-btn-link').value = '';
-  document.getElementById('slide-order').value = '1';
-  document.getElementById('slide-active').value = 'true';
-  slideClear();
-  document.getElementById('slide-modal').classList.add('open');
-}
-
-async function editSlide(id) {
-  try {
-    const data = await sbFetch('slides', 'GET', null, `?id=eq.${id}`);
-    const s = data[0];
-    document.getElementById('slide-modal-title').textContent = 'Редактировать слайд';
-    document.getElementById('slide-id').value = s.id;
-    document.getElementById('slide-title').value = s.title || '';
-    document.getElementById('slide-subtitle').value = s.subtitle || '';
-    document.getElementById('slide-btn-text').value = s.button_text || '';
-    document.getElementById('slide-btn-link').value = s.button_link || '';
-    document.getElementById('slide-order').value = s.sort_order || 1;
-    document.getElementById('slide-active').value = String(s.is_active);
-    // Показываем текущее фото
-    slideClear();
-    if (s.bg_image) {
-      document.getElementById('slide-bg-image').value = s.bg_image;
-      document.getElementById('slide-prev-img').src = s.bg_image;
-      document.getElementById('slide-prev-name').textContent = 'Текущее фото';
-      document.getElementById('slide-ph').style.display = 'none';
-      document.getElementById('slide-prev').style.display = 'block';
+    function slideOnDrop(e) {
+      e.preventDefault();
+      document.getElementById('slide-drop-zone').style.borderColor = 'var(--border)';
+      const f = e.dataTransfer.files[0];
+      if (f && f.type.startsWith('image/')) slideUpload(f);
+      else showToast('Выберите изображение', true);
     }
-    document.getElementById('slide-modal').classList.add('open');
-  } catch(e) { showToast('Ошибка загрузки', true); }
-}
 
-async function saveSlide() {
-  const id  = document.getElementById('slide-id').value;
-  const img = document.getElementById('slide-bg-image').value.trim();
-  if (!img) {
-    showToast('Загрузите фото слайда', true);
-    document.getElementById('slide-drop-zone').style.borderColor = 'var(--red)';
-    setTimeout(() => document.getElementById('slide-drop-zone').style.borderColor = 'var(--border)', 2000);
-    return;
-  }
-  const data = {
-    title:       document.getElementById('slide-title').value.trim() || null,
-    subtitle:    document.getElementById('slide-subtitle').value.trim() || null,
-    bg_color:    '#000000',
-    text_color:  '#ffffff',
-    bg_image:    img,
-    button_text: document.getElementById('slide-btn-text').value.trim() || null,
-    button_link: document.getElementById('slide-btn-link').value.trim() || null,
-    sort_order:  parseInt(document.getElementById('slide-order').value) || 1,
-    is_active:   document.getElementById('slide-active').value === 'true'
-  };
-  const btn = document.getElementById('slide-save-btn');
-  btn.disabled = true; btn.textContent = 'Сохраняем...';
-  try {
-    if (id) { await sbFetch('slides', 'PATCH', data, `?id=eq.${id}`); showToast('Слайд обновлён ✓'); }
-    else    { await sbFetch('slides', 'POST', data);                   showToast('Слайд добавлен ✓'); }
-    closeModal('slide-modal');
-    loadSlides();
-  } catch(e) { showToast('Ошибка сохранения', true); }
-  btn.disabled = false; btn.textContent = 'Сохранить слайд';
-}
+    async function slideUpload(file) {
+      // Показываем превью сразу
+      const reader = new FileReader();
+      reader.onload = e => {
+        document.getElementById('slide-prev-img').src = e.target.result;
+        document.getElementById('slide-prev-name').textContent = file.name;
+        document.getElementById('slide-ph').style.display = 'none';
+        document.getElementById('slide-prev').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
 
-async function deleteSlide(id) {
-  if (!confirm('Удалить слайд?')) return;
-  try {
-    await sbFetch('slides', 'DELETE', null, `?id=eq.${id}`);
-    showToast('Слайд удалён');
-    loadSlides();
-  } catch(e) { showToast('Ошибка', true); }
-}
-// Загружаем слайды при открытии раздела
-const origShowSection = showSection;
+      // Прогресс
+      document.getElementById('slide-prog').style.display = 'block';
+      document.getElementById('slide-prog-bar').style.width = '30%';
+      document.getElementById('slide-save-btn').disabled = true;
 
-/* ── EXPORT XLSX ── */
-async function exportOrdersXLSX() {
-  const btn = event.target.closest('button');
-  btn.textContent = '⏳ Загрузка...';
-  btn.disabled = true;
-
-  try {
-    // Загружаем все заказы
-    const orders = await sbFetch('orders', 'GET', null, '?order=created_at.desc');
-
-    // Разворачиваем каждый товар в отдельную строку
-    const rows = [];
-    orders.forEach(order => {
-      const items = Array.isArray(order.items) ? order.items : [];
-      if (items.length === 0) {
-        rows.push({
-          'ID заказа':        order.id?.slice(0,8).toUpperCase(),
-          'Дата':             new Date(order.created_at).toLocaleString('ru-RU'),
-          'Имя':              order.first_name || '—',
-          'Фамилия':          order.last_name || '—',
-          'Телефон':          order.phone || '—',
-          'Адрес':            order.address || '—',
-          'Источник':         order.source === 'telegram_miniapp' ? 'Telegram' : 'Сайт',
-          'Тип доставки':     order.delivery_type || '—',
-          'Способ оплаты':    order.payment_method || '—',
-          'Артикул товара':   '—',
-          'Название товара':  '—',
-          'Цвет':             '—',
-          'Размер':           '—',
-          'Количество':       '—',
-          'Цена за ед.':      '—',
-          'Сумма товара':     '—',
-          'Итого заказа':     order.total || 0,
-          'Статус':           order.status || 'new',
+      try {
+        const ext = file.name.split('.').pop();
+        const name = `slides/${Date.now()}.${ext}`;
+        const res = await fetch(`${SB_URL}/storage/v1/object/product-images/${name}`, {
+          method: 'POST',
+          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': file.type, 'x-upsert': 'true' },
+          body: file
         });
-      } else {
-        items.forEach(item => {
-          rows.push({
-            'ID заказа':        order.id?.slice(0,8).toUpperCase(),
-            'Дата':             new Date(order.created_at).toLocaleString('ru-RU'),
-            'Имя':              order.first_name || '—',
-            'Фамилия':          order.last_name || '—',
-            'Телефон':          order.phone || '—',
-            'Адрес':            order.address || '—',
-            'Источник':         order.source === 'telegram_miniapp' ? 'Telegram' : 'Сайт',
-            'Тип доставки':     order.delivery_type || '—',
-            'Способ оплаты':    order.payment_method || '—',
-            'Артикул товара':   item.article || '—',
-            'Название товара':  item.name || '—',
-            'Цвет':             item.color || '—',
-            'Размер':           item.size || '—',
-            'Количество':       item.quantity || item.qty || 1,
-            'Цена за ед.':      item.price || 0,
-            'Сумма товара':     (item.price || 0) * (item.quantity || item.qty || 1),
-            'Итого заказа':     order.total || 0,
-            'Статус':           order.status || 'new',
-          });
-        });
+        document.getElementById('slide-prog-bar').style.width = '90%';
+        if (res.ok) {
+          const url = `${SB_URL}/storage/v1/object/public/product-images/${name}`;
+          document.getElementById('slide-bg-image').value = url;
+          document.getElementById('slide-prev-img').src = url;
+          document.getElementById('slide-prog-bar').style.width = '100%';
+          document.getElementById('slide-prog-txt').textContent = '✓ Загружено';
+          setTimeout(() => { document.getElementById('slide-prog').style.display = 'none'; }, 1500);
+          showToast('Фото загружено ✓');
+        } else {
+          showToast('Ошибка загрузки фото', true);
+          document.getElementById('slide-prog').style.display = 'none';
+        }
+      } catch(e) {
+        showToast('Ошибка: ' + e.message, true);
+        document.getElementById('slide-prog').style.display = 'none';
       }
-    });
+      document.getElementById('slide-save-btn').disabled = false;
+    }
 
-    // Генерируем CSV с BOM для корректного отображения кириллицы в Excel
-    const headers = Object.keys(rows[0]);
-    const csvContent = '\uFEFF' + [
-      headers.join(';'),
-      ...rows.map(row => headers.map(h => {
-        const val = row[h] ?? '';
-        if (typeof val === 'number') return val;
-        return `"${String(val).replace(/"/g, '""').replace(/;/g, ',').replace(/\n/g, ' ')}"`;
-      }).join(';'))
-    ].join('\n');
+    function openSlideModal() {
+      document.getElementById('slide-modal-title').textContent = 'Добавить слайд';
+      document.getElementById('slide-id').value = '';
+      document.getElementById('slide-title').value = '';
+      document.getElementById('slide-subtitle').value = '';
+      document.getElementById('slide-btn-text').value = '';
+      document.getElementById('slide-btn-link').value = '';
+      document.getElementById('slide-order').value = '1';
+      document.getElementById('slide-active').value = 'true';
+      slideClear();
+      document.getElementById('slide-modal').classList.add('open');
+    }
 
-    // Скачиваем файл
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const date = new Date().toISOString().split('T')[0];
-    a.href = url;
-    a.download = `li-ning-orders-${date}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    async function editSlide(id) {
+      try {
+        const data = await sbFetch('slides', 'GET', null, `?id=eq.${id}`);
+        const s = data[0];
+        document.getElementById('slide-modal-title').textContent = 'Редактировать слайд';
+        document.getElementById('slide-id').value = s.id;
+        document.getElementById('slide-title').value = s.title || '';
+        document.getElementById('slide-subtitle').value = s.subtitle || '';
+        document.getElementById('slide-btn-text').value = s.button_text || '';
+        document.getElementById('slide-btn-link').value = s.button_link || '';
+        document.getElementById('slide-order').value = s.sort_order || 1;
+        document.getElementById('slide-active').value = String(s.is_active);
+        // Показываем текущее фото
+        slideClear();
+        if (s.bg_image) {
+          document.getElementById('slide-bg-image').value = s.bg_image;
+          document.getElementById('slide-prev-img').src = s.bg_image;
+          document.getElementById('slide-prev-name').textContent = 'Текущее фото';
+          document.getElementById('slide-ph').style.display = 'none';
+          document.getElementById('slide-prev').style.display = 'block';
+        }
+        document.getElementById('slide-modal').classList.add('open');
+      } catch(e) { showToast('Ошибка загрузки', true); }
+    }
 
-    showToast(`✅ Экспортировано ${orders.length} заказов (${rows.length} строк)`);
-  } catch(e) {
-    console.error(e);
-    showToast('Ошибка экспорта', true);
-  } finally {
-    btn.innerHTML = '⬇ Экспорт XLSX';
-    btn.disabled = false;
-  }
-}
+    async function saveSlide() {
+      const id  = document.getElementById('slide-id').value;
+      const img = document.getElementById('slide-bg-image').value.trim();
+      if (!img) {
+        showToast('Загрузите фото слайда', true);
+        document.getElementById('slide-drop-zone').style.borderColor = 'var(--red)';
+        setTimeout(() => document.getElementById('slide-drop-zone').style.borderColor = 'var(--border)', 2000);
+        return;
+      }
+      const data = {
+        title:       document.getElementById('slide-title').value.trim() || null,
+        subtitle:    document.getElementById('slide-subtitle').value.trim() || null,
+        bg_color:    '#000000',
+        text_color:  '#ffffff',
+        bg_image:    img,
+        button_text: document.getElementById('slide-btn-text').value.trim() || null,
+        button_link: document.getElementById('slide-btn-link').value.trim() || null,
+        sort_order:  parseInt(document.getElementById('slide-order').value) || 1,
+        is_active:   document.getElementById('slide-active').value === 'true'
+      };
+      const btn = document.getElementById('slide-save-btn');
+      btn.disabled = true; btn.textContent = 'Сохраняем...';
+      try {
+        if (id) { await sbFetch('slides', 'PATCH', data, `?id=eq.${id}`); showToast('Слайд обновлён ✓'); }
+        else    { await sbFetch('slides', 'POST', data);                   showToast('Слайд добавлен ✓'); }
+        closeModal('slide-modal');
+        loadSlides();
+      } catch(e) { showToast('Ошибка сохранения', true); }
+      btn.disabled = false; btn.textContent = 'Сохранить слайд';
+    }
 
-// Feature Flags
-function loadFeatureFlags() {
-  const flags = JSON.parse(localStorage.getItem('site_flags') || '{}');
-  document.getElementById('toggle-auth').checked     = flags.auth_enabled     ?? false;
-  document.getElementById('toggle-cart').checked     = flags.cart_enabled     ?? false;
-  document.getElementById('toggle-wishlist').checked = flags.wishlist_enabled ?? false;
-  document.getElementById('toggle-orders').checked   = flags.orders_enabled   ?? false;
-}
+    async function deleteSlide(id) {
+      if (!confirm('Удалить слайд?')) return;
+      try {
+        await sbFetch('slides', 'DELETE', null, `?id=eq.${id}`);
+        showToast('Слайд удалён');
+        loadSlides();
+      } catch(e) { showToast('Ошибка', true); }
+    }
+    // Загружаем слайды при открытии раздела
+    const origShowSection = showSection;
 
-function saveFeatureFlags() {
-  const flags = {
-    auth_enabled:     document.getElementById('toggle-auth').checked,
-    cart_enabled:     document.getElementById('toggle-cart').checked,
-    wishlist_enabled: document.getElementById('toggle-wishlist').checked,
-    orders_enabled:   document.getElementById('toggle-orders').checked,
-  };
-  localStorage.setItem('site_flags', JSON.stringify(flags));
-  showToast('Настройки сохранены ✓');
-}
+    /* ── EXPORT XLSX ── */
+    async function exportOrdersXLSX() {
+      const btn = event.target.closest('button');
+      btn.textContent = '⏳ Загрузка...';
+      btn.disabled = true;
 
-document.addEventListener('DOMContentLoaded', loadFeatureFlags);
+      try {
+        // Загружаем все заказы
+        const orders = await sbFetch('orders', 'GET', null, '?order=created_at.desc');
 
-</script>
+        // Разворачиваем каждый товар в отдельную строку
+        const rows = [];
+        orders.forEach(order => {
+          const items = Array.isArray(order.items) ? order.items : [];
+          if (items.length === 0) {
+            rows.push({
+              'ID заказа':        order.id?.slice(0,8).toUpperCase(),
+              'Дата':             new Date(order.created_at).toLocaleString('ru-RU'),
+              'Имя':              order.first_name || '—',
+              'Фамилия':          order.last_name || '—',
+              'Телефон':          order.phone || '—',
+              'Адрес':            order.address || '—',
+              'Источник':         order.source === 'telegram_miniapp' ? 'Telegram' : 'Сайт',
+              'Тип доставки':     order.delivery_type || '—',
+              'Способ оплаты':    order.payment_method || '—',
+              'Артикул товара':   '—',
+              'Название товара':  '—',
+              'Цвет':             '—',
+              'Размер':           '—',
+              'Количество':       '—',
+              'Цена за ед.':      '—',
+              'Сумма товара':     '—',
+              'Итого заказа':     order.total || 0,
+              'Статус':           order.status || 'new',
+            });
+          } else {
+            items.forEach(item => {
+              rows.push({
+                'ID заказа':        order.id?.slice(0,8).toUpperCase(),
+                'Дата':             new Date(order.created_at).toLocaleString('ru-RU'),
+                'Имя':              order.first_name || '—',
+                'Фамилия':          order.last_name || '—',
+                'Телефон':          order.phone || '—',
+                'Адрес':            order.address || '—',
+                'Источник':         order.source === 'telegram_miniapp' ? 'Telegram' : 'Сайт',
+                'Тип доставки':     order.delivery_type || '—',
+                'Способ оплаты':    order.payment_method || '—',
+                'Артикул товара':   item.article || '—',
+                'Название товара':  item.name || '—',
+                'Цвет':             item.color || '—',
+                'Размер':           item.size || '—',
+                'Количество':       item.quantity || item.qty || 1,
+                'Цена за ед.':      item.price || 0,
+                'Сумма товара':     (item.price || 0) * (item.quantity || item.qty || 1),
+                'Итого заказа':     order.total || 0,
+                'Статус':           order.status || 'new',
+              });
+            });
+          }
+        });
+
+        // Генерируем CSV с BOM для корректного отображения кириллицы в Excel
+        const headers = Object.keys(rows[0]);
+        const csvContent = '\uFEFF' + [
+          headers.join(';'),
+          ...rows.map(row => headers.map(h => {
+            const val = row[h] ?? '';
+            if (typeof val === 'number') return val;
+            return `"${String(val).replace(/"/g, '""').replace(/;/g, ',').replace(/\n/g, ' ')}"`;
+          }).join(';'))
+        ].join('\n');
+
+        // Скачиваем файл
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const date = new Date().toISOString().split('T')[0];
+        a.href = url;
+        a.download = `li-ning-orders-${date}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        showToast(`✅ Экспортировано ${orders.length} заказов (${rows.length} строк)`);
+      } catch(e) {
+        console.error(e);
+        showToast('Ошибка экспорта', true);
+      } finally {
+        btn.innerHTML = '⬇ Экспорт XLSX';
+        btn.disabled = false;
+      }
+    }
+
+    // Feature Flags
+    function loadFeatureFlags() {
+      const flags = JSON.parse(localStorage.getItem('site_flags') || '{}');
+      document.getElementById('toggle-auth').checked     = flags.auth_enabled     ?? false;
+      document.getElementById('toggle-cart').checked     = flags.cart_enabled     ?? false;
+      document.getElementById('toggle-wishlist').checked = flags.wishlist_enabled ?? false;
+      document.getElementById('toggle-orders').checked   = flags.orders_enabled   ?? false;
+    }
+
+    function saveFeatureFlags() {
+      const flags = {
+        auth_enabled:     document.getElementById('toggle-auth').checked,
+        cart_enabled:     document.getElementById('toggle-cart').checked,
+        wishlist_enabled: document.getElementById('toggle-wishlist').checked,
+        orders_enabled:   document.getElementById('toggle-orders').checked,
+      };
+      localStorage.setItem('site_flags', JSON.stringify(flags));
+      showToast('Настройки сохранены ✓');
+    }
+
+    document.addEventListener('DOMContentLoaded', loadFeatureFlags);
+
+    /* ── PRICES ── */
+    let parsedPriceData = [];
+
+    function downloadPriceTemplate() {
+      const wb = XLSX.utils.book_new();
+      const wsData = [
+        ['Артикул', 'Цена (сум)', 'Старая цена (сум)'],
+        ['ABCD056', 890000, 1100000],
+        ['ARBW018', 750000, ''],
+      ];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      ws['!cols'] = [{wch:16}, {wch:16}, {wch:20}];
+      XLSX.utils.book_append_sheet(wb, ws, 'Цены');
+      XLSX.writeFile(wb, 'lining-prices-template.xlsx');
+    }
+
+    function handlePriceFile(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const wb = XLSX.read(data, {type:'array'});
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, {header:1});
+
+          parsedPriceData = [];
+          for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const article = String(row[0] || '').trim();
+            const price = parseInt(String(row[1] || '').replace(/\D/g,'')) || 0;
+            const oldPrice = parseInt(String(row[2] || '').replace(/\D/g,'')) || 0;
+            if (article && price > 0) {
+              parsedPriceData.push({article, price, old_price: oldPrice || null});
+            }
+          }
+
+          if (parsedPriceData.length === 0) {
+            showToast('Нет данных в файле — проверьте колонки', true);
+            return;
+          }
+
+          document.getElementById('price-preview-title').textContent =
+            `Найдено ${parsedPriceData.length} товаров — проверьте данные перед применением:`;
+          document.getElementById('price-preview-table').innerHTML = `
+            <table style="width:100%;border-collapse:collapse;font-size:.83rem">
+              <thead>
+                <tr style="background:#f5f5f5;position:sticky;top:0">
+                  <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">#</th>
+                  <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">Артикул</th>
+                  <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">Новая цена</th>
+                  <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">Старая цена</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${parsedPriceData.map((row, i) => `
+                  <tr>
+                    <td style="padding:.5rem 1rem;border-bottom:1px solid #f5f5f5;color:var(--muted)">${i+1}</td>
+                    <td style="padding:.5rem 1rem;border-bottom:1px solid #f5f5f5;font-weight:600">${row.article}</td>
+                    <td style="padding:.5rem 1rem;border-bottom:1px solid #f5f5f5">${row.price.toLocaleString('ru-RU')} сум</td>
+                    <td style="padding:.5rem 1rem;border-bottom:1px solid #f5f5f5">${row.old_price ? row.old_price.toLocaleString('ru-RU') + ' сум' : '—'}</td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>`;
+          document.getElementById('price-preview').style.display = 'block';
+          document.getElementById('price-results').style.display = 'none';
+        } catch(e) {
+          showToast('Ошибка чтения файла', true);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function cancelPrices() {
+      parsedPriceData = [];
+      document.getElementById('price-preview').style.display = 'none';
+      document.getElementById('price-results').style.display = 'none';
+      document.getElementById('price-file').value = '';
+    }
+
+    async function applyPrices() {
+      if (!parsedPriceData.length) return;
+      const btn = document.getElementById('price-apply-btn');
+      btn.disabled = true;
+      btn.textContent = 'Обновляем...';
+
+      let success = 0, notFound = 0;
+      const notFoundList = [];
+
+      for (const row of parsedPriceData) {
+        try {
+          const update = {price: row.price, old_price: row.old_price || null};
+          await sbFetch('products', 'PATCH', update, `?article=eq.${encodeURIComponent(row.article)}`);
+          success++;
+        } catch(e) {
+          notFound++;
+          notFoundList.push(row.article);
+        }
+      }
+
+      const ok = notFound === 0;
+      document.getElementById('price-results').style.display = 'block';
+      document.getElementById('price-results').innerHTML = `
+        <div style="padding:1rem 1.2rem;border-left:4px solid ${ok ? 'var(--green)' : '#ffc107'};background:${ok ? '#d1e7dd' : '#fff3cd'}">
+          <div style="font-weight:600;margin-bottom:.3rem">${ok ? '✓ Все цены успешно обновлены!' : '⚠ Обновление завершено'}</div>
+          <div style="font-size:.82rem">
+            Обновлено: <strong>${success}</strong> товаров
+            ${notFound > 0 ? `&nbsp;·&nbsp; Не найдено по артикулу: <strong>${notFound}</strong> (${notFoundList.join(', ')})` : ''}
+          </div>
+        </div>`;
+
+      if (success > 0) showToast(`Обновлено ${success} цен ✓`);
+      if (notFound > 0) showToast(`Артикул не найден: ${notFoundList.join(', ')}`, true);
+
+      btn.disabled = false;
+      btn.textContent = '✓ Применить цены';
+      parsedPriceData = [];
+      document.getElementById('price-file').value = '';
+    }
+
+  </script>
 </body>
 </html>
