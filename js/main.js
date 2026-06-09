@@ -631,6 +631,12 @@ const FilterSidebar = (() => {
       cb.addEventListener('change', applyFilters);
     });
 
+    // Promo checkboxes
+    document.querySelectorAll('.filter-promo-item input').forEach(cb => {
+      cb.addEventListener('change', applyFilters);
+    });
+
+
     // Price slider sync
     const slider = document.querySelector('#price-slider');
     const maxInput = document.querySelector('#price-max');
@@ -654,6 +660,7 @@ const FilterSidebar = (() => {
     // Clear button
     document.querySelector('.filter-clear-btn')?.addEventListener('click', () => {
       document.querySelectorAll('.filter-brand-item input').forEach(cb => cb.checked = false);
+      document.querySelectorAll('.filter-promo-item input').forEach(cb => cb.checked = false);
       document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
       if (slider) slider.value = slider.max;
       if (maxInput) maxInput.value = parseInt(slider?.max || 0).toLocaleString('ru-RU');
@@ -666,21 +673,25 @@ const FilterSidebar = (() => {
     const checkedBrands = [...document.querySelectorAll('.filter-brand-item input:checked')].map(cb => cb.value);
     const activeSize    = document.querySelector('.size-btn.active')?.dataset.size;
     const maxPrice      = parseInt(document.querySelector('#price-slider')?.value || Infinity);
+    const checkedPromos = [...document.querySelectorAll('.filter-promo-item input:checked')].map(cb => cb.value);
 
     document.querySelectorAll('.product-card').forEach(card => {
       const brand = card.dataset.brand?.toLowerCase() || '';
       const price = parseInt(card.dataset.price || '0');
       const sizes = (card.dataset.sizes || '').split(',');
+      const badge = card.dataset.badge || '';
 
       const brandOk = checkedBrands.length === 0 || checkedBrands.includes(brand);
       const priceOk = price <= maxPrice;
       const sizeOk  = !activeSize || sizes.includes(activeSize);
+      const promoOk = checkedPromos.length === 0 || checkedPromos.includes(badge);
 
-      card.style.display = (brandOk && priceOk && sizeOk) ? '' : 'none';
+      card.style.display = (brandOk && priceOk && sizeOk && promoOk) ? '' : 'none';
     });
 
     updateCount();
   };
+
 
   const updateCount = () => {
     const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
@@ -1087,6 +1098,23 @@ async function fetchProducts(filter = '') {
   return data;
 }
 
+function updatePromoFilterVisibility() {
+  const block = document.getElementById('promo-filter-block');
+  if (!block) return;
+  const map = {'1=3':'promo-filter-1eq3', '-50%':'promo-filter-50pct', '-70%':'promo-filter-70pct'};
+  let anyVisible = false;
+  for (const [badge, id] of Object.entries(map)) {
+    const item = document.getElementById(id);
+    if (!item) continue;
+    const has = document.querySelectorAll(`.product-card[data-badge="${badge}"]`).length > 0;
+    item.style.display = has ? '' : 'none';
+    if (has) anyVisible = true;
+  }
+  block.style.display = anyVisible ? '' : 'none';
+}
+
+
+
 /* ─── LOAD PRODUCTS FROM SUPABASE ───────────── */
 const buildCard = (p) => {
   const images = Array.isArray(p.images) ? p.images : (p.images || []);
@@ -1110,6 +1138,7 @@ const buildCard = (p) => {
       data-price="${p.price}"
       data-brand="${(p.brand||'').toLowerCase()}"
       data-sizes="${sizes.join(',')}"
+      data-badge="${p.badge || ''}"
       data-rating="5"
       data-category="${p.category||''}"
       data-gender="${p.gender||'uni'}"
@@ -1117,8 +1146,8 @@ const buildCard = (p) => {
       data-collection="${p.collection||''}"
       data-href="product.html?id=${p.id}"
       onclick="if(!event.target.closest('button')){trackEvent('view_product_card',{item_id:'${p.article||p.id}',item_name:'${p.name.replace(/'/g,'')}',item_category:'${p.category||''}',currency:'UZS',value:${p.price}});window.location.href='product.html?id=${p.id}'}">
+      ${badge}      
       <div class="product-img-wrap">
-        ${badge}
         <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
           ${imgHtml}
         </div>
@@ -1247,6 +1276,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         catalogGrid.innerHTML = products.map(buildCard).join('');
         window.ProductCards?.init();
         highlightWishlist();
+        updatePromoFilterVisibility();
+
 
         // Применяем фильтры из URL ПОСЛЕ загрузки карточек
         const urlParams = new URLSearchParams(window.location.search);
