@@ -422,43 +422,91 @@
 
     <!-- PROMOTIONS -->
     <div class="section" id="section-promotions">
-      <div style="margin-bottom:1.5rem;display:flex;justify-content:flex-end">
-        <button class="btn-add" onclick="openPromoModal()">+ Создать акцию</button>
-      </div>
-      <div class="promo-grid" id="promo-grid">
-        <!-- Default promos -->
+      <div class="promo-grid">
+
         <div class="promo-card">
           <div class="promo-type">1=3</div>
           <div class="promo-name">Купи 1 — получи 3</div>
-          <div class="promo-dates">Акционное предложение</div>
-          <span class="promo-active promo-off">Выключена</span>
+          <div class="promo-dates" style="font-size:.78rem;color:var(--muted);margin:.3rem 0">Платишь за самый дорогой, 2 других бесплатно</div>
+          <span class="promo-active promo-off" id="promo-status-1eq3">Выключена</span>
+          <div style="font-size:.73rem;color:var(--muted);margin:.4rem 0;min-height:1rem" id="promo-dates-1eq3"></div>
           <div class="promo-actions">
-            <button class="btn-sm btn-toggle" onclick="togglePromo(this)">Включить</button>
-            <button class="btn-sm btn-edit">Изменить</button>
+            <button class="btn-sm btn-toggle" id="promo-enable-1eq3" onclick="openPromoPanel('1=3')">Включить</button>
+            <button class="btn-sm btn-delete" id="promo-disable-1eq3" style="display:none" onclick="deactivatePromo('1=3')">Выключить</button>
           </div>
         </div>
+
         <div class="promo-card">
           <div class="promo-type">-50%</div>
           <div class="promo-name">Скидка 50%</div>
-          <div class="promo-dates">На выбранные товары</div>
-          <span class="promo-active promo-off">Выключена</span>
+          <div class="promo-dates" style="font-size:.78rem;color:var(--muted);margin:.3rem 0">Скидка 50% от цены товара</div>
+          <span class="promo-active promo-off" id="promo-status-50pct">Выключена</span>
+          <div style="font-size:.73rem;color:var(--muted);margin:.4rem 0;min-height:1rem" id="promo-dates-50pct"></div>
           <div class="promo-actions">
-            <button class="btn-sm btn-toggle" onclick="togglePromo(this)">Включить</button>
-            <button class="btn-sm btn-edit">Изменить</button>
+            <button class="btn-sm btn-toggle" id="promo-enable-50pct" onclick="openPromoPanel('-50%')">Включить</button>
+            <button class="btn-sm btn-delete" id="promo-disable-50pct" style="display:none" onclick="deactivatePromo('-50%')">Выключить</button>
           </div>
         </div>
+
         <div class="promo-card">
           <div class="promo-type">-70%</div>
           <div class="promo-name">Скидка 70%</div>
-          <div class="promo-dates">Финальная распродажа</div>
-          <span class="promo-active promo-off">Выключена</span>
+          <div class="promo-dates" style="font-size:.78rem;color:var(--muted);margin:.3rem 0">Финальная распродажа</div>
+          <span class="promo-active promo-off" id="promo-status-70pct">Выключена</span>
+          <div style="font-size:.73rem;color:var(--muted);margin:.4rem 0;min-height:1rem" id="promo-dates-70pct"></div>
           <div class="promo-actions">
-            <button class="btn-sm btn-toggle" onclick="togglePromo(this)">Включить</button>
-            <button class="btn-sm btn-edit">Изменить</button>
+            <button class="btn-sm btn-toggle" id="promo-enable-70pct" onclick="openPromoPanel('-70%')">Включить</button>
+            <button class="btn-sm btn-delete" id="promo-disable-70pct" style="display:none" onclick="deactivatePromo('-70%')">Выключить</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Панель активации — раскрывается ниже карточек -->
+      <div id="promo-activation-panel" style="display:none;margin-top:1.5rem">
+        <div class="settings-section">
+          <h3 id="promo-panel-title">Активация акции</h3>
+
+          <div class="form-row" style="margin-bottom:1.2rem">
+            <div class="form-group">
+              <label class="form-label">Начало акции</label>
+              <input type="datetime-local" class="form-input" id="promo-start">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Конец акции</label>
+              <input type="datetime-local" class="form-input" id="promo-end">
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.5rem">
+            <label class="form-label">Товары, участвующие в акции</label>
+            <div style="display:flex;gap:.8rem;margin-bottom:.7rem;align-items:center">
+              <button onclick="downloadPromoTemplate()" style="background:var(--text);color:#fff;border:none;padding:.5rem 1rem;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer">⬇ Шаблон Excel</button>
+              <span style="font-size:.75rem;color:var(--muted)">Одна колонка — «Артикул»</span>
+            </div>
+            <div style="border:2px dashed var(--border);padding:1.2rem 2rem;text-align:center;cursor:pointer;background:#fafafa;transition:border-color .2s"
+                 onclick="document.getElementById('promo-file').click()">
+              <input type="file" id="promo-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handlePromoFile(this)">
+              <div style="font-size:1.8rem;margin-bottom:.3rem">📊</div>
+              <p style="font-size:.85rem;font-weight:600;margin-bottom:.2rem">Нажмите для выбора файла</p>
+              <p style="font-size:.75rem;color:var(--muted)">.xlsx, .xls, .csv</p>
+            </div>
+          </div>
+
+          <div id="promo-article-preview" style="display:none;margin-bottom:1.2rem;padding:1rem;background:#f5f5f5;border:1px solid var(--border)">
+            <div id="promo-article-list"></div>
+          </div>
+
+          <div id="promo-apply-results" style="display:none;margin-bottom:1.2rem"></div>
+
+          <div style="display:flex;gap:.8rem">
+            <button class="btn-save" id="promo-confirm-btn" onclick="confirmPromoActivation()">✓ Активировать акцию</button>
+            <button class="btn-cancel" onclick="closePromoPanel()">Отмена</button>
           </div>
         </div>
       </div>
     </div>
+
 
     <!-- SLIDES SECTION -->
     <div class="section" id="section-slides">
@@ -946,6 +994,8 @@
       if (name === 'orders') loadOrders();
       if (name === 'dashboard') loadDashboard();
       if (name === 'slides') loadSlides();
+      if (name === 'promotions') loadPromoStatuses();
+
     }
 
     // DASHBOARD
@@ -1375,35 +1425,147 @@
       } catch(e) { showToast('Ошибка', true); }
     }
 
-    // PROMOTIONS
-    function openPromoModal() { document.getElementById('promo-modal').classList.add('open'); }
-    async function savePromo() {
-      const data = {
-        name: document.getElementById('p-name').value,
-        type: document.getElementById('p-type').value,
-        discount: parseInt(document.getElementById('p-discount').value) || null,
-        starts_at: document.getElementById('p-start').value || null,
-        ends_at: document.getElementById('p-end').value || null,
-        is_active: true
+    /* ── PROMOTIONS ── */
+    let activePromoType = null;
+    let promoArticlesList = [];
+
+    function promoKey(type) {
+      return type.replace(/=/g,'eq').replace(/%/g,'pct').replace(/-/g,'');
+    }
+
+    function openPromoPanel(type) {
+      activePromoType = type;
+      const key = promoKey(type);
+      document.getElementById('promo-panel-title').textContent = `Активация акции "${type}"`;
+      document.getElementById('promo-activation-panel').style.display = 'block';
+      document.getElementById('promo-activation-panel').scrollIntoView({behavior:'smooth', block:'nearest'});
+      promoArticlesList = [];
+      document.getElementById('promo-file').value = '';
+      document.getElementById('promo-article-preview').style.display = 'none';
+      document.getElementById('promo-apply-results').style.display = 'none';
+    }
+
+    function closePromoPanel() {
+      document.getElementById('promo-activation-panel').style.display = 'none';
+      activePromoType = null;
+      promoArticlesList = [];
+    }
+
+    function downloadPromoTemplate() {
+      const wb = XLSX.utils.book_new();
+      const wsData = [['Артикул'], ['ABCD056'], ['ARBW018'], ['LN2025-001']];
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      ws['!cols'] = [{wch:18}];
+      XLSX.utils.book_append_sheet(wb, ws, 'Артикулы');
+      XLSX.writeFile(wb, 'promo-articles-template.xlsx');
+    }
+
+    function handlePromoFile(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const wb = XLSX.read(data, {type:'array'});
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, {header:1});
+          promoArticlesList = [];
+          for (let i = 1; i < rows.length; i++) {
+            const article = String(rows[i][0] || '').trim();
+            if (article) promoArticlesList.push(article);
+          }
+          if (promoArticlesList.length === 0) { showToast('Нет артикулов в файле', true); return; }
+          document.getElementById('promo-article-preview').style.display = 'block';
+          document.getElementById('promo-article-list').innerHTML = `
+            <div style="font-size:.82rem;font-weight:600;margin-bottom:.6rem">Найдено ${promoArticlesList.length} артикулов:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+              ${promoArticlesList.map(a =>
+                `<span style="background:#fff;padding:.25rem .6rem;font-size:.78rem;font-weight:600;border:1.5px solid var(--border)">${a}</span>`
+              ).join('')}
+            </div>`;
+        } catch(e) { showToast('Ошибка чтения файла', true); }
       };
-      if (!data.name) { showToast('Введите название акции', true); return; }
+      reader.readAsArrayBuffer(file);
+    }
+
+    async function confirmPromoActivation() {
+      if (!activePromoType) return;
+      if (promoArticlesList.length === 0) { showToast('Загрузите файл с артикулами', true); return; }
+      const btn = document.getElementById('promo-confirm-btn');
+      btn.disabled = true; btn.textContent = 'Активируем...';
+
+      let success = 0, notFound = 0;
+      const notFoundList = [];
+
+      for (const article of promoArticlesList) {
+        try {
+          await sbFetch('products', 'PATCH', {badge: activePromoType}, `?article=eq.${encodeURIComponent(article)}`);
+          success++;
+        } catch(e) { notFound++; notFoundList.push(article); }
+      }
+
+      const starts = document.getElementById('promo-start').value;
+      const ends   = document.getElementById('promo-end').value;
+      const saved  = JSON.parse(localStorage.getItem('promo_data') || '{}');
+      saved[activePromoType] = {starts, ends};
+      localStorage.setItem('promo_data', JSON.stringify(saved));
+
+      updatePromoCardUI(activePromoType, true);
+
+      const ok = notFound === 0;
+      document.getElementById('promo-apply-results').style.display = 'block';
+      document.getElementById('promo-apply-results').innerHTML = `
+        <div style="padding:1rem 1.2rem;border-left:4px solid ${ok ? 'var(--green)' : '#ffc107'};background:${ok ? '#d1e7dd' : '#fff3cd'}">
+          <div style="font-weight:600;margin-bottom:.3rem">${ok ? '✓ Акция активирована!' : '⚠ Активация завершена'}</div>
+          <div style="font-size:.82rem">Обновлено: <strong>${success}</strong> товаров${notFound > 0 ? ` · Не найдено: <strong>${notFound}</strong> (${notFoundList.join(', ')})` : ''}</div>
+        </div>`;
+
+      if (success > 0) showToast(`Акция "${activePromoType}" — ${success} товаров ✓`);
+      if (notFound > 0) showToast(`Не найдено: ${notFoundList.join(', ')}`, true);
+      btn.disabled = false; btn.textContent = '✓ Активировать акцию';
+    }
+
+    async function deactivatePromo(type) {
+      if (!confirm(`Выключить акцию "${type}"?\nЗначок будет убран со всех товаров.`)) return;
       try {
-        await sbFetch('promotions', 'POST', data);
-        showToast('Акция создана ✓');
-        closeModal('promo-modal');
+        await sbFetch('products', 'PATCH', {badge: null}, `?badge=eq.${encodeURIComponent(type)}`);
+        const saved = JSON.parse(localStorage.getItem('promo_data') || '{}');
+        delete saved[type];
+        localStorage.setItem('promo_data', JSON.stringify(saved));
+        updatePromoCardUI(type, false);
+        closePromoPanel();
+        showToast(`Акция "${type}" выключена ✓`);
       } catch(e) { showToast('Ошибка', true); }
     }
 
-    function togglePromo(btn) {
-      const card = btn.closest('.promo-card');
-      const badge = card.querySelector('.promo-active');
-      const isOn = badge.classList.contains('promo-on');
-      badge.classList.toggle('promo-on', !isOn);
-      badge.classList.toggle('promo-off', isOn);
-      badge.textContent = isOn ? 'Выключена' : 'Активна';
-      btn.textContent = isOn ? 'Включить' : 'Выключить';
-      showToast(isOn ? 'Акция выключена' : 'Акция включена ✓');
+    function updatePromoCardUI(type, isActive) {
+      const key = promoKey(type);
+      const statusEl  = document.getElementById(`promo-status-${key}`);
+      const datesEl   = document.getElementById(`promo-dates-${key}`);
+      const enableBtn = document.getElementById(`promo-enable-${key}`);
+      const disableBtn= document.getElementById(`promo-disable-${key}`);
+      if (statusEl)   { statusEl.className = `promo-active ${isActive ? 'promo-on' : 'promo-off'}`; statusEl.textContent = isActive ? 'Активна' : 'Выключена'; }
+      if (enableBtn)  enableBtn.style.display  = isActive ? 'none'   : 'inline';
+      if (disableBtn) disableBtn.style.display = isActive ? 'inline' : 'none';
+      if (datesEl && isActive) {
+        const saved = JSON.parse(localStorage.getItem('promo_data') || '{}');
+        const d = saved[type];
+        if (d?.starts || d?.ends) {
+          datesEl.textContent = `${d.starts ? new Date(d.starts).toLocaleDateString('ru-RU') : '?'} — ${d.ends ? new Date(d.ends).toLocaleDateString('ru-RU') : 'бессрочно'}`;
+        }
+      } else if (datesEl) { datesEl.textContent = ''; }
     }
+
+    async function loadPromoStatuses() {
+      for (const type of ['1=3', '-50%', '-70%']) {
+        try {
+          const result = await sbFetch('products', 'GET', null, `?badge=eq.${encodeURIComponent(type)}&select=id&limit=1`);
+          updatePromoCardUI(type, result.length > 0);
+        } catch(e) {}
+      }
+    }
+
 
     // SETTINGS
     async function saveSettings() {

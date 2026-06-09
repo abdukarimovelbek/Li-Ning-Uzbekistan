@@ -604,6 +604,20 @@ button { font-family: var(--font-body); }
 .badge-new { background: var(--gray-900); }
 .badge-sale { background: var(--red); }
 .badge-hot { background: var(--gold); color: var(--black); }
+.badge--50,
+.badge--70,
+.badge-1eq3 {
+  background: var(--red);
+  top: 0;
+  left: 14px;
+  border-radius: 0;
+  padding: .35rem .55rem .75rem;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .5px;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%);
+}
+
 
 .product-actions {
   display: none;
