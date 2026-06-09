@@ -95,6 +95,11 @@ button { font-family: var(--font-body); }
   border-bottom-color: transparent;
   box-shadow: none;
 }
+.navbar.is-transparent:hover {
+  background: var(--black);
+  border-bottom-color: #222;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+}
 .navbar.scrolled {
   background: var(--black);
   border-bottom-color: #222;
