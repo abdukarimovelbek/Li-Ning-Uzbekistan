@@ -1940,3 +1940,20 @@ function showFeatureDisabledModal(feature) {
   document.body.appendChild(overlay);
 }
 window.showFeatureDisabledModal = showFeatureDisabledModal;
+
+/* ─── SCROLL TO TOP ─────────────────────────── */
+(function () {
+  const btn = document.createElement('button');
+  btn.className = 'scroll-top-btn';
+  btn.setAttribute('aria-label', 'Наверх');
+  btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>`;
+  document.body.appendChild(btn);
+
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('visible', window.scrollY > 380);
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();

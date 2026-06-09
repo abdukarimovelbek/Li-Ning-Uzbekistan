@@ -1588,6 +1588,34 @@ footer .footer-inner {
   .sticky-cart-btn { padding: .7rem 1.2rem; font-size: .8rem; }
 }
 
+/* ─── SCROLL TO TOP ─────────────────────────── */
+.scroll-top-btn {
+  position: fixed;
+  bottom: 5.5rem;
+  right: 1.8rem;
+  width: 44px;
+  height: 44px;
+  background: var(--black);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 800;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .3s, transform .3s, background .2s;
+  pointer-events: none;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.28);
+}
+.scroll-top-btn.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.scroll-top-btn:hover { background: var(--red); }
+
 /* ─── MEGA MENU ──────────────────────────────── */
 .nav-item-mega {
   position: relative;
