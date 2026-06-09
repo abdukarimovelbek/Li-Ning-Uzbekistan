@@ -1113,15 +1113,60 @@ function updatePromoFilterVisibility() {
   block.style.display = anyVisible ? '' : 'none';
 }
 
+/* ─── SKELETON & FADE-IN ────────────────────── */
+function buildSkeletons(n = 8) {
+  return Array.from({length: n}, () => `
+    <div class="product-card skeleton-card">
+      <div class="product-img-wrap">
+        <div class="skeleton-block" style="width:100%;height:100%"></div>
+      </div>
+      <div class="product-info" style="padding:1rem 1.2rem">
+        <div class="skeleton-block" style="height:11px;width:50%;margin-bottom:.6rem"></div>
+        <div class="skeleton-block" style="height:15px;width:85%;margin-bottom:.5rem"></div>
+        <div class="skeleton-block" style="height:15px;width:70%;margin-bottom:.8rem"></div>
+        <div class="skeleton-block" style="height:18px;width:45%"></div>
+      </div>
+    </div>`).join('');
+}
+
+function initScrollFadeIn() {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const card = entry.target;
+      card.classList.add('card-animate');
+      card.addEventListener('animationend', () => {
+        card.classList.remove('card-animate');
+        card.style.opacity = '';
+      }, { once: true });
+      io.unobserve(card);
+    });
+  }, { threshold: 0.06 });
+
+  const observe = () => {
+    document.querySelectorAll('.product-card:not([data-fade])').forEach((card, i) => {
+      card.dataset.fade = '1';
+      card.style.opacity = '0';
+      card.style.setProperty('--card-delay', `${(i % 4) * 0.07}s`);
+      io.observe(card);
+    });
+  };
+
+  new MutationObserver(observe).observe(document.body, { childList: true, subtree: true });
+  observe();
+}
 
 
 /* ─── LOAD PRODUCTS FROM SUPABASE ───────────── */
 const buildCard = (p) => {
   const images = Array.isArray(p.images) ? p.images : (p.images || []);
   const sizes  = Array.isArray(p.sizes)  ? p.sizes  : (p.sizes  || []);
+  const hasHover = images.length > 1;
   const imgHtml = images[0]
-    ? `<img src="${images[0]}" style="width:100%;height:100%;object-fit:cover">`
+    ? `<img class="img-main" src="${images[0]}" style="width:100%;height:100%;object-fit:cover;display:block">
+       ${hasHover ? `<img class="img-hover" src="${images[1]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0">` : ''}`
     : `<span style="font-size:5rem">👟</span>`;
+
 
   const badge = p.badge
     ? `<span class="product-badge badge-${p.badge.toLowerCase().replace('%','').replace('=','eq')}">${p.badge}</span>`
@@ -1148,7 +1193,7 @@ const buildCard = (p) => {
       onclick="if(!event.target.closest('button')){trackEvent('view_product_card',{item_id:'${p.article||p.id}',item_name:'${p.name.replace(/'/g,'')}',item_category:'${p.category||''}',currency:'UZS',value:${p.price}});window.location.href='product.html?id=${p.id}'}">
       ${badge}      
       <div class="product-img-wrap">
-        <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">
+        <div class="product-img${hasHover ? ' has-hover-img' : ''}" style="width:100%;height:100%;${images[0] ? 'position:relative;overflow:hidden' : 'display:flex;align-items:center;justify-content:center'}">
           ${imgHtml}
         </div>
           <button class="btn-wishlist" data-wished="false">♡</button>
@@ -1189,9 +1234,12 @@ async function highlightWishlist() {
 }
 window.highlightWishlist = highlightWishlist;
 
+document.addEventListener('DOMContentLoaded', initScrollFadeIn);
+
 document.addEventListener('DOMContentLoaded', async () => {
   // Ждём инициализации ProductCards
   await new Promise(r => setTimeout(r, 0));
+
 
   // Главная страница — популярные товары за последние 2 недели
   const homeGrid = document.getElementById('home-products');
@@ -1271,6 +1319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const catalogGrid = document.getElementById('catalog-products');
   if (catalogGrid) {
     try {
+      catalogGrid.innerHTML = buildSkeletons(8);
       const products = await fetchProducts();
       if (products.length > 0) {
         catalogGrid.innerHTML = products.map(buildCard).join('');
