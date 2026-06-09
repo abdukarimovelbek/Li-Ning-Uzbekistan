@@ -1197,6 +1197,7 @@ const buildCard = (p) => {
           ${imgHtml}
         </div>
           <button class="btn-wishlist" data-wished="false">♡</button>
+          <button class="quick-view-btn" onclick="event.stopPropagation();openQuickView('${p.id}')">Быстрый просмотр</button>
       </div>
       <div class="product-info">
         <div class="product-brand">${p.brand || 'Li Ning'}</div>
@@ -1208,6 +1209,111 @@ const buildCard = (p) => {
       </div>
     </div>`;
 };
+
+/* ─── QUICK VIEW ────────────────────────────── */
+const openQuickView = async (productId) => {
+  let overlay = document.getElementById('qv-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'qv-overlay';
+    overlay.className = 'qv-overlay';
+    overlay.innerHTML = `
+      <div class="qv-modal">
+        <button class="qv-close" onclick="closeQuickView()">✕</button>
+        <div class="qv-img"><img id="qv-img" src="" alt=""></div>
+        <div class="qv-body">
+          <div class="qv-brand" id="qv-brand"></div>
+          <div class="qv-name" id="qv-name"></div>
+          <div class="qv-prices">
+            <span class="cur" id="qv-price"></span>
+            <span class="old" id="qv-old" style="display:none"></span>
+          </div>
+          <div class="qv-size-label">Размер (EU)</div>
+          <div class="qv-size-grid" id="qv-sizes"></div>
+          <button class="qv-add-btn" id="qv-add-btn">+ Добавить в корзину</button>
+          <button class="qv-open-link" id="qv-open-link">Открыть страницу товара →</button>
+        </div>
+      </div>`;
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeQuickView(); });
+    document.body.appendChild(overlay);
+  }
+
+  overlay.classList.add('open');
+  requestAnimationFrame(() => overlay.classList.add('visible'));
+
+  let p = null;
+  try {
+    const cacheKeys = Object.keys(sessionStorage).filter(k => k.startsWith('lining_products_cache'));
+    for (const key of cacheKeys) {
+      const cached = JSON.parse(sessionStorage.getItem(key));
+      const found = cached?.data?.find(item => item.id === productId);
+      if (found) { p = found; break; }
+    }
+  } catch(e) {}
+
+  if (!p) {
+    try {
+      const res = await fetch(
+        `${SB_URL}/rest/v1/products?id=eq.${productId}&select=*`,
+        { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+      );
+      const data = await res.json();
+      if (data?.length) p = data[0];
+    } catch(e) {}
+  }
+
+  if (!p) return;
+
+  const images = Array.isArray(p.images) ? p.images : [];
+  const sizes  = Array.isArray(p.sizes)  ? p.sizes  : [];
+
+  document.getElementById('qv-img').src = images[0] || '';
+  document.getElementById('qv-brand').textContent = p.brand || 'Li Ning';
+  document.getElementById('qv-name').textContent = p.name;
+  document.getElementById('qv-price').textContent = (p.price || 0).toLocaleString('ru-RU') + ' сум';
+  const oldEl = document.getElementById('qv-old');
+  if (p.old_price) { oldEl.textContent = p.old_price.toLocaleString('ru-RU') + ' сум'; oldEl.style.display = ''; }
+  else { oldEl.style.display = 'none'; }
+
+  const sizeGrid = document.getElementById('qv-sizes');
+  sizeGrid.innerHTML = sizes.length
+    ? sizes.map(s => `<button class="qv-size-btn" data-size="${s}">${s}</button>`).join('')
+    : '<span style="color:var(--gray-400);font-size:.82rem">Размеры уточняйте</span>';
+  sizeGrid.querySelectorAll('.qv-size-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      sizeGrid.querySelectorAll('.qv-size-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      sizeGrid.classList.remove('qv-size-err');
+    });
+  });
+
+  document.getElementById('qv-add-btn').onclick = () => {
+    const sel = sizeGrid.querySelector('.qv-size-btn.active');
+    if (!sel && sizes.length) {
+      sizeGrid.classList.add('qv-size-err');
+      setTimeout(() => sizeGrid.classList.remove('qv-size-err'), 1500);
+      return;
+    }
+    Cart.add({ id: p.id, article: p.article || p.id, name: p.name,
+      brand: p.brand || 'Li Ning', price: p.price,
+      size: sel?.dataset.size || '', image: images[0] || null, qty: 1 });
+    closeQuickView();
+  };
+
+  document.getElementById('qv-open-link').onclick = () => {
+    window.location.href = `product.html?id=${p.id}`;
+  };
+};
+
+window.openQuickView = openQuickView;
+
+const closeQuickView = () => {
+  const overlay = document.getElementById('qv-overlay');
+  if (!overlay) return;
+  overlay.classList.remove('visible');
+  setTimeout(() => overlay.classList.remove('open'), 260);
+};
+window.closeQuickView = closeQuickView;
 
 // Загружаем избранное пользователя и подсвечиваем карточки
 async function highlightWishlist() {
