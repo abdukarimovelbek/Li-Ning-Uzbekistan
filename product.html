@@ -208,6 +208,15 @@ function fillProduct(p) {
   // Сохраняем данные товара для корзины
   window._currentProduct = p;
 
+  // Заполняем sticky bar
+  const sName = document.getElementById('sticky-cart-name');
+  const sPrice = document.getElementById('sticky-cart-price');
+  const sImg = document.getElementById('sticky-cart-img');
+  if (sName) sName.textContent = p.name;
+  if (sPrice) sPrice.textContent = (p.price || 0).toLocaleString('ru-RU') + ' сум';
+  const sImgs = Array.isArray(p.images) ? p.images : [];
+  if (sImg && sImgs[0]) { sImg.src = sImgs[0]; sImg.style.display = ''; }
+
   // GA4 событие просмотра товара
   trackEvent('view_item', {
     currency: 'UZS',
@@ -272,6 +281,7 @@ function switchImg(url, thumb) {
 // ─── ИНИЦИАЛИЗАЦИЯ ──────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   loadProduct();
+  initStickyCartBar();
 
   // Кнопка добавить в корзину
   document.querySelector('.btn-add-to-cart')
@@ -329,6 +339,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function initStickyCartBar() {
+  const bar = document.getElementById('sticky-cart-bar');
+  const mainBtn = document.querySelector('.btn-add-to-cart');
+  if (!bar || !mainBtn) return;
+
+  new IntersectionObserver(([entry]) => {
+    bar.classList.toggle('visible', !entry.isIntersecting);
+  }, { threshold: 0, rootMargin: '0px' }).observe(mainBtn);
+
+  document.getElementById('sticky-cart-btn')?.addEventListener('click', () => {
+    document.querySelector('.btn-add-to-cart')?.click();
+  });
+}
+
 function showSizeAlert() {
   const existing = document.getElementById('size-alert');
   if (existing) existing.remove();
@@ -358,6 +382,18 @@ function showSizeAlert() {
 </script>
 
 <div class="toast-container"></div>
+
+<!-- Sticky Add to Cart Bar -->
+<div class="sticky-cart-bar" id="sticky-cart-bar">
+  <div class="sticky-cart-inner">
+    <img class="sticky-cart-img" id="sticky-cart-img" src="" alt="" style="display:none">
+    <div class="sticky-cart-info">
+      <div class="sticky-cart-name" id="sticky-cart-name"></div>
+      <div class="sticky-cart-price" id="sticky-cart-price"></div>
+    </div>
+    <button class="sticky-cart-btn" id="sticky-cart-btn">+ В корзину</button>
+  </div>
+</div>
 
 <!-- MODALS -->
 <div id="modals-placeholder"></div>
