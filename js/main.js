@@ -479,8 +479,9 @@ const CartDrawer = (() => {
 
   document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
 
-  window.CartDrawer = { open, close, init };
+  return window.CartDrawer = { open, close, init };
 })();
+
 
 
 
