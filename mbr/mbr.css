@@ -249,38 +249,41 @@ kbd {
 
 .navbar {
   position: fixed;
-  bottom: 22px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--dark);
   color: #fff;
   border-radius: 999px;
-  padding: 8px 12px;
+  padding: 4px 8px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   z-index: 20;
   box-shadow: 0 20px 50px -20px rgba(0,0,0,.5);
 }
 .nav-btn {
   color: #fff;
   font-weight: 600;
-  font-size: 14px;
-  padding: 8px 14px;
+  font-size: 12px;
+  padding: 5px 10px;
   border-radius: 999px;
   transition: background .15s;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
-.nav-btn:hover { background: rgba(255,255,255,.1); }
+.nav-btn:hover { 
+  background: rgba(255,255,255,.1); 
+}
 .nav-counter {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  padding: 0 10px;
-  min-width: 60px;
+  font-size: 12px;
+  padding: 0 8px;
+  min-width: 50px;
   text-align: center;
 }
+
 .nav-spacer {
   width: 1px; height: 22px;
   background: rgba(255,255,255,.15);
@@ -778,42 +781,6 @@ kbd {
   color: var(--muted);
   margin-left: 4px;
 }
-
-/* Traffic light */
-.traffic {
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  padding: 12px 18px;
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  flex-wrap: wrap;
-}
-.traffic-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-.traffic-item {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  letter-spacing: .08em;
-  color: var(--muted);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-.traffic-item .dot {
-  width: 11px; height: 11px; border-radius: 50%;
-  background: var(--grey);
-}
-.traffic-item.green .dot { background: var(--green); }
-.traffic-item.yellow .dot { background: var(--yellow); }
-.traffic-item.red .dot { background: var(--red); }
 
 /* =========================================================
    Summary slide

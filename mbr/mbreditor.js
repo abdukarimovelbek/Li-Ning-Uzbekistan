@@ -226,7 +226,6 @@ function formDirector(d) {
 }
 function storeCard(i, s) {
   const tr = (s.traffic || {});
-  const trafficKeys = ['план','трафик','конверсия','средний чек','возвраты','персонал'];
   return `
     <div class="store-card">
       <div class="store-card-hd">
@@ -302,15 +301,6 @@ function storeCard(i, s) {
           </div>`).join('')}
       </div>
 
-      <h4>Светофор</h4>
-      <div class="traffic-edit">
-        ${trafficKeys.map(k=>`
-          <label class="f"><span>${k}</span>
-            <select data-p="stores.${i}.traffic.${k}">
-              ${['green','yellow','red'].map(v=>`<option value="${v}" ${tr[k]===v?'selected':''}>${v}</option>`).join('')}
-            </select>
-          </label>`).join('')}
-      </div>
       <h4>Продажи по сотрудникам</h4>
       <div class="stores-edit">
         ${(s.staff||[]).map((emp,j) => `
@@ -338,7 +328,6 @@ window.addStore = () => {
     staff:[],
     trend:[0,0,0,0,0,0,0,0,0,0,0,0], trendPy:[0,0,0,0,0,0,0,0,0,0,0,0],
     weeks:[[0,0],[0,0],[0,0],[0,0]],
-    traffic:{'план':'yellow','трафик':'green','средний чек':'green','возвраты':'green','персонал':'yellow'}
   });
   markDirty(); renderForm();
 };
