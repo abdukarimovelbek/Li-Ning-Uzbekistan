@@ -16,6 +16,15 @@
     }
     body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
 
+    .ga-social-row { display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid var(--border); font-size:.85rem; }
+    .ga-social-row:last-child { border-bottom:none; }
+    .ga-social-row span:last-child { font-weight:700; font-size:1rem; }
+    .ga-bar-row { display:flex; align-items:center; gap:.6rem; margin-bottom:.5rem; font-size:.8rem; }
+    .ga-bar-track { flex:1; height:6px; background:var(--border); border-radius:3px; overflow:hidden; }
+    .ga-bar-fill { height:100%; background:var(--red); border-radius:3px; transition:width .5s ease; }
+    .stat-sub { font-size:.7rem; color:var(--muted); margin-top:.2rem; }
+
+
     /* SIDEBAR */
     .sidebar{width:var(--sidebar-w);background:var(--sidebar);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:100}
     .sidebar-logo{padding:1.5rem 1.2rem;border-bottom:1px solid #222}
@@ -227,6 +236,9 @@
     <div class="nav-section">Главное</div>
     <div class="nav-item active" onclick="showSection('dashboard')">
       <span class="icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showSection('analytics')">
+      <span class="icon">📈</span> Аналитика
     </div>
     <div class="nav-item" onclick="showSection('orders')">
       <span class="icon">🛒</span> Заказы
@@ -653,6 +665,100 @@
       </div>
     </div>
 
+    <!-- ─── SECTION: ANALYTICS ─── -->
+    <div class="section" id="section-analytics">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem">
+        <div>
+          <div style="font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem">За последние 30 дней / 7 дней / 24ч</div>
+          <div style="font-size:.82rem;color:var(--muted)" id="ga-updated">Загрузка...</div>
+        </div>
+        <button onclick="loadAnalytics()" style="background:var(--red);color:#fff;border:none;padding:.5rem 1.2rem;font-size:.8rem;cursor:pointer;border-radius:4px">↻ Обновить</button>
+      </div>
+
+      <!-- Строка 1: Основные метрики (30 дней) -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+        <div class="stat-card">
+          <div class="stat-label">Уник. посетители</div>
+          <div class="stat-value" id="ga-users">—</div>
+          <div class="stat-sub">за 30 дней</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Всего посещений</div>
+          <div class="stat-value" id="ga-sessions">—</div>
+          <div class="stat-sub">за 30 дней</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Посещений / чел.</div>
+          <div class="stat-value" id="ga-spu">—</div>
+          <div class="stat-sub">в среднем</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Отказы</div>
+          <div class="stat-value" id="ga-bounce">—</div>
+          <div class="stat-sub">% (меньше = лучше)</div>
+        </div>
+      </div>
+
+      <!-- Строка 2: Сегодня + Конверсия в корзину -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+        <div class="stat-card" style="border-left:3px solid var(--green)">
+          <div class="stat-label">Сегодня: посетители</div>
+          <div class="stat-value" id="ga-today-users">—</div>
+          <div class="stat-sub">уникальных</div>
+        </div>
+        <div class="stat-card" style="border-left:3px solid var(--green)">
+          <div class="stat-label">Сегодня: сессии</div>
+          <div class="stat-value" id="ga-today-sessions">—</div>
+          <div class="stat-sub">всего</div>
+        </div>
+        <div class="stat-card" style="border-left:3px solid var(--gold)">
+          <div class="stat-label">Конверсия в корзину</div>
+          <div class="stat-value" id="ga-cart-conv">—</div>
+          <div class="stat-sub">% от сессий (7 дней)</div>
+        </div>
+        <div class="stat-card" style="border-left:3px solid var(--gold)">
+          <div class="stat-label">Клики на соцсети</div>
+          <div class="stat-value" id="ga-social-total">—</div>
+          <div class="stat-sub">Instagram + Telegram (7д)</div>
+        </div>
+      </div>
+
+      <!-- Строка 3: Две колонки -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+
+        <!-- Топ-5 товаров -->
+        <div class="card" style="padding:1.2rem">
+          <div style="font-weight:700;margin-bottom:1rem;font-size:.9rem">🔥 Топ-5 товаров за 24 часа</div>
+          <div id="ga-top-products">
+            <div style="color:var(--muted);font-size:.82rem">Загрузка...</div>
+          </div>
+        </div>
+
+        <!-- Клики соцсетей + карта -->
+        <div class="card" style="padding:1.2rem">
+          <div style="font-weight:700;margin-bottom:1rem;font-size:.9rem">📲 Клики по ссылкам (7 дней)</div>
+          <div style="display:flex;flex-direction:column;gap:.7rem" id="ga-social-detail">
+            <div class="ga-social-row"><span>Instagram</span><span id="ga-instagram">—</span></div>
+            <div class="ga-social-row"><span>Telegram</span><span id="ga-telegram">—</span></div>
+            <div class="ga-social-row"><span>Открыть карту</span><span id="ga-map">—</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Строка 4: Источники + Устройства -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div class="card" style="padding:1.2rem">
+          <div style="font-weight:700;margin-bottom:1rem;font-size:.9rem">🌐 Источники трафика (7 дней)</div>
+          <div id="ga-sources"><div style="color:var(--muted);font-size:.82rem">Загрузка...</div></div>
+        </div>
+        <div class="card" style="padding:1.2rem">
+          <div style="font-weight:700;margin-bottom:1rem;font-size:.9rem">📱 Устройства (30 дней)</div>
+          <div id="ga-devices"><div style="color:var(--muted);font-size:.82rem">Загрузка...</div></div>
+        </div>
+      </div>
+    </div>
+
+
     <!-- SETTINGS -->
     <div class="section" id="section-settings">
       <div class="settings-section">
@@ -986,7 +1092,7 @@
       document.getElementById('section-' + name).classList.add('active');
       event.currentTarget.classList.add('active');
 
-      const titles = {dashboard:'Dashboard',products:'Товары',orders:'Заказы',promotions:'Акции',slides:'Слайдер',prices:'Цены',settings:'Настройки'};
+      const titles = {dashboard:'Dashboard',analytics:'Аналитика',products:'Товары',orders:'Заказы',promotions:'Акции',slides:'Слайдер',prices:'Цены',settings:'Настройки'};
       document.getElementById('topbar-title').textContent = titles[name] || name;
       document.getElementById('topbar-add-btn').style.display = name === 'products' ? 'block' : 'none';
 
@@ -995,7 +1101,83 @@
       if (name === 'dashboard') loadDashboard();
       if (name === 'slides') loadSlides();
       if (name === 'promotions') loadPromoStatuses();
+      if (name === 'analytics') loadAnalytics();
+    }
 
+    // ANALYTICS
+    const GA_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkWGM5YN12zPP_3iieAyNCOE7PY7ivpoJN-D2osSwIYXVz9xdaDxVvGm-YwlUkwia6zQ/exec';
+
+    async function loadAnalytics() {
+      document.getElementById('ga-updated').textContent = 'Загрузка данных из Google Analytics...';
+      try {
+        const res = await fetch(GA_SCRIPT_URL);
+        const json = await res.json();
+        if (!json.ok) throw new Error(json.error);
+        renderAnalytics(json.data);
+        document.getElementById('ga-updated').textContent =
+          'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
+      } catch(e) {
+        document.getElementById('ga-updated').textContent = '⚠ Ошибка загрузки: ' + e.message;
+      }
+    }
+
+    function renderAnalytics(d) {
+      // Основные метрики
+      document.getElementById('ga-users').textContent    = d.main.activeUsers.toLocaleString('ru-RU');
+      document.getElementById('ga-sessions').textContent = d.main.sessions.toLocaleString('ru-RU');
+      document.getElementById('ga-spu').textContent      = d.main.sessionsPerUser;
+      document.getElementById('ga-bounce').textContent   = d.main.bounceRate + '%';
+      // Сегодня
+      document.getElementById('ga-today-users').textContent    = d.today.activeUsers.toLocaleString('ru-RU');
+      document.getElementById('ga-today-sessions').textContent = d.today.sessions.toLocaleString('ru-RU');
+      // Конверсия + соцсети
+      document.getElementById('ga-cart-conv').textContent  = d.cartConversion + '%';
+      document.getElementById('ga-social-total').textContent = (d.social.instagram + d.social.telegram).toLocaleString('ru-RU');
+      document.getElementById('ga-instagram').textContent  = d.social.instagram.toLocaleString('ru-RU');
+      document.getElementById('ga-telegram').textContent   = d.social.telegram.toLocaleString('ru-RU');
+      document.getElementById('ga-map').textContent        = d.social.map.toLocaleString('ru-RU');
+
+      // Топ-5 товаров
+      const topEl = document.getElementById('ga-top-products');
+      if (!d.topProducts.length) {
+        topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет данных за 24ч</div>';
+      } else {
+        const maxV = d.topProducts[0].views;
+        topEl.innerHTML = d.topProducts.map((p, i) => `
+          <div class="ga-bar-row">
+            <span style="width:16px;color:var(--muted);font-size:.75rem">${i+1}</span>
+            <div style="flex:1;min-width:0">
+              <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem">${p.name}</div>
+              <div class="ga-bar-track"><div class="ga-bar-fill" style="width:${Math.round(p.views/maxV*100)}%"></div></div>
+            </div>
+            <span style="font-weight:700;font-size:.85rem;margin-left:.5rem">${p.views}</span>
+          </div>`).join('');
+      }
+
+      // Источники трафика
+      const srcEl = document.getElementById('ga-sources');
+      const maxS = d.sources[0]?.sessions || 1;
+      srcEl.innerHTML = d.sources.map(s => `
+        <div class="ga-bar-row">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.82rem">${s.channel}</div>
+            <div class="ga-bar-track"><div class="ga-bar-fill" style="width:${Math.round(s.sessions/maxS*100)}%;background:#4a90d9"></div></div>
+          </div>
+          <span style="font-weight:700;font-size:.85rem;margin-left:.5rem">${s.sessions}</span>
+        </div>`).join('');
+
+      // Устройства
+      const devEl = document.getElementById('ga-devices');
+      const totalDev = Object.values(d.devices).reduce((a,b)=>a+b, 0) || 1;
+      const devLabels = { mobile:'📱 Mobile', desktop:'🖥 Desktop', tablet:'📟 Tablet' };
+      devEl.innerHTML = Object.entries(d.devices).map(([k, v]) => `
+        <div class="ga-bar-row">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:.82rem">${devLabels[k]||k} &nbsp;<span style="color:var(--muted)">${Math.round(v/totalDev*100)}%</span></div>
+            <div class="ga-bar-track"><div class="ga-bar-fill" style="width:${Math.round(v/totalDev*100)}%;background:#22c55e"></div></div>
+          </div>
+          <span style="font-weight:700;font-size:.85rem;margin-left:.5rem">${v}</span>
+        </div>`).join('');
     }
 
     // DASHBOARD
