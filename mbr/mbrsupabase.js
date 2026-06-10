@@ -29,7 +29,7 @@ async function sbGetUser() {
 async function sbGetProfile() {
   const user = await sbGetUser();
   if (!user) return null;
-  const { data } = await SB.from('profiles').select('*').eq('id', user.id).maybeSingle();
+  const { data } = await SB.from('mbr_profiles').select('*').eq('id', user.id).maybeSingle();
   return data;
 }
 async function sbSignOut() { await SB.auth.signOut(); }
