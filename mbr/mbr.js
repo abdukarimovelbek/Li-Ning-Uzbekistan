@@ -2,7 +2,7 @@
    MBR — Monthly Business Review · Li-Ning UZ
    Презентационный режим (view-only). Данные тянутся из Supabase,
    подписан live на изменения — кто-то сохранил → экран сам обновился.
-   Редактирование — в mbr-editor.html.
+   Редактирование — в mbreditor.html.
    ========================================================= */
 
 let data = null;
@@ -24,7 +24,7 @@ let pageIndex = 0;
       `<div style="margin:auto;color:#fff;padding:40px;max-width:720px;text-align:center">
         <h2>Нет активного периода</h2>
         <p style="opacity:.7">Откройте Supabase → таблица <code>mbr_periods</code> → проставьте <code>is_current = true</code> нужной строке.</p>
-        <p><a href="mbr-editor.html" style="color:#e1241c">Открыть личный кабинет</a></p>
+        <p><a href="mbreditor.html" style="color:#e1241c">Открыть личный кабинет</a></p>
       </div>`;
     return;
   }
@@ -557,7 +557,7 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
   if (e.key === 'ArrowLeft'  || e.key === 'PageUp') { e.preventDefault(); prev(); }
   if (e.key === 'h' || e.key === 'H') { e.preventDefault(); goHome(); }
-  if (e.key === 'e' || e.key === 'E') { e.preventDefault(); location.href = 'mbr-editor.html'; }
+  if (e.key === 'e' || e.key === 'E') { e.preventDefault(); location.href = 'mbreditor.html'; }
   if (e.key === 'Home') { pageIndex = 0; render(); }
   if (e.key === 'End')  { pageIndex = totalPages()-1; render(); }
 });
