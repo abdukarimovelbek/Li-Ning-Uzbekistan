@@ -60,12 +60,15 @@ function buildSelectScreen(profile) {
   data.directors.forEach((d, i) => {
     const card = document.createElement('button');
     card.className = 'director-card';
+    const photoStyle = d.photo ? `style="background-image:url('${escapeAttr(d.photo)}');color:transparent"` : '';
+    const storeCount = (d.stores||[]).length;
+    const storeLbl = storeCount === 1 ? 'магазин' : (storeCount >= 2 && storeCount <= 4 ? 'магазина' : 'магазинов');
     card.innerHTML = `
-      <div class="dc-avatar">фото<br>директора</div>
+      <div class="dc-avatar" ${photoStyle}>${d.photo ? '' : (i+1)}</div>
       <div class="dc-body">
         <div class="dc-role">${escapeHtml(d.role || 'Региональный директор')} · ${i+1} / ${data.directors.length}</div>
-        <div class="dc-name">${escapeHtml(d.name || '—')}</div>
-        <div class="dc-meta">${escapeHtml(d.region || '')} · ${(d.stores||[]).length} магазинов</div>
+        <div class="dc-name">${escapeHtml(d.name || 'Директор ' + (i+1))}</div>
+        <div class="dc-meta">${escapeHtml(d.region || '')}${d.region && storeCount ? ' · ' : ''}${storeCount ? storeCount + ' ' + storeLbl : ''}</div>
       </div>
       <div class="dc-arrow">›</div>
     `;
