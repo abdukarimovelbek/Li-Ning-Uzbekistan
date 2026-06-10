@@ -298,7 +298,7 @@ function renderStore(d, s) {
         <div class="chart-row">
           <div class="chart-card">
             <div class="chart-head">
-              <div class="chart-title">Тренд выручки · 6 мес</div>
+              <div class="chart-title">Продажи · с начала года</div>
               <div class="chart-legend">
                 <span><i></i> ${escapeHtml(yearOf(data.period))}</span>
                 <span><i class="dashed"></i> YoY</span>
@@ -320,7 +320,9 @@ function renderStore(d, s) {
 
         <div class="sec-row">
           <div class="sec"><div class="sec-label">UPT · товаров в чеке</div><div class="sec-value">${s.upt ?? '—'}</div></div>
-          <div class="sec"><div class="sec-label">Конверсия</div><div class="sec-value">${s.conversion ?? 0}<span class="unit">%</span></div></div>
+          <div class="sec"><div class="sec-label">Площадь</div><div class="sec-value">${+s.area||0}<span class="unit">м²</span></div></div>
+          <div class="sec"><div class="sec-label">Продажи / м²</div><div class="sec-value">${(()=>{ const r=parseFloat((''+s.revenue?.value).replace(/[^\d.]/g,''))||0; const a=+s.area||0; return a>0?(r/a).toFixed(1):'—'; })()}<span class="unit">${escapeHtml(s.revenue?.unit)}</span></div></div>
+          <div class="sec"><div class="sec-label">Ср. скидка тек/пред</div><div class="sec-value">${+s.discountCurr||0}% / ${+s.discountPrev||0}%</div></div>
           <div class="sec"><div class="sec-label">Возвраты</div><div class="sec-value">${s.returns ?? 0}<span class="unit">%</span></div></div>
           <div class="sec"><div class="sec-label">Продажи / сотрудник</div><div class="sec-value">${escapeHtml(s.spe?.value)}<span class="unit">${escapeHtml(s.spe?.unit)}</span></div></div>
         </div>
@@ -331,6 +333,10 @@ function renderStore(d, s) {
             <span class="traffic-item ${v}"><span class="dot"></span> ${escapeHtml(k)}</span>
           `).join('')}
         </div>
+
+        ${(()=>{ const c=s.cats||{}; const cl=+c.clothing||0,fo=+c.footwear||0,ac=+c.accessories||0,tot=cl+fo+ac; if(!tot) return ''; const pct=v=>tot?Math.round(v/tot*100):0; const colors=['#e1241c','#0a0a0a','#9b958a']; const vals=[cl,fo,ac]; const labels=['Одежда','Обувь','Аксессуары']; let start=-Math.PI/2,paths=''; vals.forEach((v,i)=>{ if(!v)return; const ang=(v/tot)*2*Math.PI,end=start+ang,x1=80+70*Math.cos(start),y1=80+70*Math.sin(start),x2=80+70*Math.cos(end),y2=80+70*Math.sin(end); paths+=`<path d="M80,80 L${x1},${y1} A70,70 0 ${ang>Math.PI?1:0} 1 ${x2},${y2} Z" fill="${colors[i]}"/>`; start=end; }); return `<div class="chart-row" style="margin-top:14px"><div class="chart-card"><div class="chart-head"><div class="chart-title">Категории продаж</div></div><div class="chart-body" style="display:flex;align-items:center;gap:24px;padding:12px"><svg viewBox="0 0 160 160" style="width:140px;height:140px;flex-shrink:0">${paths}</svg><div style="flex:1">${labels.map((l,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0"></div><div style="font-size:13px">${l}</div><div style="margin-left:auto;font-weight:800;font-size:15px">${pct(vals[i])}%</div></div>`).join('')}</div></div></div></div>`; })()}
+
+        ${(()=>{ const st=(s.staff||[]).filter(e=>e.name||+e.sales); if(!st.length) return ''; const rows=st.slice().sort((a,b)=>(+b.sales||0)-(+a.sales||0)).map(e=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="flex:1;font-size:14px;font-weight:600">${escapeHtml(e.name)}</div><div style="font-weight:800;font-size:15px;color:var(--red)">${fmtNum(e.sales)} $</div></div>`).join(''); return `<div class="summary-notes" style="margin-top:14px"><div class="lbl">Продажи по сотрудникам</div><div>${rows}</div></div>`; })()}
       </div>
     </div>
   `;
@@ -498,25 +504,35 @@ function yearOf(period) {
 
 /* ---------- SVG charts ----------------------------------- */
 function trendChart(curr, prev) {
-  if (!curr.length) return '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#bbb;font-family:JetBrains Mono;font-size:11px;letter-spacing:.2em">НЕТ ДАННЫХ</div>';
-  const W = 600, H = 200, P = 14;
-  const all = [...curr, ...(prev||[])];
+  const MONTHS = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+  const len = Math.max(
+    (curr||[]).reduce((l,v,i)=>(+v||0)>0?i+1:l, 1),
+    (prev||[]).reduce((l,v,i)=>(+v||0)>0?i+1:l, 1)
+  );
+  const c = (curr||[]).slice(0, len);
+  const p = (prev||[]).slice(0, len);
+  if (c.every(v=>(+v||0)===0)) return '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#bbb;font-family:JetBrains Mono;font-size:11px;letter-spacing:.2em">НЕТ ДАННЫХ</div>';
+  const W = 600, H = 220, P = 14, BT = 22;
+  const all = [...c, ...p];
   const max = Math.max(...all.map(v=>+v||0), 1);
-  const stepX = (W - P*2) / Math.max(1, curr.length - 1);
-  const y = v => H - P - ((+v||0) / max) * (H - P*2);
+  const stepX = (W - P*2) / Math.max(1, len - 1);
+  const y = v => H - BT - P - ((+v||0) / max) * (H - BT - P*2);
   const pts = arr => arr.map((v,i) => `${P + i*stepX},${y(v)}`).join(' ');
-  const area = curr.map((v,i) => `${P + i*stepX},${y(v)}`)
-    .concat([`${P + (curr.length-1)*stepX},${H-P}`, `${P},${H-P}`]).join(' ');
-  const dots = curr.map((v,i) => `<circle cx="${P + i*stepX}" cy="${y(v)}" r="4" fill="#fff" stroke="#e1241c" stroke-width="2"/>`).join('');
-  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-    <line x1="${P}" y1="${H-P}" x2="${W-P}" y2="${H-P}" stroke="#e8e2d2" stroke-width="1" stroke-dasharray="2 4"/>
-    <line x1="${P}" y1="${H/2}" x2="${W-P}" y2="${H/2}" stroke="#eee5d2" stroke-width="1" stroke-dasharray="2 4"/>
+  const area = c.map((v,i) => `${P + i*stepX},${y(v)}`).concat([`${P+(len-1)*stepX},${H-BT-P}`,`${P},${H-BT-P}`]).join(' ');
+  const dots = c.map((v,i) => i===len-1
+    ? `<circle cx="${P+i*stepX}" cy="${y(v)}" r="6" fill="#e1241c" stroke="#fff" stroke-width="2"/>`
+    : `<circle cx="${P+i*stepX}" cy="${y(v)}" r="3.5" fill="#fff" stroke="#e1241c" stroke-width="2"/>`).join('');
+  const labels = c.map((_,i) => `<text x="${P+i*stepX}" y="${H-4}" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#9b958a">${MONTHS[i]||''}</text>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet">
+    <line x1="${P}" y1="${H-BT-P}" x2="${W-P}" y2="${H-BT-P}" stroke="#e8e2d2" stroke-width="1" stroke-dasharray="2 4"/>
+    <line x1="${P}" y1="${(H-BT)/2}" x2="${W-P}" y2="${(H-BT)/2}" stroke="#eee5d2" stroke-width="1" stroke-dasharray="2 4"/>
     <polygon points="${area}" fill="rgba(225,36,28,.07)"/>
-    ${prev && prev.length ? `<polyline points="${pts(prev)}" fill="none" stroke="#9b958a" stroke-width="2" stroke-dasharray="6 5"/>` : ''}
-    <polyline points="${pts(curr)}" fill="none" stroke="#e1241c" stroke-width="2.5"/>
-    ${dots}
+    ${p.length ? `<polyline points="${pts(p)}" fill="none" stroke="#9b958a" stroke-width="2" stroke-dasharray="6 5"/>` : ''}
+    <polyline points="${pts(c)}" fill="none" stroke="#e1241c" stroke-width="2.5"/>
+    ${dots}${labels}
   </svg>`;
 }
+
 function weeksChart(weeks) {
   if (!weeks.length) return '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#bbb;font-family:JetBrains Mono;font-size:11px;letter-spacing:.2em">НЕТ ДАННЫХ</div>';
   const W = 600, H = 200, P = 14;

@@ -243,7 +243,12 @@ function storeCard(i, s) {
           </select>
         </label>
         <label class="f"><span>UPT (товаров в чеке)</span><input type="number" step="0.1" data-p="stores.${i}.upt" value="${attr(s.upt)}"></label>
-        <label class="f"><span>Конверсия, %</span><input type="number" data-p="stores.${i}.conversion" value="${attr(s.conversion)}"></label>
+        <label class="f"><span>Площадь магазина, м²</span><input type="number" data-p="stores.${i}.area" value="${attr(s.area)}" placeholder="кв.м"></label>
+      </div>
+      <h4>Средняя скидка</h4>
+      <div class="grid g2">
+        <label class="f"><span>Ср. скидка текущий мес., %</span><input type="number" step="0.1" data-p="stores.${i}.discountCurr" value="${attr(s.discountCurr)}"></label>
+        <label class="f"><span>Ср. скидка пред. мес., %</span><input type="number" step="0.1" data-p="stores.${i}.discountPrev" value="${attr(s.discountPrev)}"></label>
       </div>
 
       <h4>Выручка</h4>
@@ -271,14 +276,20 @@ function storeCard(i, s) {
         <label class="f"><span>Продажи / сотр.</span><input data-p="stores.${i}.spe.value" value="${attr(s.spe?.value)}"></label>
         <label class="f"><span>Ед. изм</span><input data-p="stores.${i}.spe.unit" value="${attr(s.spe?.unit)}"></label>
       </div>
-
-      <h4>Тренд выручки · 6 месяцев</h4>
-      <div class="grid g6">
-        ${[0,1,2,3,4,5].map(j=>`<label class="f"><span>М${j+1}</span><input type="number" data-p="stores.${i}.trend.${j}" value="${attr((s.trend||[])[j])}"></label>`).join('')}
+      <h4>Категории продаж, $ (отчётный месяц)</h4>
+      <div class="grid g3">
+        <label class="f"><span>Одежда</span><input type="number" data-p="stores.${i}.cats.clothing" value="${attr(s.cats?.clothing)}"></label>
+        <label class="f"><span>Обувь</span><input type="number" data-p="stores.${i}.cats.footwear" value="${attr(s.cats?.footwear)}"></label>
+        <label class="f"><span>Аксессуары</span><input type="number" data-p="stores.${i}.cats.accessories" value="${attr(s.cats?.accessories)}"></label>
       </div>
-      <h4>Прошлый год (YoY) · 6 месяцев</h4>
+
+      <h4>Продажи с начала года · текущий год ($, Янв–Дек)</h4>
       <div class="grid g6">
-        ${[0,1,2,3,4,5].map(j=>`<label class="f"><span>М${j+1}</span><input type="number" data-p="stores.${i}.trendPy.${j}" value="${attr((s.trendPy||[])[j])}"></label>`).join('')}
+        ${['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'].map((m,j)=>`<label class="f"><span>${m}</span><input type="number" data-p="stores.${i}.trend.${j}" value="${attr((s.trend||[])[j])}"></label>`).join('')}
+      </div>
+      <h4>Продажи с начала года · прошлый год ($, Янв–Дек)</h4>
+      <div class="grid g6">
+        ${['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'].map((m,j)=>`<label class="f"><span>${m}</span><input type="number" data-p="stores.${i}.trendPy.${j}" value="${attr((s.trendPy||[])[j])}"></label>`).join('')}
       </div>
 
       <h4>План / Факт по неделям</h4>
@@ -300,6 +311,17 @@ function storeCard(i, s) {
             </select>
           </label>`).join('')}
       </div>
+      <h4>Продажи по сотрудникам</h4>
+      <div class="stores-edit">
+        ${(s.staff||[]).map((emp,j) => `
+          <div class="store-card-hd">
+            <input class="store-card-name" data-p="stores.${i}.staff.${j}.name" value="${attr(emp.name)}" placeholder="ФИО сотрудника">
+            <input class="store-card-mall" data-p="stores.${i}.staff.${j}.sales" type="number" value="${attr(emp.sales)}" placeholder="Продажи $">
+            <button type="button" class="btn-del" onclick="delStaff(${i},${j})">×</button>
+          </div>
+        `).join('')}
+      </div>
+      <button type="button" class="btn-add" onclick="addStaff(${i})">+ Добавить сотрудника</button>
     </div>
   `;
 }
@@ -310,11 +332,13 @@ window.addStore = () => {
     revenue:{value:'0',unit:'млрд сум',mom:0,yoy:0},
     pairs:{value:0,mom:0}, tx:{value:0,mom:0},
     avg:{value:'0',unit:'тыс',mom:0},
-    upt:1.7, conversion:30, returns:2.0,
+    upt:1.7, area:0, discountCurr:0, discountPrev:0, returns:2.0,
     spe:{value:'0',unit:'млн'},
-    trend:[0,0,0,0,0,0], trendPy:[0,0,0,0,0,0],
+    cats:{clothing:0, footwear:0, accessories:0},
+    staff:[],
+    trend:[0,0,0,0,0,0,0,0,0,0,0,0], trendPy:[0,0,0,0,0,0,0,0,0,0,0,0],
     weeks:[[0,0],[0,0],[0,0],[0,0]],
-    traffic:{'план':'yellow','трафик':'green','конверсия':'yellow','средний чек':'green','возвраты':'green','персонал':'yellow'}
+    traffic:{'план':'yellow','трафик':'green','средний чек':'green','возвраты':'green','персонал':'yellow'}
   });
   markDirty(); renderForm();
 };
@@ -322,6 +346,16 @@ window.delStore = (i) => {
   if (!confirm('Удалить этот магазин из вашей секции?')) return;
   _state.stores.splice(i,1); markDirty(); renderForm();
 };
+window.addStaff = (si) => {
+  _state.stores[si].staff = _state.stores[si].staff || [];
+  _state.stores[si].staff.push({name:'', sales:0});
+  markDirty(); renderForm();
+};
+window.delStaff = (si, ji) => {
+  _state.stores[si].staff.splice(ji, 1);
+  markDirty(); renderForm();
+};
+
 
 function formProduct(d) {
   return `
