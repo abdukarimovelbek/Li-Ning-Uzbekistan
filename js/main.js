@@ -899,6 +899,17 @@ const OrderForm = (() => {
         if (res.ok) {
           const data = await res.json();
           const orderId = data[0]?.id?.slice(0, 8).toUpperCase() || 'XXXXXX';
+          trackEvent('purchase', {
+            transaction_id: data[0]?.id || orderId,
+            value: orderData.total,
+            currency: 'UZS',
+            items: orderItems.map(i => ({
+              item_id:   i.article,
+              item_name: i.name,
+              price:     i.price,
+              quantity:  i.quantity
+            }))
+          });
           window.Toast?.show('🎉 Заказ принят!', `Номер заказа: ${orderId}`, 'success');
           window.Cart.clear();
           submitBtn.textContent = '✓ Заказ оформлен';

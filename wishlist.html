@@ -82,7 +82,6 @@
   <script>
   /* ── WISHLIST PAGE LOGIC ── */
   const SB_URL_W = 'https://dgyirginrefvjsbhhooi.supabase.co';
-  const SB_KEY_W = window.SB_KEY || 'ВСТАВЬ_СВОЙ_ANON_KEY';
 
   // Ключи localStorage
   const WISHLIST_KEY = 'lining_wishlist';
@@ -93,13 +92,6 @@
 
   function saveWishlist(ids) {
     localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
-  }
-
-  function removeFromWishlist(productId) {
-    const ids = getWishlist().filter(id => id !== productId);
-    saveWishlist(ids);
-    renderWishlist();
-    window.Toast?.show('Убрано из избранного', '', '');
   }
 
   async function renderWishlist() {

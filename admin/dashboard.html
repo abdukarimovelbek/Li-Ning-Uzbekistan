@@ -16,6 +16,11 @@
     }
     body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh}
 
+    .stat-card { background:var(--card); border:1px solid var(--border); border-radius:8px; padding:1.5rem; }
+    .stat-label { font-size:.72rem; letter-spacing:.5px; text-transform:uppercase; color:var(--muted); margin-bottom:.4rem; }
+    .stat-value { font-size:1.8rem; font-weight:700; line-height:1; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:8px; }
+
     .ga-social-row { display:flex; justify-content:space-between; align-items:center; padding:.5rem 0; border-bottom:1px solid var(--border); font-size:.85rem; }
     .ga-social-row:last-child { border-bottom:none; }
     .ga-social-row span:last-child { font-weight:700; font-size:1rem; }
@@ -691,11 +696,6 @@
           <div class="stat-label">Посещений / чел.</div>
           <div class="stat-value" id="ga-spu">—</div>
           <div class="stat-sub">в среднем</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Отказы</div>
-          <div class="stat-value" id="ga-bounce">—</div>
-          <div class="stat-sub">% (меньше = лучше)</div>
         </div>
       </div>
 
