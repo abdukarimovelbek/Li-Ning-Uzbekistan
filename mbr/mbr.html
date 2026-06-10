@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>MBR · Li-Ning UZ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/mbr.css">
+</head>
+<body>
+
+  <!-- =================== Director selection screen =================== -->
+  <div id="selectScreen" class="select-screen">
+    <div class="select-inner">
+      <div class="select-brand">
+        <span class="brand-badge">LI-NING UZ</span>
+        <h1 class="brand-mbr">M<span class="b">B</span>R</h1>
+        <div class="brand-sub">Monthly Business Review<br>Ежемесячный разбор результатов</div>
+      </div>
+
+      <div class="select-right">
+        <div class="select-label">Выберите презентующего</div>
+        <div id="directorGrid" class="director-grid"></div>
+        <button class="btn-all" id="openAllBtn">Открыть всю презентацию →</button>
+        <div class="select-tools">
+          <button id="selImport">Импорт данных</button>
+          <button id="selExport">Экспорт данных</button>
+          <button id="selReset">Сбросить всё</button>
+          <input type="file" id="importFile" accept="application/json" hidden>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =================== Presentation deck =================== -->
+  <main id="deck" class="deck hidden">
+    <div id="slide" class="slide"></div>
+
+    <div class="navbar">
+      <button id="prevBtn" class="nav-btn" title="Назад (←)">‹</button>
+      <span id="pageIndicator" class="nav-counter">1 / 8</span>
+      <button id="nextBtn" class="nav-btn" title="Вперёд (→)">›</button>
+
+      <div class="nav-spacer"></div>
+
+      <button id="editBtn" class="nav-btn nav-edit" title="Режим редактирования (E)">
+        <span class="dot"></span> Редактировать
+      </button>
+      <button id="homeBtn" class="nav-btn" title="К выбору директора (H)">Меню</button>
+      <button id="resetBtn" class="nav-btn nav-reset" title="Сброс (R)">Reset <kbd>R</kbd></button>
+    </div>
+
+    <div id="editHint" class="edit-hint hidden">
+      Режим редактирования включён. Кликните по любому числу или тексту, чтобы изменить. Изменения сохраняются автоматически.
+    </div>
+  </main>
+
+  <!-- =================== Toast =================== -->
+  <div id="toast" class="toast"></div>
+
+  <script src="js/mbr.js"></script>
+</body>
+</html>

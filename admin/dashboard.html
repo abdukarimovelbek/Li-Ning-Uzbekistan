@@ -1113,16 +1113,7 @@
         const res = await fetch(GA_SCRIPT_URL);
         const json = await res.json();
         if (!json.ok) throw new Error(json.error);
-        const gaData = json.data;
-        const ids = gaData.topProducts.map(p => p.id).filter(Boolean);
-        if (ids.length) {
-          try {
-            const prods = await sbFetch('products', 'GET', null, `?id=in.(${ids.join(',')})&select=id,article`);
-            const artMap = Object.fromEntries(prods.map(p => [p.id, p.article]));
-            gaData.topProducts = gaData.topProducts.map(p => ({ ...p, article: artMap[p.id] || '' }));
-          } catch(e) { /* артикулы не загрузились — ничего страшного */ }
-        }
-        renderAnalytics(gaData);
+        renderAnalytics(json.data);
         document.getElementById('ga-updated').textContent =
           'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
       } catch(e) {
@@ -1155,7 +1146,6 @@
           <div class="ga-bar-row">
             <span style="width:16px;color:var(--muted);font-size:.75rem">${i+1}</span>
             <div style="flex:1;min-width:0">
-              ${p.article ? `<div style="font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:1px">${p.article}</div>` : ''}
               <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem">${p.name}</div>
               <div class="ga-bar-track"><div class="ga-bar-fill" style="width:${Math.round(p.views/maxV*100)}%"></div></div>
             </div>
