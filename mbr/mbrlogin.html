@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>MBR · Вход</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -42,9 +42,7 @@
         <button type="button" id="forgotBtn" class="link-btn">Забыли пароль?</button>
       </div>
 
-      <div class="select-tools" style="margin-top:auto">
-        <button type="button" onclick="location.href='mbr.html'">К презентации без входа</button>
-      </div>
+      <div class="select-tools" style="margin-top:auto"></div>
     </div>
   </div>
 </div>
@@ -52,12 +50,12 @@
 <div id="toast" class="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="mbr-supabase.js"></script>
+<script src="mbrsupabase.js"></script>
 <script>
 (async function () {
   // Если уже залогинены — сразу в редактор / в место возврата
   const params = new URLSearchParams(location.search);
-  const ret = params.get('return') || 'mbr-editor.html';
+  const ret = params.get('return') || 'mbreditor.html';
   const user = await sbGetUser();
   if (user) location.replace(ret);
 
@@ -86,7 +84,7 @@
   document.getElementById('forgotBtn').addEventListener('click', async () => {
     const email = form.email.value.trim();
     if (!email) { err.textContent = 'Введите email сверху, чтобы получить ссылку для сброса.'; err.classList.remove('hidden'); return; }
-    const { error } = await SB.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/mbr-login.html' });
+    const { error } = await SB.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/mbrlogin.html' });
     err.textContent = error ? error.message : 'Если email есть в системе, на него отправлена ссылка для сброса пароля.';
     err.classList.remove('hidden');
   });

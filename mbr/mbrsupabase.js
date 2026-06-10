@@ -1,6 +1,6 @@
 /* =========================================================
    MBR · общий клиент Supabase + хелперы для работы с данными
-   Подключается до mbr.js / mbr-editor.js
+   Подключается до mbr.js / mbreditor.js
    ========================================================= */
 
 const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
@@ -34,7 +34,7 @@ async function sbGetProfile() {
 }
 async function sbSignOut() { await SB.auth.signOut(); }
 
-async function sbRequireAuth(redirectTo = 'mbr-login.html') {
+async function sbRequireAuth(redirectTo = 'mbrlogin.html') {
   const user = await sbGetUser();
   if (!user) {
     const ret = encodeURIComponent(location.pathname.split('/').pop() || 'mbr.html');
