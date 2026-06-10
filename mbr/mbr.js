@@ -47,7 +47,7 @@ let pageIndex = 0;
   document.getElementById('nextBtn').onclick = next;
   document.getElementById('homeBtn').onclick = goHome;
   document.getElementById('resetBtn').onclick = () => location.reload();
-  document.getElementById('editBtn').onclick = () => location.href = 'mbr-editor.html';
+  document.getElementById('editBtn').onclick = () => location.href = 'mbreditor.html';
 })();
 
 async function reload() {
@@ -82,8 +82,8 @@ function buildSelectScreen(profile) {
     <button id="goLogout">Выйти</button>
     <span class="who">${escapeHtml(profile?.full_name || '')} · ${escapeHtml(ROLE_LABEL[profile?.role] || '')}</span>
   `;
-  document.getElementById('goEditor').onclick = () => location.href = 'mbr-editor.html';
-  document.getElementById('goLogout').onclick = async () => { await sbSignOut(); location.replace('mbr-login.html'); };
+  document.getElementById('goEditor').onclick = () => location.href = 'mbreditor.html';
+  document.getElementById('goLogout').onclick = async () => { await sbSignOut(); location.replace('mbrlogin.html'); };
 }
 
 function openDeck(directorIdx) {
@@ -331,7 +331,7 @@ function renderStore(d, s) {
 }
 
 /* ---------- Extra section slides ------------------------- */
-function sectionSlide(title, role, cards, notes) {
+function sectionSlide(title, role, cards, notes, extra = '') {
   return `
     <div class="detail">
       <div class="detail-top-band"></div>
@@ -351,6 +351,7 @@ function sectionSlide(title, role, cards, notes) {
             </div>
           `).join('')}
         </div>
+        ${extra}
         ${notes ? `
           <div class="summary-notes" style="margin-top:14px">
             <div class="lbl">Комментарий и выводы</div>
@@ -362,30 +363,24 @@ function sectionSlide(title, role, cards, notes) {
 }
 
 function renderProduct(d) {
-  const cats = (d.topCategories||[]).slice(0, 3);
   const cards = [
     { label:'Топ продукт месяца', value: d.topProduct?.name || '—', sub: d.topProduct?.units ? `${fmtNum(d.topProduct.units)} шт · ${d.topProduct?.revenue||''}` : '', primary:true },
     { label:'Новых SKU введено', value: fmtNum(d.newSku||0) },
     { label:'Оборачиваемость', value: d.turnover||0, unit:'дней' },
     { label:'Категорий в топе',  value: (d.topCategories||[]).length }
   ];
-  let html = sectionSlide('Продуктовая аналитика', 'Продукт-менеджер', cards, d.notes);
-  if (cats.length) {
-    html = html.replace('</div>\n    </div>\n  ', `</div>
-      <div class="cats-display" style="margin-top:14px">
-        ${(d.topCategories||[]).map(c=>`
-          <div class="cat-display-row">
-            <div class="cat-name">${escapeHtml(c.name||'—')}</div>
-            <div class="cat-bar"><div style="width:${Math.min(100, +c.share||0)}%"></div></div>
-            <div class="cat-share">${+c.share||0}%</div>
-            <div class="cat-rev">${escapeHtml(c.revenue||'')}</div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-  `);
-  }
-  return html;
+  const extra = (d.topCategories||[]).length ? `
+    <div class="cats-display" style="margin-top:14px">
+      ${(d.topCategories||[]).map(c=>`
+        <div class="cat-display-row">
+          <div class="cat-name">${escapeHtml(c.name||'—')}</div>
+          <div class="cat-bar"><div style="width:${Math.min(100, +c.share||0)}%"></div></div>
+          <div class="cat-share">${+c.share||0}%</div>
+          <div class="cat-rev">${escapeHtml(c.revenue||'')}</div>
+        </div>
+      `).join('')}
+    </div>` : '';
+  return sectionSlide('Продуктовая аналитика', 'Продукт-менеджер', cards, d.notes, extra);
 }
 
 function renderHR(d) {
@@ -416,24 +411,19 @@ function renderWarehouse(d) {
 
 function renderMarketing(d) {
   const cards = [
-    { label:'Рекл. бюджет', value: d.budget || '—', primary:true },
-    { label:'Охват', value: d.reach||0, unit:'млн' },
-    { label:'Визитов на сайт', value: fmtNum(d.visits||0) },
-    { label:'CAC', value: fmtNum(d.cac||0), unit:'сум' },
-    { label:'Конверсия онлайн', value: d.convOnline||0, unit:'%' },
-    { label:'Подписчиков', value: fmtNum(d.socialFollowers||0) }
+    { label: 'Рекл. бюджет',       value: d.budget || '—',            primary: true },
+    { label: 'Охват',              value: d.reach || 0,               unit: 'млн' },
+    { label: 'Визитов на сайт',    value: fmtNum(d.visits || 0) },
+    { label: 'CAC',                value: fmtNum(d.cac || 0),         unit: 'сум' },
+    { label: 'Конверсия онлайн',   value: d.convOnline || 0,          unit: '%' },
+    { label: 'Подписчиков',        value: fmtNum(d.socialFollowers || 0) }
   ];
-  let html = sectionSlide('Маркетинг · трафик и кампании', 'Директор по маркетингу', cards, d.notes);
-  if (d.bestCampaign) {
-    html = html.replace('</div>\n    </div>\n  ', `</div>
-      <div class="summary-notes" style="margin-top:14px;background:var(--ink);color:#fff;border-color:var(--ink)">
-        <div class="lbl" style="color:rgba(255,255,255,.5)">Лучшая кампания месяца</div>
-        <div class="txt" style="font-size:24px;font-weight:800;letter-spacing:-.01em">${escapeHtml(d.bestCampaign)}</div>
-      </div>
-    </div>
-  `);
-  }
-  return html;
+  const extra = d.bestCampaign ? `
+    <div class="summary-notes" style="margin-top:14px;background:var(--ink);color:#fff;border-color:var(--ink)">
+      <div class="lbl" style="color:rgba(255,255,255,.5)">Лучшая кампания месяца</div>
+      <div class="txt" style="font-size:24px;font-weight:800;letter-spacing:-.01em">${escapeHtml(d.bestCampaign)}</div>
+    </div>` : '';
+  return sectionSlide('Маркетинг · трафик и кампании', 'Директор по маркетингу', cards, d.notes, extra);
 }
 
 /* ---------- Summary -------------------------------------- */
