@@ -9,42 +9,297 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="mbr.css">
+  <style>
+    /* ── Login page overrides ── */
+    body { overflow: hidden; }
+
+    .login-wrap {
+      position: fixed; inset: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    /* LEFT — brand panel */
+    .login-left {
+      background: #0a0a0a;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 52px 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-left::before {
+      content: 'MBR';
+      position: absolute;
+      bottom: -60px; left: -20px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: 380px;
+      line-height: 1;
+      letter-spacing: -.06em;
+      color: rgba(255,255,255,.03);
+      pointer-events: none;
+      user-select: none;
+    }
+    .login-left-top { position: relative; z-index: 2; }
+    .login-left-mid {
+      position: relative; z-index: 2;
+    }
+    .login-mbr {
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: 120px;
+      line-height: .9;
+      letter-spacing: -.04em;
+      color: #fff;
+      margin: 0;
+    }
+    .login-mbr .b { color: #e1241c; }
+    .login-subtitle {
+      font-size: 17px;
+      color: rgba(255,255,255,.55);
+      font-weight: 500;
+      margin-top: 18px;
+      line-height: 1.5;
+    }
+    .login-left-foot {
+      position: relative; z-index: 2;
+      display: flex;
+      gap: 20px;
+    }
+    .login-stat {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px;
+      padding: 14px 20px;
+    }
+    .login-stat-num {
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: 28px;
+      color: #fff;
+      letter-spacing: -.02em;
+      line-height: 1;
+    }
+    .login-stat-lbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+      margin-top: 4px;
+    }
+    .red-bar {
+      position: absolute;
+      top: 0; bottom: 0; right: 0;
+      width: 4px;
+      background: #e1241c;
+    }
+
+    /* RIGHT — form panel */
+    .login-right {
+      background: #f1efe9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+    }
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+    }
+    .login-card-head {
+      margin-bottom: 40px;
+    }
+    .login-card-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: #6b6b6b;
+      margin-bottom: 10px;
+    }
+    .login-card-title {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      line-height: 1.1;
+      color: #0a0a0a;
+      margin: 0;
+    }
+    .login-card-title span { color: #e1241c; }
+
+    .login-form-new {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .lf-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .lf-field label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: #6b6b6b;
+      font-weight: 600;
+    }
+    .lf-field input {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      padding: 14px 16px;
+      border: 1.5px solid #d8d4c8;
+      border-radius: 12px;
+      background: #fff;
+      color: #0a0a0a;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .lf-field input:focus {
+      border-color: #0a0a0a;
+      box-shadow: 0 0 0 3px rgba(10,10,10,.06);
+    }
+    .lf-field input::placeholder { color: #b5b0a5; }
+
+    .lf-error {
+      color: #e1241c;
+      font-size: 13px;
+      background: #fbe2e0;
+      border: 1px solid #f3b9b5;
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: none;
+    }
+    .lf-error.show { display: block; }
+
+    .lf-submit {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 16px 24px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .lf-submit:hover { background: #e1241c; }
+    .lf-submit:active { transform: scale(.98); }
+    .lf-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+    .lf-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #6b6b6b;
+      gap: 12px;
+    }
+    .lf-footer button {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: #0a0a0a;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      padding: 0;
+    }
+    .lf-footer button:hover { color: #e1241c; }
+
+    @media (max-width: 860px) {
+      .login-wrap { grid-template-columns: 1fr; }
+      .login-left { display: none; }
+      .login-right { padding: 40px 24px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="select-screen">
-  <div class="select-inner">
-    <div class="select-brand">
+<div class="login-wrap">
+
+  <!-- LEFT — брендинг -->
+  <div class="login-left">
+    <div class="login-left-top">
       <span class="brand-badge">LI-NING UZ</span>
-      <h1 class="brand-mbr">M<span class="b">B</span>R</h1>
-      <div class="brand-sub">Monthly Business Review<br>Внутренний портал презентаций</div>
     </div>
 
-    <div class="select-right">
-      <div class="select-label">Вход в личный кабинет</div>
+    <div class="login-left-mid">
+      <h1 class="login-mbr">M<span class="b">B</span>R</h1>
+      <div class="login-subtitle">
+        Monthly Business Review<br>
+        Внутренний портал презентаций
+      </div>
+    </div>
 
-      <form id="loginForm" class="login-form">
-        <label class="login-field">
-          <span>Email</span>
-          <input type="email" name="email" autocomplete="email" required placeholder="director@li-ning.uz">
-        </label>
-        <label class="login-field">
-          <span>Пароль</span>
-          <input type="password" name="password" autocomplete="current-password" required placeholder="••••••••">
-        </label>
+    <div class="login-left-foot">
+      <div class="login-stat">
+        <div class="login-stat-num">14</div>
+        <div class="login-stat-lbl">Магазинов</div>
+      </div>
+      <div class="login-stat">
+        <div class="login-stat-num">3</div>
+        <div class="login-stat-lbl">Региона</div>
+      </div>
+      <div class="login-stat">
+        <div class="login-stat-num" id="statMonth">—</div>
+        <div class="login-stat-lbl">Период</div>
+      </div>
+    </div>
 
-        <div id="loginError" class="login-error hidden"></div>
-        <button type="submit" class="btn-all" id="loginBtn">Войти →</button>
-      </form>
+    <div class="red-bar"></div>
+  </div>
 
-      <div class="login-help">
-        <div>Доступ выдаёт администратор. После первого входа смените пароль.</div>
-        <button type="button" id="forgotBtn" class="link-btn">Забыли пароль?</button>
+  <!-- RIGHT — форма входа -->
+  <div class="login-right">
+    <div class="login-card">
+
+      <div class="login-card-head">
+        <div class="login-card-label">Личный кабинет</div>
+        <h2 class="login-card-title">Добро<br>пожаловать<span>.</span></h2>
       </div>
 
-      <div class="select-tools" style="margin-top:auto"></div>
+      <form id="loginForm" class="login-form-new">
+        <div class="lf-field">
+          <label for="inp-email">Email</label>
+          <input id="inp-email" type="email" name="email" autocomplete="email"
+                 required placeholder="director@li-ning.uz">
+        </div>
+        <div class="lf-field">
+          <label for="inp-pass">Пароль</label>
+          <input id="inp-pass" type="password" name="password" autocomplete="current-password"
+                 required placeholder="••••••••">
+        </div>
+
+        <div id="loginError" class="lf-error"></div>
+
+        <button type="submit" class="lf-submit" id="loginBtn">
+          Войти <span>→</span>
+        </button>
+      </form>
+
+      <div class="lf-footer">
+        <span>Доступ выдаёт администратор</span>
+        <button type="button" id="forgotBtn">Забыли пароль?</button>
+      </div>
+
     </div>
   </div>
+
 </div>
 
 <div id="toast" class="toast"></div>
@@ -53,42 +308,61 @@
 <script src="mbrsupabase.js"></script>
 <script>
 (async function () {
-  // Если уже залогинены — сразу в редактор / в место возврата
+  // Текущий месяц в статусе
+  const months = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
+  const now = new Date();
+  document.getElementById('statMonth').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
+
+  // Если уже залогинены — редирект
   const params = new URLSearchParams(location.search);
   const ret = params.get('return') || 'mbreditor.html';
   const user = await sbGetUser();
   if (user) location.replace(ret);
 
   const form = document.getElementById('loginForm');
-  const err = document.getElementById('loginError');
+  const errEl = document.getElementById('loginError');
   const btn = document.getElementById('loginBtn');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    err.classList.add('hidden');
-    btn.disabled = true; btn.textContent = 'Входим…';
+    errEl.classList.remove('show');
+    btn.disabled = true;
+    btn.innerHTML = 'Входим… <span>⋯</span>';
+
     const fd = new FormData(form);
     const { error } = await SB.auth.signInWithPassword({
       email: fd.get('email').trim(),
       password: fd.get('password')
     });
-    btn.disabled = false; btn.textContent = 'Войти →';
+
+    btn.disabled = false;
+    btn.innerHTML = 'Войти <span>→</span>';
+
     if (error) {
-      err.textContent = 'Не удалось войти: ' + error.message;
-      err.classList.remove('hidden');
+      errEl.textContent = 'Не удалось войти: ' + error.message;
+      errEl.classList.add('show');
       return;
     }
     location.replace(ret);
   });
 
   document.getElementById('forgotBtn').addEventListener('click', async () => {
-    const email = form.email.value.trim();
-    if (!email) { err.textContent = 'Введите email сверху, чтобы получить ссылку для сброса.'; err.classList.remove('hidden'); return; }
-    const { error } = await SB.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/mbrlogin.html' });
-    err.textContent = error ? error.message : 'Если email есть в системе, на него отправлена ссылка для сброса пароля.';
-    err.classList.remove('hidden');
+    const email = document.getElementById('inp-email').value.trim();
+    if (!email) {
+      errEl.textContent = 'Введите email в поле выше, чтобы получить ссылку для сброса.';
+      errEl.classList.add('show');
+      return;
+    }
+    const { error } = await SB.auth.resetPasswordForEmail(email, {
+      redirectTo: location.origin + '/mbr/mbrlogin.html'
+    });
+    errEl.textContent = error
+      ? error.message
+      : 'Если email есть в системе — письмо со ссылкой уже отправлено.';
+    errEl.classList.add('show');
   });
 })();
 </script>
+
 </body>
 </html>
