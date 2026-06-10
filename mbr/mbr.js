@@ -12,11 +12,9 @@ let pageIndex = 0;
 
 /* ---------- Init ----------------------------------------- */
 (async function init() {
-  // Требуем логин — данные internal-only
-  const user = await sbRequireAuth();
-  if (!user) return;
-
-  const profile = await sbGetProfile();
+  // Презентация публичная — логин не требуется
+  const user = await sbGetUser();
+  const profile = user ? await sbGetProfile() : null;
   _period = await sbGetCurrentPeriod();
 
   if (!_period) {
@@ -77,13 +75,18 @@ function buildSelectScreen(profile) {
 
   // Заменить тулбар внизу — оставить только «Открыть редактор» и «Выйти»
   const tools = document.querySelector('.select-tools');
-  tools.innerHTML = `
-    <button id="goEditor">Личный кабинет</button>
-    <button id="goLogout">Выйти</button>
-    <span class="who">${escapeHtml(profile?.full_name || '')} · ${escapeHtml(ROLE_LABEL[profile?.role] || '')}</span>
-  `;
-  document.getElementById('goEditor').onclick = () => location.href = 'mbreditor.html';
-  document.getElementById('goLogout').onclick = async () => { await sbSignOut(); location.replace('mbrlogin.html'); };
+  if (profile) {
+    tools.innerHTML = `
+      <button id="goEditor">Личный кабинет</button>
+      <button id="goLogout">Выйти</button>
+      <span class="who">${escapeHtml(profile.full_name || '')} · ${escapeHtml(ROLE_LABEL[profile.role] || '')}</span>
+    `;
+    document.getElementById('goEditor').onclick = () => location.href = 'mbreditor.html';
+    document.getElementById('goLogout').onclick = async () => { await sbSignOut(); location.reload(); };
+  } else {
+    tools.innerHTML = `<button id="goLogin">Войти как сотрудник →</button>`;
+    document.getElementById('goLogin').onclick = () => location.href = 'mbrlogin.html';
+  }
 }
 
 function openDeck(directorIdx) {
