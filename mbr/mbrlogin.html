@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>MBR · Вход</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="mbr.css">
+</head>
+<body>
+
+<div class="select-screen">
+  <div class="select-inner">
+    <div class="select-brand">
+      <span class="brand-badge">LI-NING UZ</span>
+      <h1 class="brand-mbr">M<span class="b">B</span>R</h1>
+      <div class="brand-sub">Monthly Business Review<br>Внутренний портал презентаций</div>
+    </div>
+
+    <div class="select-right">
+      <div class="select-label">Вход в личный кабинет</div>
+
+      <form id="loginForm" class="login-form">
+        <label class="login-field">
+          <span>Email</span>
+          <input type="email" name="email" autocomplete="email" required placeholder="director@li-ning.uz">
+        </label>
+        <label class="login-field">
+          <span>Пароль</span>
+          <input type="password" name="password" autocomplete="current-password" required placeholder="••••••••">
+        </label>
+
+        <div id="loginError" class="login-error hidden"></div>
+        <button type="submit" class="btn-all" id="loginBtn">Войти →</button>
+      </form>
+
+      <div class="login-help">
+        <div>Доступ выдаёт администратор. После первого входа смените пароль.</div>
+        <button type="button" id="forgotBtn" class="link-btn">Забыли пароль?</button>
+      </div>
+
+      <div class="select-tools" style="margin-top:auto">
+        <button type="button" onclick="location.href='mbr.html'">К презентации без входа</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="mbr-supabase.js"></script>
+<script>
+(async function () {
+  // Если уже залогинены — сразу в редактор / в место возврата
+  const params = new URLSearchParams(location.search);
+  const ret = params.get('return') || 'mbr-editor.html';
+  const user = await sbGetUser();
+  if (user) location.replace(ret);
+
+  const form = document.getElementById('loginForm');
+  const err = document.getElementById('loginError');
+  const btn = document.getElementById('loginBtn');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    err.classList.add('hidden');
+    btn.disabled = true; btn.textContent = 'Входим…';
+    const fd = new FormData(form);
+    const { error } = await SB.auth.signInWithPassword({
+      email: fd.get('email').trim(),
+      password: fd.get('password')
+    });
+    btn.disabled = false; btn.textContent = 'Войти →';
+    if (error) {
+      err.textContent = 'Не удалось войти: ' + error.message;
+      err.classList.remove('hidden');
+      return;
+    }
+    location.replace(ret);
+  });
+
+  document.getElementById('forgotBtn').addEventListener('click', async () => {
+    const email = form.email.value.trim();
+    if (!email) { err.textContent = 'Введите email сверху, чтобы получить ссылку для сброса.'; err.classList.remove('hidden'); return; }
+    const { error } = await SB.auth.resetPasswordForEmail(email, { redirectTo: location.origin + '/mbr-login.html' });
+    err.textContent = error ? error.message : 'Если email есть в системе, на него отправлена ссылка для сброса пароля.';
+    err.classList.remove('hidden');
+  });
+})();
+</script>
+</body>
+</html>

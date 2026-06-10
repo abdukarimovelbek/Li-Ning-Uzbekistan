@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>MBR · Редактор</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="mbr.css">
+</head>
+<body class="editor-body">
+
+<aside class="ed-side">
+  <div class="ed-brand">
+    <span class="brand-badge">LI-NING UZ</span>
+    <div class="ed-brand-mbr">M<span class="b">B</span>R</div>
+    <div class="ed-brand-sub">Личный кабинет</div>
+  </div>
+
+  <div class="ed-user" id="edUser">
+    <div class="ed-user-name">…</div>
+    <div class="ed-user-role">загрузка</div>
+  </div>
+
+  <nav class="ed-nav" id="edNav"></nav>
+
+  <div class="ed-actions">
+    <button class="link-btn" onclick="location.href='mbr.html'">Открыть презентацию ↗</button>
+    <button class="link-btn" id="logoutBtn">Выйти</button>
+  </div>
+</aside>
+
+<main class="ed-main">
+  <header class="ed-head">
+    <div>
+      <div class="ed-period" id="edPeriod">—</div>
+      <h1 class="ed-title" id="edTitle">Моя секция</h1>
+      <div class="ed-sub" id="edSub">Заполните поля и нажмите «Сохранить». Изменения сразу же появятся в презентации.</div>
+    </div>
+    <div class="ed-save-bar">
+      <span class="ed-status" id="edStatus"></span>
+      <button class="btn-all" id="saveBtn">Сохранить</button>
+    </div>
+  </header>
+
+  <section class="ed-form" id="edForm"></section>
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="mbr-supabase.js"></script>
+<script src="mbr-editor.js"></script>
+</body>
+</html>
