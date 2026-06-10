@@ -681,7 +681,7 @@
       </div>
 
       <!-- Строка 1: Основные метрики (30 дней) -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem">
         <div class="stat-card">
           <div class="stat-label">Уник. посетители</div>
           <div class="stat-value" id="ga-users">—</div>
@@ -1126,7 +1126,6 @@
       document.getElementById('ga-users').textContent    = d.main.activeUsers.toLocaleString('ru-RU');
       document.getElementById('ga-sessions').textContent = d.main.sessions.toLocaleString('ru-RU');
       document.getElementById('ga-spu').textContent      = d.main.sessionsPerUser;
-      document.getElementById('ga-bounce').textContent   = d.main.bounceRate + '%';
       // Сегодня
       document.getElementById('ga-today-users').textContent    = d.today.activeUsers.toLocaleString('ru-RU');
       document.getElementById('ga-today-sessions').textContent = d.today.sessions.toLocaleString('ru-RU');
