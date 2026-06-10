@@ -78,8 +78,12 @@ kbd {
   height: 100%;
 }
 .select-inner::after {
-  content: ""; grid-column: 2; background: var(--red);
+  content: ""; 
+  grid-column: 2; 
+  background: var(--red); 
+  align-self: stretch;
 }
+
 .select-brand {
   grid-column: 1;
   background: var(--dark);
@@ -972,12 +976,12 @@ kbd {
 }
 .link-btn:hover { color: var(--red); }
 .select-tools .who {
+  display: none;
   margin-left: auto;
   font-family: 'JetBrains Mono', monospace;
   font-size: 11px;
   color: var(--muted);
   letter-spacing: .08em;
-  align-self: center;
 }
 
 /* =========================================================
