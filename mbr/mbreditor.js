@@ -1,5 +1,5 @@
 /* =========================================================
-   MBR · Editor — личный кабинет (mbr-editor.html)
+   MBR · Editor — личный кабинет (mbreditor.html)
    Каждый пользователь видит и редактирует только свою секцию,
    admin может переключаться между любыми.
    ========================================================= */
@@ -49,7 +49,7 @@ let _dirty   = false;
   document.getElementById('saveBtn').addEventListener('click', save);
   document.getElementById('logoutBtn').addEventListener('click', async () => {
     await sbSignOut();
-    location.replace('mbr-login.html');
+    location.replace('mbrlogin.html');
   });
 
   // Не дать уйти без сохранения

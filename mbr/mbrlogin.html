@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="mbr.css">
   <style>
-    /* ── Login page overrides ── */
     body { overflow: hidden; }
 
     .login-wrap {
@@ -19,7 +18,7 @@
       grid-template-columns: 1fr 1fr;
     }
 
-    /* LEFT — brand panel */
+    /* LEFT */
     .login-left {
       background: #0a0a0a;
       display: flex;
@@ -43,9 +42,7 @@
       user-select: none;
     }
     .login-left-top { position: relative; z-index: 2; }
-    .login-left-mid {
-      position: relative; z-index: 2;
-    }
+    .login-left-mid { position: relative; z-index: 2; }
     .login-mbr {
       font-family: 'Inter', sans-serif;
       font-weight: 900;
@@ -66,7 +63,7 @@
     .login-left-foot {
       position: relative; z-index: 2;
       display: flex;
-      gap: 20px;
+      gap: 16px;
     }
     .login-stat {
       background: rgba(255,255,255,.05);
@@ -75,7 +72,6 @@
       padding: 14px 20px;
     }
     .login-stat-num {
-      font-family: 'Inter', sans-serif;
       font-weight: 900;
       font-size: 28px;
       color: #fff;
@@ -97,7 +93,7 @@
       background: #e1241c;
     }
 
-    /* RIGHT — form panel */
+    /* RIGHT */
     .login-right {
       background: #f1efe9;
       display: flex;
@@ -105,13 +101,8 @@
       justify-content: center;
       padding: 60px 48px;
     }
-    .login-card {
-      width: 100%;
-      max-width: 400px;
-    }
-    .login-card-head {
-      margin-bottom: 40px;
-    }
+    .login-card { width: 100%; max-width: 400px; }
+    .login-card-head { margin-bottom: 40px; }
     .login-card-label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 11px;
@@ -130,16 +121,8 @@
     }
     .login-card-title span { color: #e1241c; }
 
-    .login-form-new {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-    .lf-field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
+    .login-form-new { display: flex; flex-direction: column; gap: 18px; }
+    .lf-field { display: flex; flex-direction: column; gap: 8px; }
     .lf-field label {
       font-family: 'JetBrains Mono', monospace;
       font-size: 10px;
@@ -194,6 +177,7 @@
       justify-content: center;
       gap: 8px;
       margin-top: 4px;
+      width: 100%;
     }
     .lf-submit:hover { background: #e1241c; }
     .lf-submit:active { transform: scale(.98); }
@@ -232,12 +216,10 @@
 
 <div class="login-wrap">
 
-  <!-- LEFT — брендинг -->
   <div class="login-left">
     <div class="login-left-top">
       <span class="brand-badge">LI-NING UZ</span>
     </div>
-
     <div class="login-left-mid">
       <h1 class="login-mbr">M<span class="b">B</span>R</h1>
       <div class="login-subtitle">
@@ -245,7 +227,6 @@
         Внутренний портал презентаций
       </div>
     </div>
-
     <div class="login-left-foot">
       <div class="login-stat">
         <div class="login-stat-num">14</div>
@@ -260,14 +241,11 @@
         <div class="login-stat-lbl">Период</div>
       </div>
     </div>
-
     <div class="red-bar"></div>
   </div>
 
-  <!-- RIGHT — форма входа -->
   <div class="login-right">
     <div class="login-card">
-
       <div class="login-card-head">
         <div class="login-card-label">Личный кабинет</div>
         <h2 class="login-card-title">Добро<br>пожаловать<span>.</span></h2>
@@ -284,19 +262,14 @@
           <input id="inp-pass" type="password" name="password" autocomplete="current-password"
                  required placeholder="••••••••">
         </div>
-
         <div id="loginError" class="lf-error"></div>
-
-        <button type="submit" class="lf-submit" id="loginBtn">
-          Войти <span>→</span>
-        </button>
+        <button type="submit" class="lf-submit" id="loginBtn">Войти →</button>
       </form>
 
       <div class="lf-footer">
         <span>Доступ выдаёт администратор</span>
         <button type="button" id="forgotBtn">Забыли пароль?</button>
       </div>
-
     </div>
   </div>
 
@@ -308,12 +281,10 @@
 <script src="mbrsupabase.js"></script>
 <script>
 (async function () {
-  // Текущий месяц в статусе
   const months = ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'];
   const now = new Date();
   document.getElementById('statMonth').textContent = months[now.getMonth()] + ' ' + now.getFullYear();
 
-  // Если уже залогинены — редирект
   const params = new URLSearchParams(location.search);
   const ret = params.get('return') || 'mbreditor.html';
   const user = await sbGetUser();
@@ -326,18 +297,13 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errEl.classList.remove('show');
-    btn.disabled = true;
-    btn.innerHTML = 'Входим… <span>⋯</span>';
-
+    btn.disabled = true; btn.textContent = 'Входим…';
     const fd = new FormData(form);
     const { error } = await SB.auth.signInWithPassword({
       email: fd.get('email').trim(),
       password: fd.get('password')
     });
-
-    btn.disabled = false;
-    btn.innerHTML = 'Войти <span>→</span>';
-
+    btn.disabled = false; btn.textContent = 'Войти →';
     if (error) {
       errEl.textContent = 'Не удалось войти: ' + error.message;
       errEl.classList.add('show');
@@ -349,7 +315,7 @@
   document.getElementById('forgotBtn').addEventListener('click', async () => {
     const email = document.getElementById('inp-email').value.trim();
     if (!email) {
-      errEl.textContent = 'Введите email в поле выше, чтобы получить ссылку для сброса.';
+      errEl.textContent = 'Введите email в поле выше.';
       errEl.classList.add('show');
       return;
     }
@@ -358,11 +324,10 @@
     });
     errEl.textContent = error
       ? error.message
-      : 'Если email есть в системе — письмо со ссылкой уже отправлено.';
+      : 'Если email есть в системе — письмо уже отправлено.';
     errEl.classList.add('show');
   });
 })();
 </script>
-
 </body>
 </html>
