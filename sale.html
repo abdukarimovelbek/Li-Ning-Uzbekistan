@@ -53,86 +53,8 @@
         </div>
         <a href="catalog.html" class="see-all">Весь каталог →</a>
       </div>
-      <div class="products-grid">
-
-        <div class="product-card" data-product-id="ln-002" data-price="650000" data-brand="li ning" data-sizes="38,39,40,41,42,43" data-rating="4.7" data-href="product.html">
-          <div class="product-img-wrap">
-            <span class="product-badge badge-sale">−25%</span>
-            <div class="product-img">🥾</div>
-            <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-          </div>
-          <div class="product-info">
-            <div class="product-brand">Li Ning</div>
-            <div class="product-name">Li Ning Saga Trail</div>
-            <div class="product-footer"><div class="product-price"><span class="old-price">870 000</span>650 000 сум</div><div class="product-rating">★★★★☆ <span>(86)</span></div></div>
-          </div>
-        </div>
-
-        <div class="product-card" data-product-id="ad-001" data-price="980000" data-brand="adidas" data-sizes="39,40,41,42,43" data-rating="4.8" data-href="product.html">
-          <div class="product-img-wrap">
-            <span class="product-badge badge-sale">−20%</span>
-            <div class="product-img">🏃</div>
-            <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-          </div>
-          <div class="product-info">
-            <div class="product-brand">Adidas</div>
-            <div class="product-name">Adidas Ultraboost 23</div>
-            <div class="product-footer"><div class="product-price"><span class="old-price">1 225 000</span>980 000 сум</div><div class="product-rating">★★★★★ <span>(178)</span></div></div>
-          </div>
-        </div>
-
-        <div class="product-card" data-product-id="rb-001" data-price="690000" data-brand="reebok" data-sizes="38,39,40,41,42,43" data-rating="4.3" data-href="product.html">
-          <div class="product-img-wrap">
-            <span class="product-badge badge-sale">−15%</span>
-            <div class="product-img">💪</div>
-            <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-          </div>
-          <div class="product-info">
-            <div class="product-brand">Reebok</div>
-            <div class="product-name">Reebok Nano X3</div>
-            <div class="product-footer"><div class="product-price"><span class="old-price">810 000</span>690 000 сум</div><div class="product-rating">★★★★☆ <span>(74)</span></div></div>
-          </div>
-        </div>
-
-        <div class="product-card" data-product-id="ln-s01" data-price="280000" data-brand="li ning" data-sizes="S,M,L,XL" data-rating="4.5" data-href="product.html">
-          <div class="product-img-wrap">
-            <span class="product-badge badge-sale">−40%</span>
-            <div class="product-img">👕</div>
-            <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-          </div>
-          <div class="product-info">
-            <div class="product-brand">Li Ning</div>
-            <div class="product-name">Li Ning Classic Tee</div>
-            <div class="product-footer"><div class="product-price"><span class="old-price">470 000</span>280 000 сум</div><div class="product-rating">★★★★☆ <span>(38)</span></div></div>
-          </div>
-        </div>
-
-        <div class="product-card" data-product-id="ni-s01" data-price="820000" data-brand="nike" data-sizes="38,39,40,41,42,43,44" data-rating="4.6" data-href="product.html">
-          <div class="product-img-wrap">
-            <span class="product-badge badge-sale">−30%</span>
-            <div class="product-img">👟</div>
-            <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-          </div>
-          <div class="product-info">
-            <div class="product-brand">Nike</div>
-            <div class="product-name">Nike React Infinity Run</div>
-            <div class="product-footer"><div class="product-price"><span class="old-price">1 170 000</span>820 000 сум</div><div class="product-rating">★★★★☆ <span>(145)</span></div></div>
-          </div>
-        </div>
-
-        <div class="product-card" data-product-id="ln-s02" data-price="350000" data-brand="li ning" data-sizes="S,M,L,XL,XXL" data-rating="4.4" data-href="product.html">
-          <div class="product-img-wrap">
-            <span class="product-badge badge-sale">−35%</span>
-            <div class="product-img">🩳</div>
-            <div class="product-actions"><button class="btn-addcart">+ В корзину</button><button class="btn-wishlist" data-wished="false">♡</button></div>
-          </div>
-          <div class="product-info">
-            <div class="product-brand">Li Ning</div>
-            <div class="product-name">Li Ning Speed Shorts</div>
-            <div class="product-footer"><div class="product-price"><span class="old-price">540 000</span>350 000 сум</div><div class="product-rating">★★★★☆ <span>(21)</span></div></div>
-          </div>
-        </div>
-
+      <div class="products-grid" id="sale-grid">
+        <div style="text-align:center;padding:3rem;color:var(--gray-500);grid-column:1/-1">Загрузка...</div>
       </div>
     </div>
   </section>
@@ -157,6 +79,29 @@
   }
   updateCountdown();
   setInterval(updateCountdown, 1000);
+
+  // Load sale products from Supabase
+  document.addEventListener('DOMContentLoaded', async function() {
+    const grid = document.getElementById('sale-grid');
+    try {
+      const res = await fetch(
+        SB_URL + '/rest/v1/products?is_active=eq.true&old_price=gt.0&order=old_price.desc&limit=24',
+        { headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' } }
+      );
+      const products = await res.json();
+
+      if (!Array.isArray(products) || !products.length) {
+        grid.innerHTML = '<p style="text-align:center;color:var(--gray-500);padding:3rem;grid-column:1/-1">Нет товаров со скидкой</p>';
+        return;
+      }
+
+      grid.innerHTML = products.map(p => buildCard(p)).join('');
+      window.ProductCards?.init();
+    } catch(e) {
+      console.error('sale fetch error', e);
+      grid.innerHTML = '<p style="text-align:center;color:var(--gray-500);padding:3rem;grid-column:1/-1">Ошибка загрузки</p>';
+    }
+  });
   </script>
 
   <!-- CITY MODAL -->
