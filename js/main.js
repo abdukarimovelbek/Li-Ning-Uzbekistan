@@ -579,6 +579,16 @@ const ProductCards = (() => {
                 });
                 wishBtn.dataset.wished = 'true';
                 wishBtn.textContent = '♥';
+                wishBtn.classList.remove('heart-pop');
+                requestAnimationFrame(() => requestAnimationFrame(() => wishBtn.classList.add('heart-pop')));
+                setTimeout(() => wishBtn.classList.remove('heart-pop'), 420);
+                const hRect = wishBtn.getBoundingClientRect();
+                const hParticle = document.createElement('span');
+                hParticle.className = 'heart-particle';
+                hParticle.textContent = '♥';
+                hParticle.style.cssText = `top:${hRect.top + window.scrollY - 8}px;left:${hRect.left + hRect.width / 2}px`;
+                document.body.appendChild(hParticle);
+                setTimeout(() => hParticle.remove(), 650);
                 window.Toast?.show('Добавлено в избранное', '', 'success');
               }
             });
