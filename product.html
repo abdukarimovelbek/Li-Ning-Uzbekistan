@@ -94,6 +94,19 @@
   </div>
 </div>
 
+<!-- Recently Viewed -->
+<section class="section" id="recently-viewed" style="display:none">
+  <div class="section-inner">
+    <div class="section-head">
+      <div>
+        <div class="section-label">История просмотров</div>
+        <div class="section-title">НЕДАВНО<br>СМОТРЕЛИ</div>
+      </div>
+    </div>
+    <div class="products-grid" style="grid-template-columns:repeat(4,1fr)" id="recent-grid"></div>
+  </div>
+</section>
+
 <!-- Related products -->
 <section class="section" style="background:var(--gray-100)">
   <div class="section-inner">
@@ -215,6 +228,8 @@ function fillProduct(p) {
   // Сохраняем данные товара для корзины
   window._currentProduct = p;
 
+  saveRecentlyViewed(p);
+
   // Заполняем sticky bar
   const sName = document.getElementById('sticky-cart-name');
   const sPrice = document.getElementById('sticky-cart-price');
@@ -284,12 +299,46 @@ function switchImg(url, thumb) {
   thumb.classList.add('active');
 }
 
+// ─── RECENTLY VIEWED ────────────────────────
+const RECENT_KEY = 'lining_recent';
+
+function saveRecentlyViewed(p) {
+  try {
+    let recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    recent = recent.filter(r => r.id !== p.id);
+    recent.unshift({
+      id: p.id, article: p.article, name: p.name,
+      brand: p.brand, price: p.price, old_price: p.old_price || null,
+      images: Array.isArray(p.images) ? p.images.slice(0, 2) : [],
+      sizes: Array.isArray(p.sizes) ? p.sizes : [],
+      category: p.category, badge: p.badge || null
+    });
+    localStorage.setItem(RECENT_KEY, JSON.stringify(recent.slice(0, 7)));
+  } catch(e) {}
+}
+
+function loadRecentlyViewed() {
+  const section = document.getElementById('recently-viewed');
+  if (!section) return;
+  try {
+    const currentId = new URLSearchParams(window.location.search).get('id');
+    const recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]')
+      .filter(p => p.id !== currentId)
+      .slice(0, 4);
+    if (!recent.length) return;
+    section.style.display = '';
+    document.getElementById('recent-grid').innerHTML = recent.map(p => buildCard(p)).join('');
+    window.ProductCards?.init();
+    highlightWishlist();
+  } catch(e) {}
+}
 
 // ─── ИНИЦИАЛИЗАЦИЯ ──────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   loadProduct();
   initStickyCartBar();
   initLightbox();
+  loadRecentlyViewed();
 
   // Кнопка добавить в корзину
   document.querySelector('.btn-add-to-cart')
