@@ -201,6 +201,49 @@
   })();
   </script>
   <!-- ════════ /MOTION ════════ -->
+
+  <!-- ════════ LI-NING PAGE WIPE ════════ -->
+  <script>
+  (function(){
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    var w=document.createElement('div'); w.className='ln-wipe';
+    w.innerHTML='<span></span><span></span><span></span><span></span><span></span><div class="ln-wipe-logo"><img src="logo.jpg" alt=""></div>';
+    document.body.appendChild(w);
+    var panels=[].slice.call(w.querySelectorAll('span')), logo=w.querySelector('.ln-wipe-logo');
+
+    // приехали на страницу через wipe → раскрываем шторку
+    if(sessionStorage.getItem('ln_wipe_in')){
+      sessionStorage.removeItem('ln_wipe_in');
+      panels.forEach(function(s){ s.style.transition='none'; s.style.transformOrigin='top'; s.style.transform='scaleY(1)'; });
+      logo.style.opacity='1';
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        logo.style.transition='opacity .3s'; logo.style.opacity='0';
+        panels.forEach(function(s,i){ s.style.transition='transform .5s cubic-bezier(.76,0,.24,1) '+(i*0.05)+'s'; s.style.transform='scaleY(0)'; });
+      });});
+    }
+
+    function leave(href){
+      sessionStorage.setItem('ln_wipe_in','1');
+      panels.forEach(function(s,i){ s.style.transformOrigin='bottom'; s.style.transition='transform .42s cubic-bezier(.76,0,.24,1) '+(i*0.05)+'s'; s.style.transform='scaleY(1)'; });
+      logo.style.transition='opacity .3s ease .15s'; logo.style.opacity='1';
+      setTimeout(function(){ location.href=href; }, 560);
+    }
+
+    document.addEventListener('click', function(e){
+      if(e.defaultPrevented || e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      if(e.target.closest('button,[data-no-wipe]')) return;           // клики по кнопкам (корзина/❤/размеры) — без шторки
+      var a=e.target.closest('a[href]'); if(!a) return;
+      if(a.target==='_blank' || a.hasAttribute('download')) return;
+      var href=a.getAttribute('href');
+      if(!href || href.charAt(0)==='#' || /^(javascript:|mailto:|tel:)/i.test(href)) return;
+      var url; try{ url=new URL(href, location.href); }catch(_){ return; }
+      if(url.origin!==location.origin) return;                        // внешние ссылки (Telegram/Instagram) — обычный переход
+      if(url.pathname===location.pathname && url.search===location.search) return; // та же страница
+      e.preventDefault(); leave(url.href);
+    }, true);
+  })();
+  </script>
+  <!-- ════════ /PAGE WIPE ════════ -->  
   
 </body>
 </html>

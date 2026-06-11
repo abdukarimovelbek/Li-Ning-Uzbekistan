@@ -2509,3 +2509,30 @@ footer .footer-inner {
   .collections-grid:hover .collection-card{ flex-grow:.7; }             /* соседи сжимаются */
   .collections-grid:hover .collection-card:hover{ flex-grow:1.5; }        /* наведённая расширяется */
 }
+
+/* ════════ LI-NING: page transition wipe ════════ */
+.ln-wipe{ 
+  position:fixed; 
+  inset:0; 
+  z-index:99990; 
+  display:flex; 
+  pointer-events:none; 
+}
+.ln-wipe span{ 
+  flex:1; 
+  background:#141414; 
+  transform:scaleY(0); 
+}
+.ln-wipe 
+.ln-wipe-logo{ 
+  position:absolute; 
+  inset:0; display:flex; 
+  align-items:center; 
+  justify-content:center; 
+  opacity:0; 
+}
+.ln-wipe 
+.ln-wipe-logo img{ 
+  height:42px; 
+  filter:invert(1); 
+}
