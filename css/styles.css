@@ -2036,10 +2036,24 @@ footer .footer-inner {
 .hero-slide-bg {
   position: absolute; inset: 0;
   background-size: cover;
-  background-position: center;
+  background-position: center center;
   z-index: 0;
   width: 100%;
   height: 100%;
+}
+
+@media (max-width: 768px) {
+  .hero-slide-bg {
+    background-size: 120%;
+    background-position: center center;
+  }
+  .hero-slide {
+    height: 90vh;
+    padding-top: calc(var(--nav-h) + 1rem);
+  }
+  .hero-slider {
+    height: 90vh;
+  }
 }
 
 .hero-slide-bg-overlay {
@@ -2440,15 +2454,28 @@ footer .footer-inner {
 
 @media (max-width: 768px) {
   .collections-grid {
-    flex-direction: column;
-    height: auto;
+    flex-direction: row;
+    height: 440px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-left: 1rem;
+    gap: 0;
   }
+  .collections-grid::-webkit-scrollbar { display: none; }
   .collections-side-label { display: none; }
   .collection-card {
-    height: 200px;
-    border-right: none;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex: 0 0 72vw;
+    width: 72vw;
+    height: 100%;
+    border-right: 1px solid rgba(255,255,255,0.12);
+    border-bottom: none;
+    scroll-snap-align: start;
   }
+  .collection-card:last-child { border-right: none; margin-right: 1rem; }
+  .collection-card::after { opacity: 1; transform: translateY(0); }
 }
 
 #navbar-placeholder {
