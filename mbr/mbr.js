@@ -109,7 +109,7 @@ const EXTRA_SECTIONS = ['product','hr','warehouse','marketing'];
 
 function totalPages() {
   const directors = currentDirectorIdx === null ? data.directors : [data.directors[currentDirectorIdx]];
-  const dirPages = directors.reduce((s, d) => s + 1 + (d.stores||[]).length, 0);
+  const dirPages = directors.reduce((s, d) => s + 1 + (d.stores||[]).length * 3, 0);
   const extra = currentDirectorIdx === null ? EXTRA_SECTIONS.length : 0;
   return 1 /*cover*/ + dirPages + extra + 1 /*summary*/;
 }
@@ -123,8 +123,10 @@ function pageMeta(idx) {
     if (idx === i) return { type: 'intro', director: d };
     i++;
     for (const s of (d.stores || [])) {
-      if (idx === i) return { type: 'store', director: d, store: s };
-      i++;
+      if (idx === i)   return { type: 'store', director: d, store: s, slide: 1 };
+      if (idx === i+1) return { type: 'store', director: d, store: s, slide: 2 };
+      if (idx === i+2) return { type: 'store', director: d, store: s, slide: 3 };
+      i += 3;
     }
   }
   if (currentDirectorIdx === null) {
@@ -147,7 +149,7 @@ function render() {
   switch (meta.type) {
     case 'cover':     root.innerHTML = renderCover(); break;
     case 'intro':     root.innerHTML = renderIntro(meta.director); break;
-    case 'store':     root.innerHTML = renderStore(meta.director, meta.store); break;
+    case 'store':     root.innerHTML = renderStore(meta.director, meta.store, meta.slide || 1); break;
     case 'product':   root.innerHTML = renderProduct(data.product); break;
     case 'hr':        root.innerHTML = renderHR(data.hr); break;
     case 'warehouse': root.innerHTML = renderWarehouse(data.warehouse); break;
@@ -247,27 +249,34 @@ function renderIntro(d) {
   `;
 }
 
-/* ---------- Store detail --------------------------------- */
-function renderStore(d, s) {
+/* ---------- Store detail — shared header ------------------ */
+function renderStoreHeader(d, s, slideNum) {
   const statusLabel = s.planPercent >= 100 ? 'План выполнен' : (s.planPercent >= 95 ? 'Близко к плану' : 'Ниже плана');
   const pillClass = s.status || 'yellow';
   return `
-    <div class="detail">
-      <div class="detail-top-band"></div>
-      <header class="detail-head">
-        <div>
-          <h2 class="detail-title">${escapeHtml(s.name)}</h2>
-          <div class="detail-sub">
-            <b>${escapeHtml(initial(d.name))}</b> · ${escapeHtml(d.region)} · ${escapeHtml(data.period)}
-          </div>
+    <div class="detail-top-band"></div>
+    <header class="detail-head">
+      <div>
+        <h2 class="detail-title">${escapeHtml(s.name)}</h2>
+        <div class="detail-sub">
+          <b>${escapeHtml(initial(d.name))}</b> · ${escapeHtml(d.region)} · ${escapeHtml(data.period)}
+          &nbsp;·&nbsp; <span style="opacity:.5;font-size:.88em">слайд ${slideNum}&thinsp;/&thinsp;3</span>
         </div>
-        <div class="plan-badge">
-          <div class="plan-pill ${pillClass}"><span class="d"></span> ${statusLabel}</div>
-          <div class="plan-label" style="margin-top:14px">Выполнение плана</div>
-          <div class="plan-val ${pillClass}">${s.planPercent || 0}%</div>
-        </div>
-      </header>
+      </div>
+      <div class="plan-badge">
+        <div class="plan-pill ${pillClass}"><span class="d"></span> ${statusLabel}</div>
+        <div class="plan-label" style="margin-top:14px">Выполнение плана</div>
+        <div class="plan-val ${pillClass}">${s.planPercent || 0}%</div>
+      </div>
+    </header>
+  `;
+}
 
+/* ---------- Store slide 1 — KPIs + Charts + Categories ---- */
+function renderStore1(d, s) {
+  return `
+    <div class="detail">
+      ${renderStoreHeader(d, s, 1)}
       <div class="detail-body">
         <div class="kpi-row">
           <div class="kpi primary">
@@ -318,6 +327,82 @@ function renderStore(d, s) {
           </div>
         </div>
 
+        ${(()=>{ const c=s.cats||{}; const cl=+c.clothing||0,fo=+c.footwear||0,ac=+c.accessories||0,tot=cl+fo+ac; if(!tot) return ''; const pct=v=>tot?Math.round(v/tot*100):0; const colors=['#e1241c','#0a0a0a','#9b958a']; const vals=[cl,fo,ac]; const labels=['Одежда','Обувь','Аксессуары']; let start=-Math.PI/2,paths=''; vals.forEach((v,i)=>{ if(!v)return; const ang=(v/tot)*2*Math.PI,end=start+ang,x1=80+70*Math.cos(start),y1=80+70*Math.sin(start),x2=80+70*Math.cos(end),y2=80+70*Math.sin(end); paths+=`<path d="M80,80 L${x1},${y1} A70,70 0 ${ang>Math.PI?1:0} 1 ${x2},${y2} Z" fill="${colors[i]}"/>`; start=end; }); return `<div style="display:grid;grid-template-columns:1fr 3fr;gap:14px;margin-top:14px"><div class="chart-card"><div class="chart-head"><div class="chart-title">Категории продаж</div></div><div class="chart-body" style="display:flex;align-items:center;gap:24px;padding:12px"><svg viewBox="0 0 160 160" style="width:140px;height:140px;flex-shrink:0">${paths}</svg><div style="flex:1">${labels.map((l,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0"></div><div style="font-size:13px">${l}</div><div style="margin-left:auto;font-weight:800;font-size:15px">${pct(vals[i])}%</div></div>`).join('')}</div></div></div></div>`; })()}
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- Store slide 2 — Staff performance ------------- */
+function renderStore2(d, s) {
+  const staff = (s.staff || []).filter(e => e.name || +e.sales);
+  const daysAllocated = +s.daysAllocated || 27;
+  const sorted = staff.slice().sort((a, b) => (+b.sales || 0) - (+a.sales || 0));
+  const maxSales = sorted.length ? Math.max(...sorted.map(e => +e.sales || 0), 1) : 1;
+  const totalSales = sorted.reduce((sum, e) => sum + (+e.sales || 0), 0);
+
+  const rows = sorted.map((emp, rank) => {
+    const sales    = +emp.sales    || 0;
+    const daysW    = +emp.daysWorked || 0;
+    const salesPct = Math.round(sales / maxSales * 100);
+    const daysPct  = daysAllocated ? Math.round(daysW / daysAllocated * 100) : 0;
+    const perDay   = daysW ? Math.round(sales / daysW) : 0;
+    const isTop    = rank === 0 && sales > 0;
+    const daysColor = daysPct >= 90 ? '#22c55e' : daysPct >= 70 ? '#f59e0b' : '#e1241c';
+    return `
+      <div style="display:grid;grid-template-columns:1.8fr 2fr 1.6fr 1fr;align-items:center;gap:20px;padding:14px 0;border-bottom:1px solid var(--line)${isTop ? ';background:rgba(225,36,28,.04);margin:0 -20px;padding-left:20px;padding-right:20px' : ''}">
+        <div style="display:flex;align-items:center;gap:10px">
+          ${isTop ? `<span style="font-size:18px">🥇</span>` : `<span style="width:24px;text-align:center;font-size:12px;color:#bbb;font-family:'JetBrains Mono',monospace">${rank + 1}</span>`}
+          <div style="font-size:15px;font-weight:700">${escapeHtml(emp.name)}</div>
+        </div>
+        <div>
+          <div style="font-size:18px;font-weight:800;color:var(--red)">${fmtNum(sales)} $</div>
+          <div style="height:5px;background:#f0ede8;border-radius:3px;margin-top:6px;overflow:hidden">
+            <div style="width:${salesPct}%;height:100%;background:var(--red);border-radius:3px"></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:15px;font-weight:700">${daysW}<span style="font-size:12px;font-weight:400;opacity:.5"> / ${daysAllocated} дн.</span></div>
+          <div style="height:5px;background:#f0ede8;border-radius:3px;margin-top:6px;overflow:hidden">
+            <div style="width:${daysPct}%;height:100%;background:${daysColor};border-radius:3px"></div>
+          </div>
+        </div>
+        <div style="font-size:14px;font-weight:600;color:#6b7280">${perDay ? fmtNum(perDay) + ' $/д' : '—'}</div>
+      </div>
+    `;
+  });
+
+  const summaryRow = sorted.length ? `
+    <div style="display:grid;grid-template-columns:1.8fr 2fr 1.6fr 1fr;gap:20px;padding:12px 0 0;border-top:2px solid var(--ink)">
+      <div style="font-size:12px;font-weight:700;opacity:.5;padding-left:34px;text-transform:uppercase;letter-spacing:.06em">Итого · ${sorted.length} сотр.</div>
+      <div style="font-size:17px;font-weight:800">${fmtNum(totalSales)} $</div>
+      <div></div><div></div>
+    </div>
+  ` : '';
+
+  return `
+    <div class="detail">
+      ${renderStoreHeader(d, s, 2)}
+      <div class="detail-body">
+        <div style="display:grid;grid-template-columns:1.8fr 2fr 1.6fr 1fr;gap:20px;padding:8px 0 10px;border-bottom:2px solid var(--ink);margin-bottom:2px">
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.45;padding-left:34px">Сотрудник</div>
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.45">Продажи за месяц</div>
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.45">Дней из ${daysAllocated}</div>
+          <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.45">В день</div>
+        </div>
+        ${rows.length ? rows.join('') : `<div style="text-align:center;color:#bbb;padding:60px 0;font-size:14px">Нет данных по сотрудникам</div>`}
+        ${summaryRow}
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- Store slide 3 — Operational metrics + Notes --- */
+function renderStore3(d, s) {
+  return `
+    <div class="detail">
+      ${renderStoreHeader(d, s, 3)}
+      <div class="detail-body">
         <div class="sec-row">
           <div class="sec"><div class="sec-label">UPT · товаров в чеке</div><div class="sec-value">${s.upt ?? '—'}</div></div>
           <div class="sec"><div class="sec-label">Площадь</div><div class="sec-value">${+s.area||0}<span class="unit">м²</span></div></div>
@@ -326,13 +411,21 @@ function renderStore(d, s) {
           <div class="sec"><div class="sec-label">Возвраты</div><div class="sec-value">${s.returns ?? 0}<span class="unit">%</span></div></div>
           <div class="sec"><div class="sec-label">Продажи / сотрудник</div><div class="sec-value">${escapeHtml(s.spe?.value)}<span class="unit">${escapeHtml(s.spe?.unit)}</span></div></div>
         </div>
-
-        ${(()=>{ const c=s.cats||{}; const cl=+c.clothing||0,fo=+c.footwear||0,ac=+c.accessories||0,tot=cl+fo+ac; if(!tot) return ''; const pct=v=>tot?Math.round(v/tot*100):0; const colors=['#e1241c','#0a0a0a','#9b958a']; const vals=[cl,fo,ac]; const labels=['Одежда','Обувь','Аксессуары']; let start=-Math.PI/2,paths=''; vals.forEach((v,i)=>{ if(!v)return; const ang=(v/tot)*2*Math.PI,end=start+ang,x1=80+70*Math.cos(start),y1=80+70*Math.sin(start),x2=80+70*Math.cos(end),y2=80+70*Math.sin(end); paths+=`<path d="M80,80 L${x1},${y1} A70,70 0 ${ang>Math.PI?1:0} 1 ${x2},${y2} Z" fill="${colors[i]}"/>`; start=end; }); return `<div style="display:grid;grid-template-columns:1fr 3fr;gap:14px;margin-top:14px"><div class="chart-card"><div class="chart-head"><div class="chart-title">Категории продаж</div></div><div class="chart-body" style="display:flex;align-items:center;gap:24px;padding:12px"><svg viewBox="0 0 160 160" style="width:140px;height:140px;flex-shrink:0">${paths}</svg><div style="flex:1">${labels.map((l,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0"></div><div style="font-size:13px">${l}</div><div style="margin-left:auto;font-weight:800;font-size:15px">${pct(vals[i])}%</div></div>`).join('')}</div></div></div></div>`; })()}
-
-        ${(()=>{ const st=(s.staff||[]).filter(e=>e.name||+e.sales); if(!st.length) return ''; const rows=st.slice().sort((a,b)=>(+b.sales||0)-(+a.sales||0)).map(e=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)"><div style="flex:1;font-size:14px;font-weight:600">${escapeHtml(e.name)}</div><div style="font-weight:800;font-size:15px;color:var(--red)">${fmtNum(e.sales)} $</div></div>`).join(''); return `<div class="summary-notes" style="margin-top:14px"><div class="lbl">Продажи по сотрудникам</div><div>${rows}</div></div>`; })()}
+        ${s.notes ? `
+          <div class="summary-notes" style="margin-top:24px">
+            <div class="lbl">Комментарий и план действий</div>
+            <div class="txt">${escapeHtml(s.notes)}</div>
+          </div>` : ''}
       </div>
     </div>
   `;
+}
+
+/* ---------- Store detail dispatcher ----------------------- */
+function renderStore(d, s, slide) {
+  if (slide === 2) return renderStore2(d, s);
+  if (slide === 3) return renderStore3(d, s);
+  return renderStore1(d, s);
 }
 
 /* ---------- Extra section slides ------------------------- */
@@ -557,7 +650,7 @@ function wireDeckClicks() {
     el.addEventListener('click', () => {
       const goIdx = +el.dataset.go;
       const meta = pageMeta(pageIndex);
-      if (meta.type === 'intro') { pageIndex += 1 + goIdx; render(); }
+      if (meta.type === 'intro') { pageIndex += 1 + goIdx * 3; render(); }
     });
   });
 }

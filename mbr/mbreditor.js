@@ -307,11 +307,20 @@ function storeCard(i, s) {
           <div class="store-card-hd">
             <input class="store-card-name" data-p="stores.${i}.staff.${j}.name" value="${attr(emp.name)}" placeholder="ФИО сотрудника">
             <input class="store-card-mall" data-p="stores.${i}.staff.${j}.sales" type="number" value="${attr(emp.sales)}" placeholder="Продажи $">
+            <input style="width:80px" title="Дней отработано в месяце" class="store-card-mall" data-p="stores.${i}.staff.${j}.daysWorked" type="number" value="${attr(emp.daysWorked||0)}" placeholder="Дней" min="0" max="31">
             <button type="button" class="btn-del" onclick="delStaff(${i},${j})">×</button>
           </div>
         `).join('')}
       </div>
       <button type="button" class="btn-add" onclick="addStaff(${i})">+ Добавить сотрудника</button>
+
+      <h4 style="margin-top:20px">Рабочих дней в месяце</h4>
+      <div class="grid g2">
+        <label class="f"><span>Всего рабочих дней (план)</span><input type="number" data-p="stores.${i}.daysAllocated" value="${attr(s.daysAllocated||27)}" placeholder="27" min="1" max="31"></label>
+      </div>
+
+      <h4 style="margin-top:20px">Комментарий и план действий</h4>
+      <label class="f"><textarea rows="3" data-p="stores.${i}.notes" placeholder="Выводы, замечания, план на следующий месяц...">${escapeHtml(s.notes||'')}</textarea></label>
     </div>
   `;
 }
@@ -325,7 +334,7 @@ window.addStore = () => {
     upt:1.7, area:0, discountCurr:0, discountPrev:0, returns:2.0,
     spe:{value:'0',unit:'млн'},
     cats:{clothing:0, footwear:0, accessories:0},
-    staff:[],
+    staff:[], daysAllocated:27, notes:'',
     trend:[0,0,0,0,0,0,0,0,0,0,0,0], trendPy:[0,0,0,0,0,0,0,0,0,0,0,0],
     weeks:[[0,0],[0,0],[0,0],[0,0]],
   });
@@ -337,7 +346,7 @@ window.delStore = (i) => {
 };
 window.addStaff = (si) => {
   _state.stores[si].staff = _state.stores[si].staff || [];
-  _state.stores[si].staff.push({name:'', sales:0});
+  _state.stores[si].staff.push({name:'', sales:0, daysWorked:0});
   markDirty(); renderForm();
 };
 window.delStaff = (si, ji) => {
