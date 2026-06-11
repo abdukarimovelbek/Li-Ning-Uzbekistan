@@ -274,15 +274,52 @@ function renderStoreHeader(d, s, slideNum) {
 
 /* ---------- Store slide 1 — KPIs + Charts + Categories ---- */
 function renderStore1(d, s) {
+  // YTD calculations
   const ytdCurr  = (s.trend   || []).reduce((acc, v) => acc + (+v || 0), 0);
   const ytdPrev  = (s.trendPy || []).reduce((acc, v) => acc + (+v || 0), 0);
   const ytdDelta = ytdPrev ? +(((ytdCurr - ytdPrev) / ytdPrev) * 100).toFixed(1) : null;
   const ytdColor = ytdDelta === null ? 'var(--muted)' : ytdDelta > 0 ? 'var(--green)' : 'var(--red)';
   const ytdSign  = ytdDelta > 0 ? '+' : '';
+
+  // Category pie (compact vertical layout)
+  const cats = s.cats || {};
+  const cl = +cats.clothing||0, fo = +cats.footwear||0, ac = +cats.accessories||0;
+  const catTot = cl + fo + ac;
+  let piePaths = '';
+  if (catTot) {
+    const catVals = [cl, fo, ac];
+    const catColors = ['#e1241c','#0a0a0a','#9b958a'];
+    let start = -Math.PI/2;
+    catVals.forEach((v, i) => {
+      if (!v) return;
+      const ang = (v/catTot)*2*Math.PI, end = start+ang;
+      const x1 = 50+45*Math.cos(start), y1 = 50+45*Math.sin(start);
+      const x2 = 50+45*Math.cos(end),   y2 = 50+45*Math.sin(end);
+      piePaths += `<path d="M50,50 L${x1},${y1} A45,45 0 ${ang>Math.PI?1:0} 1 ${x2},${y2} Z" fill="${catColors[i]}"/>`;
+      start = end;
+    });
+  }
+  const catCard = catTot ? `
+    <div class="chart-card">
+      <div class="chart-head"><div class="chart-title">Категории продаж</div></div>
+      <div class="chart-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px 14px">
+        <svg viewBox="0 0 100 100" style="width:80px;height:80px;flex-shrink:0">${piePaths}</svg>
+        <div style="width:100%">
+          ${[[cl,'#e1241c','Одежда'],[fo,'#0a0a0a','Обувь'],[ac,'#9b958a','Аксессуары']].filter(([v])=>v).map(([v,col,lbl])=>
+            `<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+              <div style="width:8px;height:8px;border-radius:2px;background:${col};flex-shrink:0"></div>
+              <span style="font-size:12px;flex:1">${lbl}</span>
+              <b style="font-size:13px">${Math.round(v/catTot*100)}%</b>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>` : '';
+
   return `
     <div class="detail">
       ${renderStoreHeader(d, s, 1)}
-      <div class="detail-body">
+      <div class="detail-body" style="grid-template-rows: auto 1fr">
+
         <div class="kpi-row">
           <div class="kpi primary">
             <div class="kpi-label">Выручка, факт</div>
@@ -308,26 +345,27 @@ function renderStore1(d, s) {
             <div class="kpi-deltas">${deltaHtml(s.avg?.mom, 'MoM')}</div>
           </div>
           ${ytdCurr > 0 ? `
-          <div style="grid-column:1/-1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+          <div style="grid-column:1/-1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
             <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);white-space:nowrap">Продажи с начала года</div>
-            <div style="width:1px;height:20px;background:var(--line)"></div>
-            <div style="display:flex;align-items:baseline;gap:7px">
-              <span style="font-size:22px;font-weight:900">${fmtNum(ytdCurr)} $</span>
+            <div style="width:1px;height:18px;background:var(--line)"></div>
+            <div style="display:flex;align-items:baseline;gap:6px">
+              <span style="font-size:20px;font-weight:900">${fmtNum(ytdCurr)} $</span>
               <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">${yearOf(data.period)}</span>
             </div>
-            <div style="display:flex;align-items:baseline;gap:7px;opacity:.65">
-              <span style="font-size:18px;font-weight:700">${fmtNum(ytdPrev)} $</span>
+            <div style="display:flex;align-items:baseline;gap:6px;opacity:.6">
+              <span style="font-size:16px;font-weight:700">${fmtNum(ytdPrev)} $</span>
               <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">${+yearOf(data.period) - 1}</span>
             </div>
             ${ytdDelta !== null ? `
-            <div style="margin-left:auto;display:flex;align-items:baseline;gap:7px">
-              <span style="font-size:26px;font-weight:900;color:${ytdColor}">${ytdSign}${ytdDelta}%</span>
+            <div style="margin-left:auto;display:flex;align-items:baseline;gap:6px">
+              <span style="font-size:22px;font-weight:900;color:${ytdColor}">${ytdSign}${ytdDelta}%</span>
               <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">YoY</span>
             </div>` : ''}
           </div>` : ''}
         </div>
 
-        <div class="chart-row">
+        <div style="display:grid;grid-template-columns:${catTot ? '200px ' : ''}1fr 1fr;gap:14px;min-height:0">
+          ${catCard}
           <div class="chart-card">
             <div class="chart-head">
               <div class="chart-title">Продажи · с начала года</div>
@@ -350,7 +388,6 @@ function renderStore1(d, s) {
           </div>
         </div>
 
-        ${(()=>{ const c=s.cats||{}; const cl=+c.clothing||0,fo=+c.footwear||0,ac=+c.accessories||0,tot=cl+fo+ac; if(!tot) return ''; const pct=v=>tot?Math.round(v/tot*100):0; const colors=['#e1241c','#0a0a0a','#9b958a']; const vals=[cl,fo,ac]; const labels=['Одежда','Обувь','Аксессуары']; let start=-Math.PI/2,paths=''; vals.forEach((v,i)=>{ if(!v)return; const ang=(v/tot)*2*Math.PI,end=start+ang,x1=80+70*Math.cos(start),y1=80+70*Math.sin(start),x2=80+70*Math.cos(end),y2=80+70*Math.sin(end); paths+=`<path d="M80,80 L${x1},${y1} A70,70 0 ${ang>Math.PI?1:0} 1 ${x2},${y2} Z" fill="${colors[i]}"/>`; start=end; }); return `<div style="display:grid;grid-template-columns:1fr 3fr;gap:14px;margin-top:14px"><div class="chart-card"><div class="chart-head"><div class="chart-title">Категории продаж</div></div><div class="chart-body" style="display:flex;align-items:center;gap:24px;padding:12px"><svg viewBox="0 0 160 160" style="width:140px;height:140px;flex-shrink:0">${paths}</svg><div style="flex:1">${labels.map((l,i)=>`<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:10px;height:10px;border-radius:2px;background:${colors[i]};flex-shrink:0"></div><div style="font-size:13px">${l}</div><div style="margin-left:auto;font-weight:800;font-size:15px">${pct(vals[i])}%</div></div>`).join('')}</div></div></div></div>`; })()}
       </div>
     </div>
   `;
@@ -406,14 +443,16 @@ function renderStore2(d, s) {
   return `
     <div class="detail">
       ${renderStoreHeader(d, s, 2)}
-      <div class="detail-body">
-        <div style="display:grid;grid-template-columns:1.8fr 2fr 1.6fr 1fr;gap:20px;padding:8px 0 10px;border-bottom:2px solid var(--ink);margin-bottom:2px">
+      <div class="detail-body" style="grid-template-rows: auto 1fr auto">
+        <div style="display:grid;grid-template-columns:1.8fr 2fr 1.6fr 1fr;gap:20px;padding:8px 0 10px;border-bottom:2px solid var(--ink)">
           <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.45;padding-left:34px">Сотрудник</div>
           <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.45">Продажи за месяц</div>
           <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.45">Дней из ${daysAllocated}</div>
           <div style="font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.45">В день</div>
         </div>
-        ${rows.length ? rows.join('') : `<div style="text-align:center;color:#bbb;padding:60px 0;font-size:14px">Нет данных по сотрудникам</div>`}
+        <div style="overflow-y:auto;min-height:0">
+          ${rows.length ? rows.join('') : `<div style="text-align:center;color:#bbb;padding:60px 0;font-size:14px">Нет данных по сотрудникам</div>`}
+        </div>
         ${summaryRow}
       </div>
     </div>
@@ -425,7 +464,7 @@ function renderStore3(d, s) {
   return `
     <div class="detail">
       ${renderStoreHeader(d, s, 3)}
-      <div class="detail-body">
+      <div class="detail-body" style="grid-template-rows: auto auto 1fr">
         <div class="sec-row">
           <div class="sec"><div class="sec-label">UPT · товаров в чеке</div><div class="sec-value">${s.upt ?? '—'}</div></div>
           <div class="sec"><div class="sec-label">Площадь</div><div class="sec-value">${+s.area||0}<span class="unit">м²</span></div></div>
@@ -620,7 +659,7 @@ function trendChart(curr, prev) {
   );
   const c = (curr||[]).slice(0, len);
   const p = (prev||[]).slice(0, len);
-  if (c.every(v=>(+v||0)===0)) return '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#bbb;font-family:JetBrains Mono;font-size:11px;letter-spacing:.2em">НЕТ ДАННЫХ</div>';
+  if (c.every(v=>(+v||0)===0)) return '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:80px;color:#bbb;font-family:JetBrains Mono;font-size:11px;letter-spacing:.2em">НЕТ ДАННЫХ</div>';
   const W = 600, H = 220, P = 14, BT = 22;
   const all = [...c, ...p];
   const max = Math.max(...all.map(v=>+v||0), 1);
@@ -643,7 +682,7 @@ function trendChart(curr, prev) {
 }
 
 function weeksChart(weeks) {
-  if (!weeks.length) return '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#bbb;font-family:JetBrains Mono;font-size:11px;letter-spacing:.2em">НЕТ ДАННЫХ</div>';
+  if (!weeks.length) return '<div style="display:flex;align-items:center;justify-content:center;height:100%;min-height:80px;color:#bbb;font-family:JetBrains Mono;font-size:11px;letter-spacing:.2em">НЕТ ДАННЫХ</div>';
   const W = 600, H = 200, P = 14;
   const groupW = (W - P*2) / weeks.length;
   const barW = groupW * 0.32;

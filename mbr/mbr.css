@@ -745,7 +745,7 @@ kbd {
 .chart-legend i.boxg { width: 12px; height: 12px; border-radius: 3px; background: #d8d4c8; }
 .chart-body {
   flex: 1;
-  min-height: 140px;
+  min-height: 0;
   position: relative;
 }
 .chart-body svg { width: 100%; height: 100%; display: block; }
