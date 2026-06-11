@@ -1113,7 +1113,7 @@
         const res = await fetch(GA_SCRIPT_URL);
         const json = await res.json();
         if (!json.ok) throw new Error(json.error);
-        renderAnalytics(json.data);
+        await renderAnalytics(json.data);
         document.getElementById('ga-updated').textContent =
           'Обновлено: ' + new Date().toLocaleTimeString('ru-RU');
       } catch(e) {
@@ -1121,7 +1121,20 @@
       }
     }
 
-    function renderAnalytics(d) {
+    function renderTopProductsBar(container, products) {
+      const maxV = products[0].views;
+      container.innerHTML = products.map((p, i) => `
+        <div class="ga-bar-row">
+          <span style="width:16px;color:var(--muted);font-size:.75rem">${i+1}</span>
+          <div style="flex:1;min-width:0">
+            <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem">${p.name}</div>
+            <div class="ga-bar-track"><div class="ga-bar-fill" style="width:${Math.round(p.views/maxV*100)}%"></div></div>
+          </div>
+          <span style="font-weight:700;font-size:.85rem;margin-left:.5rem">${p.views}</span>
+        </div>`).join('');
+    }
+
+    async function renderAnalytics(d) {
       // Основные метрики
       document.getElementById('ga-users').textContent    = d.main.activeUsers.toLocaleString('ru-RU');
       document.getElementById('ga-sessions').textContent = d.main.sessions.toLocaleString('ru-RU');
@@ -1136,21 +1149,37 @@
       document.getElementById('ga-telegram').textContent   = d.social.telegram.toLocaleString('ru-RU');
       document.getElementById('ga-map').textContent        = d.social.map.toLocaleString('ru-RU');
 
-      // Топ-5 товаров
+      // Топ-5 товаров — если GA пустой, берём из заказов Supabase
       const topEl = document.getElementById('ga-top-products');
-      if (!d.topProducts.length) {
-        topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет данных за 24ч</div>';
+      const gaTop = d.topProducts || [];
+      if (gaTop.length > 0) {
+        renderTopProductsBar(topEl, gaTop);
       } else {
-        const maxV = d.topProducts[0].views;
-        topEl.innerHTML = d.topProducts.map((p, i) => `
-          <div class="ga-bar-row">
-            <span style="width:16px;color:var(--muted);font-size:.75rem">${i+1}</span>
-            <div style="flex:1;min-width:0">
-              <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.82rem">${p.name}</div>
-              <div class="ga-bar-track"><div class="ga-bar-fill" style="width:${Math.round(p.views/maxV*100)}%"></div></div>
-            </div>
-            <span style="font-weight:700;font-size:.85rem;margin-left:.5rem">${p.views}</span>
-          </div>`).join('');
+        // Fallback: топ по просмотрам за 7 дней из Supabase (таблица product_views)
+        topEl.innerHTML = '<div style="color:var(--muted);font-size:.78rem">Загрузка просмотров...</div>';
+        try {
+          const sevenDaysAgo = new Date();
+          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+          const views = await sbFetch('product_views', 'GET', null,
+            `?created_at=gte.${sevenDaysAgo.toISOString()}&select=article,name`);
+
+          const counts = {};
+          views.forEach(v => {
+            const key = v.article || v.name;
+            if (!key) return;
+            if (!counts[key]) counts[key] = { name: v.name || key, views: 0 };
+            counts[key].views++;
+          });
+
+          const top = Object.values(counts).sort((a, b) => b.views - a.views).slice(0, 5);
+          if (top.length > 0) {
+            renderTopProductsBar(topEl, top);
+          } else {
+            topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет просмотров за 7 дней</div>';
+          }
+        } catch(e) {
+          topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет данных за 7 дней</div>';
+        }
       }
 
       // Источники трафика

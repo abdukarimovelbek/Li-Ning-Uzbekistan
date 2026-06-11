@@ -246,6 +246,18 @@ function fillProduct(p) {
     items: [{ item_id: p.article || p.id, item_name: p.name, price: p.price, item_category: p.category }]
   });
 
+  // Запись просмотра в Supabase для аналитики топ-товаров
+  fetch(`${SB_URL}/rest/v1/product_views`, {
+    method: 'POST',
+    headers: {
+      'apikey': SB_KEY,
+      'Authorization': `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ product_id: p.id, article: p.article || null, name: p.name })
+  }).catch(() => {});
+
   // Отслеживание времени на странице товара
   window._productViewStart = Date.now();
   window._currentArticle = p.article || p.id;
