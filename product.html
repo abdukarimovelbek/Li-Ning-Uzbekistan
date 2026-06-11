@@ -589,5 +589,39 @@ function showSizeAlert() {
 <!-- MODALS -->
 <div id="modals-placeholder"></div>
 
+  <!-- ════════ LI-NING MOTION (reveal + progress) ════════ -->
+  <script>
+  (function(){
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    document.documentElement.classList.add('ln-mo');
+
+    // прогресс-бар
+    var bar=document.createElement('div'); bar.className='ln-prog'; document.body.appendChild(bar);
+    function prog(){ var h=document.documentElement.scrollHeight-innerHeight; bar.style.width=(h>0?(scrollY/h*100):0)+'%'; }
+
+    // ЧТО анимируем (настраивай список под себя; product-card НЕ трогаем — у него свой card-animate)
+    var SEL='.section-label,.section-title,.section-head,.see-all,.reviews-summary,.review-card,.store-card,.wishlist-header,.breadcrumb';
+    var els=[].slice.call(document.querySelectorAll(SEL));
+    els.forEach(function(el){ el.classList.add('ln-rev'); });
+
+    function show(el){ el.classList.add('in'); }
+    function inView(el){ var r=el.getBoundingClientRect(); return r.top<innerHeight*0.92 && r.bottom>-40; }
+
+    var io=('IntersectionObserver' in window) ? new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ show(e.target); io.unobserve(e.target); } });
+    },{threshold:.12, rootMargin:'0px 0px -7% 0px'}) : null;
+
+    els.forEach(function(el){ if(inView(el)) show(el); else if(io) io.observe(el); });
+
+    // ручной фолбэк (если IO недоступен/притормозил) + обновление прогресса
+    function onScroll(){ prog(); els.forEach(function(el){ if(!el.classList.contains('in') && inView(el)){ show(el); if(io) io.unobserve(el); } }); }
+    addEventListener('scroll', onScroll, {passive:true});
+    prog();
+    setTimeout(onScroll, 1200);   // подстраховка
+    addEventListener('load', onScroll);
+  })();
+  </script>
+  <!-- ════════ /MOTION ════════ -->
+
 </body>
 </html>
