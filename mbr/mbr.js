@@ -274,6 +274,11 @@ function renderStoreHeader(d, s, slideNum) {
 
 /* ---------- Store slide 1 — KPIs + Charts + Categories ---- */
 function renderStore1(d, s) {
+  const ytdCurr  = (s.trend   || []).reduce((acc, v) => acc + (+v || 0), 0);
+  const ytdPrev  = (s.trendPy || []).reduce((acc, v) => acc + (+v || 0), 0);
+  const ytdDelta = ytdPrev ? +(((ytdCurr - ytdPrev) / ytdPrev) * 100).toFixed(1) : null;
+  const ytdColor = ytdDelta === null ? 'var(--muted)' : ytdDelta > 0 ? 'var(--green)' : 'var(--red)';
+  const ytdSign  = ytdDelta > 0 ? '+' : '';
   return `
     <div class="detail">
       ${renderStoreHeader(d, s, 1)}
@@ -302,6 +307,24 @@ function renderStore1(d, s) {
             <div class="kpi-value">${escapeHtml(s.avg?.value)}<span class="unit">${escapeHtml(s.avg?.unit)}</span></div>
             <div class="kpi-deltas">${deltaHtml(s.avg?.mom, 'MoM')}</div>
           </div>
+          ${ytdCurr > 0 ? `
+          <div style="grid-column:1/-1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);white-space:nowrap">Продажи с начала года</div>
+            <div style="width:1px;height:20px;background:var(--line)"></div>
+            <div style="display:flex;align-items:baseline;gap:7px">
+              <span style="font-size:22px;font-weight:900">${fmtNum(ytdCurr)} $</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">${yearOf(data.period)}</span>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:7px;opacity:.65">
+              <span style="font-size:18px;font-weight:700">${fmtNum(ytdPrev)} $</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">${+yearOf(data.period) - 1}</span>
+            </div>
+            ${ytdDelta !== null ? `
+            <div style="margin-left:auto;display:flex;align-items:baseline;gap:7px">
+              <span style="font-size:26px;font-weight:900;color:${ytdColor}">${ytdSign}${ytdDelta}%</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">YoY</span>
+            </div>` : ''}
+          </div>` : ''}
         </div>
 
         <div class="chart-row">
