@@ -2497,4 +2497,15 @@ footer .footer-inner {
   z-index:9998; box-shadow:0 0 12px rgba(196,30,58,.6);
   transition:width .1s linear; pointer-events:none;
 }
-@media(prefers-reduced-motion:reduce){ .ln-mo .ln-rev{ opacity:1!important; transform:none!important; } }
+@media(prefers-reduced-motion:reduce){ .ln-mo .ln-rev{ opacity:1!important; transform:none!important; } 
+}
+
+/* ════════ LI-NING: collections accordion (расхлоп при наведении) ════════ */
+@media (hover:hover) and (min-width:769px){
+  .collections-grid{ transition:height .75s cubic-bezier(.22,1,.36,1); }
+  .collections-grid:has(.collection-card:hover){ height:550px; }        /* база 520 → лёгкий прирост */
+
+  .collection-card{ min-width:0; transition:flex-grow .75s cubic-bezier(.22,1,.36,1); }
+  .collections-grid:hover .collection-card{ flex-grow:.7; }             /* соседи сжимаются */
+  .collections-grid:hover .collection-card:hover{ flex-grow:1.5; }        /* наведённая расширяется */
+}
