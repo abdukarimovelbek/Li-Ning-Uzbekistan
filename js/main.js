@@ -1580,6 +1580,41 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>`;
     };
 
+    const updateReviewsSummary = (reviews) => {
+      const total = reviews.length;
+      const counts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      let sum = 0;
+      reviews.forEach(r => {
+        const rt = Math.min(5, Math.max(1, r.rating || 5));
+        counts[rt]++;
+        sum += rt;
+      });
+      const avg = total ? (sum / total).toFixed(1) : '—';
+      const avgRounded = total ? Math.round(sum / total) : 0;
+
+      const bigEl = document.getElementById('rating-big-value');
+      if (bigEl) bigEl.textContent = avg;
+
+      const starsEl = document.getElementById('rating-stars-big');
+      if (starsEl) starsEl.textContent = '★'.repeat(avgRounded) + '☆'.repeat(5 - avgRounded);
+
+      const countEl = document.getElementById('rating-count-text');
+      if (countEl) countEl.textContent = total
+        ? `На основе ${total} ${total === 1 ? 'отзыва' : total < 5 ? 'отзывов' : 'отзывов'}`
+        : 'Отзывов пока нет';
+
+      // Анимированное заполнение баров — небольшая задержка чтобы transition успел сработать
+      setTimeout(() => {
+        for (let star = 5; star >= 1; star--) {
+          const pct = total ? Math.round((counts[star] / total) * 100) : 0;
+          const fillEl = document.getElementById(`bar-fill-${star}`);
+          const pctEl  = document.getElementById(`bar-pct-${star}`);
+          if (fillEl) fillEl.style.width = pct + '%';
+          if (pctEl)  pctEl.textContent  = total ? pct + '%' : '—';
+        }
+      }, 150);
+    };
+
     try {
       const res = await fetch(
         `${SB_URL}/rest/v1/reviews?order=created_at.desc&limit=9`,
@@ -1587,6 +1622,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       );
       if (!res.ok) throw new Error('no_table');
       const reviews = await res.json();
+      updateReviewsSummary(reviews);
       if (reviews?.length) {
         reviewsGrid.innerHTML = reviews.map(buildReviewCard).join('');
       } else {
@@ -1595,6 +1631,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>`;
       }
     } catch(e) {
+      updateReviewsSummary([]);
       reviewsGrid.innerHTML = `<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--gray-400);font-size:.9rem">
         Отзывы скоро появятся ✨
       </div>`;

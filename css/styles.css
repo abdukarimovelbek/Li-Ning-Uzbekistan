@@ -1231,8 +1231,8 @@ button { font-family: var(--font-body); }
 .rating-info p { font-size: 0.78rem; color: var(--gray-300); margin-top: 0.3rem; }
 .rating-bars { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
 .rating-bar-row { display: flex; align-items: center; gap: 0.8rem; font-size: 0.75rem; color: var(--gray-300); }
-.rating-bar { flex: 1; height: 6px; background: var(--gray-700); position: relative; }
-.rating-bar-fill { height: 100%; background: var(--gold); }
+.rating-bar { flex: 1; height: 6px; background: var(--gray-700); border-radius: 3px; overflow: hidden; }
+.rating-bar-fill { height: 100%; background: var(--gold); border-radius: 3px; width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
 
 /* ─── Order Form ─────────────────────────────── */
 .order-page { padding: 4rem 2rem 6rem; }
