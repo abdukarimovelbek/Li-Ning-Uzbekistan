@@ -1549,6 +1549,58 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch(e) { console.error(e); }
   }
 
+  // Отзывы на главной странице
+  const reviewsGrid = document.getElementById('reviews-grid');
+  if (reviewsGrid) {
+    const avatarColors = ['var(--red)', 'var(--gold)', '#4a90d9', '#22c55e', '#9b59b6', '#e67e22'];
+
+    const buildReviewCard = (r, i) => {
+      const words = (r.customer_name || 'A').trim().split(/\s+/);
+      const initials = words.map(w => w[0]).join('').toUpperCase().slice(0, 2);
+      const color = avatarColors[i % avatarColors.length];
+      const rating = Math.min(5, Math.max(1, r.rating || 5));
+      const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating);
+      const date = new Date(r.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+      return `
+        <div class="review-card" data-rating="${rating}">
+          <div class="review-quote-mark">"</div>
+          <div class="review-header">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar" style="background:${color}">${initials}</div>
+              <div>
+                <div class="reviewer-name">${r.customer_name}</div>
+                <div class="reviewer-date">${date}</div>
+              </div>
+            </div>
+            <div class="review-stars">${stars}</div>
+          </div>
+          ${r.product_name ? `<div class="review-product">${r.product_name}</div>` : ''}
+          <div class="review-text">${r.text}</div>
+          ${r.is_verified ? '<div class="review-verified">✓ Проверенная покупка</div>' : ''}
+        </div>`;
+    };
+
+    try {
+      const res = await fetch(
+        `${SB_URL}/rest/v1/reviews?order=created_at.desc&limit=9`,
+        { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+      );
+      if (!res.ok) throw new Error('no_table');
+      const reviews = await res.json();
+      if (reviews?.length) {
+        reviewsGrid.innerHTML = reviews.map(buildReviewCard).join('');
+      } else {
+        reviewsGrid.innerHTML = `<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--gray-400);font-size:.9rem">
+          Отзывы скоро появятся ✨
+        </div>`;
+      }
+    } catch(e) {
+      reviewsGrid.innerHTML = `<div style="grid-column:1/-1;padding:3rem;text-align:center;color:var(--gray-400);font-size:.9rem">
+        Отзывы скоро появятся ✨
+      </div>`;
+    }
+  }
+
 });
 
 /* ─── SEARCH TOGGLE ─────────────────────────── */
