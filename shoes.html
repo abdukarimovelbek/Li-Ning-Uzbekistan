@@ -218,5 +218,57 @@
   </script>
   <!-- ════════ /PAGE WIPE ════════ -->  
 
+  <!-- ════════ LI-NING: word-reveal + count-up ════════ -->
+  <script>
+  (function(){
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+
+    /* ── 1. Заголовок по словам ── */
+    function lnWords(el){
+      if(!el || el.dataset.lnW) return; el.dataset.lnW='1';
+      var units=[];
+      [].forEach.call(el.childNodes,function(n){
+        if(n.nodeType===3){ n.textContent.split(/(\s+)/).forEach(function(t){ units.push(t.trim()===''?{sp:t}:{word:t}); }); }
+        else if(n.nodeType===1){ n.tagName==='BR' ? units.push({br:1}) : units.push({el:n}); }
+      });
+      el.innerHTML=''; var i=0;
+      units.forEach(function(u){
+        if(u.sp!=null){ el.appendChild(document.createTextNode(u.sp)); return; }
+        if(u.br){ el.appendChild(document.createElement('br')); return; }
+        var w=document.createElement('span'); w.className='ln-w';
+        var inner=document.createElement('i'); inner.style.setProperty('--d',(i*0.07)+'s');
+        if(u.word!=null) inner.textContent=u.word; else inner.appendChild(u.el);
+        w.appendChild(inner); el.appendChild(w); i++;
+      });
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('in'); }); });
+    }
+    window.lnWords=lnWords;
+    [].forEach.call(document.querySelectorAll('.ln-words'), lnWords);
+
+    /* ── 2. Count-up для цифр ── */
+    function lnCount(el){
+      if(el.dataset.lnC) return; el.dataset.lnC='1';
+      var target=parseFloat(el.getAttribute('data-count'))||0,
+          dec=parseInt(el.getAttribute('data-dec')||'0',10),
+          pre=el.getAttribute('data-pre')||'', suf=el.getAttribute('data-suf')||'',
+          t0=performance.now(), DUR=1400;
+      function fmt(v){ return dec ? v.toFixed(dec) : Math.round(v).toLocaleString('ru-RU'); }
+      function tk(now){ var p=Math.min((now-t0)/DUR,1), e=1-Math.pow(1-p,3);
+        el.textContent=pre+fmt(target*e)+suf;
+        if(p<1) requestAnimationFrame(tk); else el.textContent=pre+fmt(target)+suf;
+      }
+      requestAnimationFrame(tk);
+    }
+    var counters=[].slice.call(document.querySelectorAll('[data-count]'));
+    function inView(el){ var r=el.getBoundingClientRect(); return r.top<innerHeight*0.9 && r.bottom>0; }
+    var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ lnCount(e.target); io.unobserve(e.target);} });
+    },{threshold:.3}):null;
+    counters.forEach(function(el){ if(inView(el)) lnCount(el); else if(io) io.observe(el); else lnCount(el); });
+    addEventListener('scroll',function(){ counters.forEach(function(el){ if(!el.dataset.lnC && inView(el)) lnCount(el); }); },{passive:true});
+  })();
+  </script>
+  <!-- ════════ /WORD-REVEAL ════════ -->
+
 </body>
 </html>
