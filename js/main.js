@@ -1664,16 +1664,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
-  // Закрытие поиска при клике вне поля
-  document.addEventListener('click', e => {
-    const bar = document.getElementById('nav-search-bar');
-    const searchBtn = document.getElementById('searchBtn');
-    if (!bar || !bar.classList.contains('open')) return;
-    if (!bar.contains(e.target) && !searchBtn?.contains(e.target)) {
-      bar.classList.remove('open');
-    }
-  });
 });
+
+// Закрытие поиска при клике вне — вне DOMContentLoaded,
+// getElementById вызывается в момент клика когда navbar уже загружен
+document.addEventListener('click', e => {
+  const bar = document.getElementById('nav-search-bar');
+  const searchBtn = document.getElementById('searchBtn');
+  if (!bar || !bar.classList.contains('open')) return;
+  if (!bar.contains(e.target) && !searchBtn?.contains(e.target)) {
+    bar.classList.remove('open');
+  }
+});
+
 window.toggleSearch = toggleSearch;
 
 /* ─── CITY SELECTOR ─────────────────────────── */
