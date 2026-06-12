@@ -1593,7 +1593,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       const avgRounded = total ? Math.round(sum / total) : 0;
 
       const bigEl = document.getElementById('rating-big-value');
-      if (bigEl) bigEl.textContent = avg;
+      if (bigEl && avg !== '—') {
+        const tgt = parseFloat(avg), t0 = performance.now();
+        (function tk(now){ const p=Math.min((now-t0)/1200,1), e=1-Math.pow(1-p,3);
+          bigEl.textContent=(tgt*e).toFixed(1); if(p<1) requestAnimationFrame(tk); else bigEl.textContent=avg; })(t0);
+      } else if (bigEl) { bigEl.textContent = avg; }
 
       const starsEl = document.getElementById('rating-stars-big');
       if (starsEl) starsEl.textContent = '★'.repeat(avgRounded) + '☆'.repeat(5 - avgRounded);
@@ -1778,7 +1782,7 @@ const HeroSlider = (() => {
         ` : ''}
         <div style="position:relative;z-index:2;width:100%;min-height:calc(100vh - var(--nav-h) - 36px);display:flex;flex-direction:column;justify-content:center;padding:0 4rem">
           <div class="hero-tag" style="color:rgba(255,255,255,0.7)">${slide.subtitle || ''}</div>
-          <h1 class="hero-h1" style="color:${slide.text_color || '#fff'};font-size:clamp(4rem,10vw,9rem)">
+          <h1 class="hero-h1 ln-words" style="color:${slide.text_color || '#fff'};font-size:clamp(4rem,10vw,9rem)">
             ${(slide.title || '').replace(/\n/g,'<br>')}
           </h1>
           <div class="hero-cta" style="margin-top:2rem">
@@ -1796,6 +1800,20 @@ const HeroSlider = (() => {
     });
 
     startTimer();
+    lnReveal(container.querySelector('.hero-slide.active'));  // ← word-reveal первого слайда
+  };
+
+  // проиграть word-reveal на заголовке слайда (первый раз — разбить, далее — повторить)
+  const lnReveal = (slideEl) => {
+    const h1 = slideEl && slideEl.querySelector('.hero-h1');
+    if (!h1 || !window.lnWords) return;
+    if (h1.dataset.lnW) {
+      h1.classList.remove('in');
+      void h1.offsetWidth; // форсируем reflow
+      requestAnimationFrame(() => requestAnimationFrame(() => h1.classList.add('in')));
+    } else {
+      window.lnWords(h1);
+    }
   };
 
   const goTo = (index) => {
@@ -1810,6 +1828,7 @@ const HeroSlider = (() => {
 
     slideEls[current]?.classList.add('active');
     dotEls[current]?.classList.add('active');
+    lnReveal(slideEls[current]);   // ← анимация заголовка по словам
   };
 
   const startTimer = () => {

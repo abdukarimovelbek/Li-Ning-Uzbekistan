@@ -37,7 +37,10 @@
   --shadow-md: 0 6px 32px rgba(0,0,0,0.11);
   --shadow-lg: 0 16px 60px rgba(0,0,0,0.15);
 
-  --transition: 0.28s cubic-bezier(0.4,0,0.2,1);
+  --ease:       cubic-bezier(.22,1,.36,1);
+  --ease-io:    cubic-bezier(.65,.05,.36,1);
+  --transition: 0.28s var(--ease);
+
 }
 
 /* ─── Reset ─────────────────────────────────── */
@@ -2054,38 +2057,46 @@ footer .footer-inner {
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(30px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: scale(1.015); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 .hero-slide-bg {
-  position: absolute; inset: 0;
+  position: absolute;
+  top: -5%; left: -5%;          /* запас по краям, чтобы зум не оголял углы */
+  width: 110%; height: 110%;
   background-size: cover;
   background-position: center center;
   z-index: 0;
-  width: 100%;
-  height: 100%;
+  transform: scale(1.1);
+  will-change: transform;
+}
+/* Ken Burns — плавный «наезд камеры» на активном слайде */
+.hero-slide.active .hero-slide-bg {
+  animation: kenburns 9s ease-out forwards;
+}
+@keyframes kenburns {
+  from { transform: scale(1.16) translate(1.5%, 1%); }
+  to   { transform: scale(1.03) translate(-1%, -1%); }
 }
 
 @media (max-width: 768px) {
-  .hero-slide-bg {
-    background-size: 120%;
-    background-position: center center;
-  }
-  .hero-slide {
-    height: 90vh;
-    padding-top: calc(var(--nav-h) + 1rem);
-  }
-  .hero-slider {
-    height: 90vh;
-  }
+  .hero-slide-bg { background-size: cover; }
+  .hero-slide  { height: 90vh; padding-top: calc(var(--nav-h) + 1rem); }
+  .hero-slider { height: 90vh; }
 }
 
+/* Кинематографичный скрим: тёмный слева под текст, прозрачный справа */
 .hero-slide-bg-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0) 100%);
+  background: linear-gradient(105deg,
+    rgba(15,15,15,0.86) 0%,
+    rgba(15,15,15,0.55) 38%,
+    rgba(15,15,15,0.12) 70%,
+    rgba(15,15,15,0.38) 100%);
   z-index: 1;
 }
+
 .hero-slide .hero-left { position: relative; z-index: 2; }
 .hero-slide .hero-right { position: relative; z-index: 2; }
 
