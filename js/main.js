@@ -1051,10 +1051,6 @@ const Breadcrumb = (() => {
       'catalog.html': 'Каталог',
       'product.html': 'Товар',
       'order.html':   'Оформление заказа',
-      'shoes.html':   'Обувь',
-      'clothing.html':'Одежда',
-      'running.html': 'Бег',
-      'training.html':'Тренировка',
       'sale.html':    'Скидки',
     };
     const current = window.location.pathname.split('/').pop() || 'index.html';
@@ -1589,49 +1585,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
           catalogGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
         }
-    } catch(e) { console.error(e); }
-  }
-
-  // Страница обуви
-  const shoesGrid = document.getElementById('shoes-products');
-  if (shoesGrid) {
-    try {
-      const products = await fetchProducts('&category=eq.shoes');
-      shoesGrid.innerHTML = products.length > 0
-        ? products.map(buildCard).join('')
-        : '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
-      window.ProductCards?.init();
-      highlightWishlist();
-    } catch(e) { console.error(e); }
-  }
-
-  const clothingGrid = document.getElementById('clothing-products');
-  if (clothingGrid) {
-    try {
-      const products = await fetchProducts('&category=eq.clothing');
-      clothingGrid.innerHTML = products.map(buildCard).join('');
-      window.ProductCards?.init();
-      highlightWishlist();
-    } catch(e) { console.error(e); }
-  }
-
-  const runningGrid = document.getElementById('running-products');
-  if (runningGrid) {
-    try {
-      const products = await fetchProducts('&category=eq.running');
-      runningGrid.innerHTML = products.map(buildCard).join('');
-      window.ProductCards?.init();
-      highlightWishlist();
-    } catch(e) { console.error(e); }
-  }
-
-  const trainingGrid = document.getElementById('training-products');
-  if (trainingGrid) {
-    try {
-      const products = await fetchProducts('&category=eq.training');
-      trainingGrid.innerHTML = products.map(buildCard).join('');
-      window.ProductCards?.init();
-      highlightWishlist();
     } catch(e) { console.error(e); }
   }
 
