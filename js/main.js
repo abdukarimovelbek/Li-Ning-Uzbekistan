@@ -2099,3 +2099,15 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 })();
+
+// Scroll progress bar
+(function(){
+  var prog = document.createElement('div');
+  prog.className = 'scroll-progress';
+  document.body.appendChild(prog);
+  window.addEventListener('scroll', function() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (h > 0 ? (window.scrollY / h * 100) : 0) + '%';
+  }, { passive: true });
+})();
+

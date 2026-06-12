@@ -40,7 +40,16 @@
   --ease:       cubic-bezier(.22,1,.36,1);
   --ease-io:    cubic-bezier(.65,.05,.36,1);
   --transition: 0.28s var(--ease);
+}
 
+::selection { background: var(--red); color: #fff; }
+
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--red), var(--red-light));
+  z-index: 9999; pointer-events: none;
+  box-shadow: 0 0 10px rgba(196,30,58,.5);
+  transition: width .1s linear;
 }
 
 /* ─── Reset ─────────────────────────────────── */
