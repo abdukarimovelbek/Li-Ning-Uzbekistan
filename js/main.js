@@ -1650,6 +1650,7 @@ function toggleSearch() {
     setTimeout(() => input?.focus(), 100);
   }
 }
+
 // Обработчик поиска — при нажатии Enter переходим в каталог
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.getElementById('nav-search-input');
@@ -1661,6 +1662,15 @@ document.addEventListener('DOMContentLoaded', () => {
         trackEvent('search', { search_term: q.toLowerCase() });
         window.location.href = `catalog.html?search=${encodeURIComponent(q)}`;
       }
+    }
+  });
+  // Закрытие поиска при клике вне поля
+  document.addEventListener('click', e => {
+    const bar = document.getElementById('nav-search-bar');
+    const searchBtn = document.getElementById('searchBtn');
+    if (!bar || !bar.classList.contains('open')) return;
+    if (!bar.contains(e.target) && !searchBtn?.contains(e.target)) {
+      bar.classList.remove('open');
     }
   });
 });
