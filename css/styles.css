@@ -1122,13 +1122,18 @@ button {
 .size-label{ display:flex; justify-content:space-between; align-items:center; font-family:'Oswald',sans-serif; font-size:.74rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase; margin-bottom:.7rem; }
 .size-label a{ font-family:var(--font-body); font-weight:400; text-transform:none; letter-spacing:0; color:var(--gray-400); text-decoration:underline; }
 .size-picked{ color:var(--red); }
-.detail-size-grid{ display:flex; flex-wrap:wrap; gap:.5rem; }
+.detail-size-grid{ 
+  display:flex; 
+  flex-wrap:wrap; 
+  gap:.6rem; 
+}
 .detail-size-btn{
-  min-width:52px; height:46px; padding:0 .7rem; background:#fff; border:1.5px solid var(--gray-100); border-radius:10px;
+  min-width:50px; height:48px; padding:0 .8rem; background:#fff;
+  border:1.5px solid #D9D3CA; border-radius:10px;
   font-size:.9rem; font-weight:600; color:var(--gray-700); cursor:pointer; transition:.2s var(--ease);
   display:flex; align-items:center; justify-content:center;
 }
-.detail-size-btn:hover{ border-color:var(--black); transform:translateY(-2px); }
+.detail-size-btn:hover{ border-color:var(--black); transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.08); }
 .detail-size-btn.active{ background:var(--black); color:#fff; border-color:var(--black); box-shadow:0 8px 20px rgba(20,20,20,.2); }
 .detail-size-btn.sold-out{ opacity:.4; text-decoration:line-through; cursor:not-allowed; pointer-events:none; }
 .detail-size-grid.err{ animation:qvShake .45s; }
