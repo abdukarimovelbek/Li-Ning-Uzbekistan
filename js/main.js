@@ -1240,19 +1240,41 @@ const openQuickView = async (productId) => {
     overlay.className = 'qv-overlay';
     overlay.innerHTML = `
       <div class="qv-modal">
-        <button class="qv-close" onclick="closeQuickView()">✕</button>
-        <div class="qv-img"><img id="qv-img" src="" alt=""></div>
+        <button class="qv-close" onclick="closeQuickView()" aria-label="Закрыть">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="qv-img">
+          <span class="qv-badge" id="qv-badge" style="display:none"></span>
+          <img id="qv-img" src="" alt="">
+          <div class="qv-thumbs" id="qv-thumbs"></div>
+        </div>
         <div class="qv-body">
           <div class="qv-brand" id="qv-brand"></div>
           <div class="qv-name" id="qv-name"></div>
+          <div class="qv-rating" id="qv-rating" style="display:none"></div>
           <div class="qv-prices">
             <span class="cur" id="qv-price"></span>
             <span class="old" id="qv-old" style="display:none"></span>
+            <span class="save" id="qv-save" style="display:none"></span>
           </div>
-          <div class="qv-size-label">Размер (EU)</div>
-          <div class="qv-size-grid" id="qv-sizes"></div>
-          <button class="qv-add-btn" id="qv-add-btn">+ Добавить в корзину</button>
-          <button class="qv-open-link" id="qv-open-link">Открыть страницу товара →</button>
+          <div id="qv-colors-wrap" style="display:none">
+            <div class="qv-opt-label">Цвет <span class="hint" id="qv-color-name"></span></div>
+            <div class="qv-colors" id="qv-colors"></div>
+          </div>
+          <div>
+            <div class="qv-opt-label">Размер (EU) <span class="hint">Подбор по таблице</span></div>
+            <div class="qv-size-grid" id="qv-sizes"></div>
+          </div>
+          <div class="qv-cta">
+            <div class="qv-row">
+              <button class="qv-add-btn" id="qv-add-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <span class="qv-add-txt">Добавить в корзину</span>
+              </button>
+              <button class="qv-fav" id="qv-fav" aria-label="В избранное"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+            </div>
+            <button class="qv-open-link" id="qv-open-link">Открыть полную страницу товара →</button>
+          </div>
         </div>
       </div>`;
     overlay.addEventListener('click', e => { if (e.target === overlay) closeQuickView(); });
@@ -1288,40 +1310,104 @@ const openQuickView = async (productId) => {
   const images = Array.isArray(p.images) ? p.images : [];
   const sizes  = Array.isArray(p.sizes)  ? p.sizes  : [];
 
-  document.getElementById('qv-img').src = images[0] || '';
-  document.getElementById('qv-brand').textContent = p.brand || 'Li Ning';
-  document.getElementById('qv-name').textContent = p.name;
-  document.getElementById('qv-price').textContent = (p.price || 0).toLocaleString('ru-RU') + ' сум';
-  const oldEl = document.getElementById('qv-old');
-  if (p.old_price) { oldEl.textContent = p.old_price.toLocaleString('ru-RU') + ' сум'; oldEl.style.display = ''; }
-  else { oldEl.style.display = 'none'; }
+    // ── изображение + миниатюры ──
+    const mainImg = document.getElementById('qv-img');
+    mainImg.src = images[0] || '';
+    const thumbsWrap = document.getElementById('qv-thumbs');
+    if (images.length > 1) {
+      thumbsWrap.innerHTML = images.slice(0,4).map((src,i) =>
+        `<div class="qv-thumb ${i===0?'active':''}" data-src="${src}"><img src="${src}" alt=""></div>`).join('');
+      thumbsWrap.querySelectorAll('.qv-thumb').forEach(t => t.onclick = () => {
+        thumbsWrap.querySelectorAll('.qv-thumb').forEach(x => x.classList.remove('active'));
+        t.classList.add('active');
+        mainImg.style.opacity = '0';
+        setTimeout(() => { mainImg.src = t.dataset.src; mainImg.style.opacity = '1'; }, 160);
+      });
+    } else { thumbsWrap.innerHTML = ''; }
 
-  const sizeGrid = document.getElementById('qv-sizes');
-  sizeGrid.innerHTML = sizes.length
-    ? sizes.map(s => `<button class="qv-size-btn" data-size="${s}">${s}</button>`).join('')
-    : '<span style="color:var(--gray-400);font-size:.82rem">Размеры уточняйте</span>';
-  sizeGrid.querySelectorAll('.qv-size-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      sizeGrid.querySelectorAll('.qv-size-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      sizeGrid.classList.remove('qv-size-err');
-    });
-  });
+    // ── бренд / название ──
+    document.getElementById('qv-brand').textContent = (p.brand || 'Li-Ning');
+    document.getElementById('qv-name').textContent = p.name || '';
 
-  document.getElementById('qv-add-btn').onclick = () => {
-    const sel = sizeGrid.querySelector('.qv-size-btn.active');
-    if (!sel && sizes.length) {
-      sizeGrid.classList.add('qv-size-err');
-      setTimeout(() => sizeGrid.classList.remove('qv-size-err'), 1500);
-      return;
+    // ── рейтинг (показывается, только если есть p.rating) ──
+    const ratingEl = document.getElementById('qv-rating');
+    if (p.rating) {
+      const r = Math.round(p.rating);
+      ratingEl.innerHTML = `<span class="stars">${'★'.repeat(r)}${'☆'.repeat(5-r)}</span> ${(+p.rating).toFixed(1)}${p.reviews_count ? ` · ${p.reviews_count} отзывов` : ''}`;
+      ratingEl.style.display = '';
+    } else { ratingEl.style.display = 'none'; }
+
+    // ── цена / скидка / бейдж ──
+    const priceEl = document.getElementById('qv-price');
+    const oldEl   = document.getElementById('qv-old');
+    const saveEl  = document.getElementById('qv-save');
+    const badgeEl = document.getElementById('qv-badge');
+    if (p.price) {
+      priceEl.textContent = p.price.toLocaleString('ru-RU') + ' сум';
+      if (p.old_price && p.old_price > p.price) {
+        const pct = Math.round((1 - p.price / p.old_price) * 100);
+        oldEl.textContent = p.old_price.toLocaleString('ru-RU') + ' сум'; oldEl.style.display = '';
+        saveEl.textContent = '−' + pct + '%'; saveEl.style.display = '';
+        badgeEl.textContent = '−' + pct + '% · SALE'; badgeEl.style.display = '';
+      } else { oldEl.style.display = 'none'; saveEl.style.display = 'none'; badgeEl.style.display = 'none'; }
+    } else {
+      priceEl.textContent = 'Цена по запросу';
+      oldEl.style.display = 'none'; saveEl.style.display = 'none'; badgeEl.style.display = 'none';
     }
-    Cart.add({ id: p.id, article: p.article || p.id, name: p.name,
-      brand: p.brand || 'Li Ning', price: p.price,
-      size: sel?.dataset.size || '', image: images[0] || null, qty: 1 });
-    closeQuickView();
-  };
 
-  document.getElementById('qv-open-link').onclick = () => {
+    // ── цвета (показываются, только если есть массив p.colors: [{name, hex}]) ──
+    const colorsWrap = document.getElementById('qv-colors-wrap');
+    const colorsBox  = document.getElementById('qv-colors');
+    const colorName  = document.getElementById('qv-color-name');
+    const colors = Array.isArray(p.colors) ? p.colors : [];
+    if (colors.length) {
+      colorName.textContent = colors[0].name || '';
+      colorsBox.innerHTML = colors.map((c,i) =>
+        `<div class="qv-color ${i===0?'active':''}" data-name="${c.name||''}"><span class="sw" style="background:${c.hex||'#ccc'}"></span><span class="nm">${c.name||''}</span></div>`).join('');
+      colorsBox.querySelectorAll('.qv-color').forEach(c => c.onclick = () => {
+        colorsBox.querySelectorAll('.qv-color').forEach(x => x.classList.remove('active'));
+        c.classList.add('active'); colorName.textContent = c.dataset.name;
+      });
+      colorsWrap.style.display = '';
+    } else { colorsWrap.style.display = 'none'; }
+
+    // ── размеры ──
+    const sizeGrid = document.getElementById('qv-sizes');
+    sizeGrid.innerHTML = sizes.length
+      ? sizes.map(s => `<button class="qv-size-btn" data-size="${s}">${s}</button>`).join('')
+      : '<span style="color:var(--gray-500);font-size:.84rem">Размеры уточняйте у менеджера</span>';
+    sizeGrid.querySelectorAll('.qv-size-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sizeGrid.querySelectorAll('.qv-size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sizeGrid.classList.remove('qv-size-err');
+      });
+    });
+
+    // ── избранное (визуальный тоггл; при наличии своего API можно вызвать его здесь) ──
+    const favBtn = document.getElementById('qv-fav');
+    if (favBtn) favBtn.onclick = () => {
+      favBtn.classList.toggle('on');
+      favBtn.animate([{transform:'scale(.7)'},{transform:'scale(1.2)'},{transform:'scale(1)'}], {duration:360, easing:'cubic-bezier(.22,1,.36,1)'});
+    };
+
+    // ── добавить в корзину ──
+    document.getElementById('qv-add-btn').onclick = () => {
+      const sel = sizeGrid.querySelector('.qv-size-btn.active');
+      if (!sel && sizes.length) {
+        sizeGrid.classList.remove('qv-size-err'); void sizeGrid.offsetWidth; // перезапуск анимации
+        sizeGrid.classList.add('qv-size-err');
+        setTimeout(() => sizeGrid.classList.remove('qv-size-err'), 600);
+        return;
+      }
+      Cart.add({ id: p.id, article: p.article || p.id, name: p.name,
+        brand: p.brand || 'Li Ning', price: p.price,
+        size: sel?.dataset.size || '', image: images[0] || null, qty: 1 });
+      closeQuickView();
+    };  
+
+  
+    document.getElementById('qv-open-link').onclick = () => {
     window.location.href = `product.html?id=${p.id}`;
   };
 };
@@ -1332,7 +1418,7 @@ const closeQuickView = () => {
   const overlay = document.getElementById('qv-overlay');
   if (!overlay) return;
   overlay.classList.remove('visible');
-  setTimeout(() => overlay.classList.remove('open'), 260);
+  setTimeout(() => overlay.classList.remove('open'), 480);
 };
 window.closeQuickView = closeQuickView;
 
