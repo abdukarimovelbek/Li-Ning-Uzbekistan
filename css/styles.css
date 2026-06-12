@@ -139,18 +139,7 @@ button {
   opacity: 0.85; 
 }
 
-.nav-links {
-  display: flex; 
-  align-items: center; 
-  gap: 0.25rem;
-}
-
-.nav-links li {
-  display: flex; 
-  align-items: center; 
-  height: 100%;
-}
-
+.nav-links { display:flex; gap:.2rem; margin-left:1.5rem; }
 
 .nav-links a {
   position: relative;
@@ -1777,15 +1766,7 @@ footer .footer-inner {
 .nav-item-mega > a {
   display: flex; align-items: center; gap: 0.3rem;
 }
-.nav-item-mega > a::after {
-  content: '▾';
-  font-size: 0.6rem;
-  opacity: 0.5;
-  transition: transform var(--transition);
-}
-.nav-item-mega:hover > a::after {
-  transform: rotate(180deg);
-}
+
 .mega-menu {
   position: fixed;
   top: calc(var(--nav-h) + 36px);
