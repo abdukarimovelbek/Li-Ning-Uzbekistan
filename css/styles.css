@@ -88,7 +88,7 @@ button { font-family: var(--font-body); }
   height: var(--nav-h);
   display: flex; align-items: stretch;
   box-shadow: 0 2px 20px rgba(0,0,0,0.3);
-  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition: background 0.5s cubic-bezier(.22,1,.36,1), border-color 0.5s, box-shadow 0.5s, backdrop-filter 0.5s;
 }
 .navbar.is-transparent {
   background: transparent;
@@ -96,14 +96,16 @@ button { font-family: var(--font-body); }
   box-shadow: none;
 }
 .navbar.is-transparent:hover {
-  background: var(--black);
-  border-bottom-color: #222;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  background: rgba(20,20,20,.86);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom-color: transparent;
+  box-shadow: 0 1px 0 rgba(255,255,255,.06), 0 8px 30px rgba(0,0,0,.25);
 }
 .navbar.scrolled {
-  background: var(--black);
-  border-bottom-color: #222;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  background: rgba(20,20,20,.86);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom-color: transparent;
+  box-shadow: 0 1px 0 rgba(255,255,255,.06), 0 8px 30px rgba(0,0,0,.25);
 }
 
 
@@ -145,24 +147,32 @@ button { font-family: var(--font-body); }
 
 
 .nav-links a {
-  padding: 0.5rem 1rem;
-  font-size: 0.82rem;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  position: relative;
+  padding: .5rem .9rem;
+  font-family: var(--head);           /* Oswald — спортивный шрифт */
   font-weight: 600;
-  color: var(--white);
-  transition: color var(--transition);
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
+  font-size: .76rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.82);       /* чуть приглушённый белый */
+  transition: color .25s var(--ease);
 }
-
+.nav-links a::after {                 /* анимированная красная линия */
+  content: '';
+  position: absolute;
+  left: .9rem; right: .9rem; bottom: .28rem;
+  height: 2px;
+  background: var(--red);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .35s var(--ease);
+}
 .nav-links a:hover { 
-  color: var(--red); 
-  background: transparent; 
-}
-.nav-links a.active { 
-  color: var(--red); 
-  border-bottom-color: var(--red); 
+  color: #fff; 
+}  /* при hover — чистый белый */
+.nav-links a:hover::after,
+.nav-links a.active::after { 
+  transform: scaleX(1);   /* линия выезжает */
 }
 
 .nav-actions {
@@ -1484,6 +1494,7 @@ footer .footer-inner {
 @media (max-width: 768px) {
   :root { --nav-h: 60px; }
   .nav-links { display: none; }
+  .nav-burger { display: flex; }
   .nav-search { width: 140px; }
   .hero-left { padding: 3.5rem 1.5rem; }
   .hero-h1 { font-size: clamp(3rem, 12vw, 5rem); }
@@ -1506,13 +1517,19 @@ footer .footer-inner {
 }
 
 /* ─── Mobile Nav Toggle ──────────────────────── */
-.mobile-menu-btn {
-  display: none; 
-  background: none; 
-  border: none;
-  color: var(--white); 
-  font-size: 1.4rem;
+.nav-burger {
+  display: none;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  align-items: center; justify-content: center;
+  color: rgba(255,255,255,.85);
+  transition: .25s cubic-bezier(.22,1,.36,1);
 }
+.nav-burger:hover {
+  background: rgba(255,255,255,.1);
+  color: #fff;
+}
+
 .mobile-nav {
   display: none; 
   flex-direction: column;
@@ -1838,19 +1855,36 @@ footer .footer-inner {
 
 /* ─── NAV ICON BUTTONS ───────────────────────── */
 .nav-icon-btn {
-  width: 40px; height: 40px;
-  background: transparent;
-  color: var(--white);
-  border: none;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: var(--radius-sm);
-  transition: background var(--transition), color var(--transition);
+  width: 40px; 
+  height: 40px;
+  border-radius: 50%;                /* идеальный круг */
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  color: rgba(255,255,255,.85);      /* чуть приглушённые иконки */
   position: relative;
+  transition: .25s var(--ease);
 }
 .nav-icon-btn:hover {
-  background: var(--white);
-  color: var(--black);
+  background: rgba(255,255,255,.1);  /* при hover — лёгкий ghost-эффект */
+  color: #fff;                       /* иконка остаётся белой */
 }
+.nav-icon-btn svg { 
+  width: 19px; 
+  height: 19px; 
+}
+.nav-badge {
+  position: absolute; top: 5px; right: 5px;
+  min-width: 16px; height: 16px; padding: 0 3px;
+  background: var(--red); color: #fff;
+  border-radius: 9px;                /* овальный бейдж */
+  font-size: .6rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  transform: scale(0);               /* появляется с pop-анимацией */
+  transition: transform .35s var(--ease);
+}
+.nav-badge.show { transform: scale(1); }
+
 .nav-icon-btn.cart-btn {
   background: transparent;
   letter-spacing: 0;

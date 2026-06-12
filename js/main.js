@@ -968,7 +968,7 @@ const Navbar = (() => {
     });
 
     // Mobile menu toggle
-    const mobileBtn  = document.querySelector('.mobile-menu-btn');
+    const mobileBtn  = document.querySelector('.nav-burger');
     const mobileNav  = document.querySelector('.mobile-nav');
     mobileBtn?.addEventListener('click', () => mobileNav?.classList.toggle('open'));
 
