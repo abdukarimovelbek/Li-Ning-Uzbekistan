@@ -696,7 +696,7 @@ button {
   position: absolute;
   bottom: -40px;
   left: 0; right: 0;
-  background: rgba(0,0,0,0.87);
+  background: var(--red);
   color: #fff;
   border: none;
   padding: .62rem;
