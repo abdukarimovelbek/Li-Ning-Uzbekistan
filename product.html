@@ -635,5 +635,49 @@ function showSizeAlert() {
 <!-- MODALS -->
 <div id="modals-placeholder"></div>
 
+<!-- ════════ PRODUCT PAGE: accordions + zoom + lightbox ════════ -->
+<script>
+(function(){
+  // аккордеоны
+  document.querySelectorAll('.detail-acc .acc').forEach(acc => {
+    const head = acc.querySelector('.acc-head'); if (!head) return;
+    head.addEventListener('click', () => {
+      const body = acc.querySelector('.acc-body');
+      if (acc.classList.contains('open')) { body.style.maxHeight = null; acc.classList.remove('open'); }
+      else { acc.classList.add('open'); body.style.maxHeight = body.firstElementChild.scrollHeight + 'px'; }
+    });
+  });
+  const first = document.querySelector('.detail-acc .acc.open .acc-body');
+  if (first) setTimeout(() => { first.style.maxHeight = first.firstElementChild.scrollHeight + 'px'; }, 60);
+
+  // зум по наведению (десктоп)
+  const gMain = document.querySelector('.gallery-main');
+  const gImg  = document.getElementById('gallery-img');
+  if (gMain && gImg && matchMedia('(hover:hover)').matches) {
+    gMain.addEventListener('mousemove', e => {
+      if (!gMain.classList.contains('zoom')) return;
+      const r = gMain.getBoundingClientRect();
+      gImg.style.transformOrigin = ((e.clientX - r.left)/r.width*100) + '% ' + ((e.clientY - r.top)/r.height*100) + '%';
+    });
+    gMain.addEventListener('mouseenter', () => gMain.classList.add('zoom'));
+    gMain.addEventListener('mouseleave', () => gMain.classList.remove('zoom'));
+  }
+
+  // клик по фото → лайтбокс (сохраняем твою функцию openLightbox)
+  if (gMain) gMain.addEventListener('click', () => {
+    const thumbs = [...document.querySelectorAll('.gallery-thumb')];
+    const idx = thumbs.findIndex(t => t.classList.contains('active'));
+    if (typeof openLightbox === 'function') openLightbox(idx >= 0 ? idx : 0);
+  });
+
+  // подстраховка: показать панели, даже если товар не загрузился
+  setTimeout(() => {
+    document.querySelector('.product-gallery')?.classList.add('in');
+    document.querySelector('.product-info-panel')?.classList.add('in');
+  }, 1500);
+})();
+</script>
+<!-- ════════ /PRODUCT PAGE ════════ -->
+
 </body>
 </html>
