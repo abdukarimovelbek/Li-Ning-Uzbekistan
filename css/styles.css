@@ -2548,11 +2548,11 @@ footer .footer-inner {
 /* ════════ LI-NING: collections accordion (расхлоп при наведении) ════════ */
 @media (hover:hover) and (min-width:769px){
   .collections-grid{ transition:height .75s cubic-bezier(.22,1,.36,1); }
-  .collections-grid:has(.collection-card:hover){ height:550px; }        /* база 520 → лёгкий прирост */
+  .collections-grid:has(.collection-card:hover){ height:570px; }        /* база 520 → лёгкий прирост */
 
   .collection-card{ min-width:0; transition:flex-grow .75s cubic-bezier(.22,1,.36,1); }
-  .collections-grid:hover .collection-card{ flex-grow:.7; }             /* соседи сжимаются */
-  .collections-grid:hover .collection-card:hover{ flex-grow:1.5; }        /* наведённая расширяется */
+  .collections-grid:hover .collection-card{ flex-grow:.65; }             /* соседи сжимаются */
+  .collections-grid:hover .collection-card:hover{ flex-grow:1.3; }        /* наведённая расширяется */
 }
 
 /* ════════ LI-NING: page transition wipe ════════ */
