@@ -260,33 +260,50 @@ function fillProduct(p) {
   if (nameEl) nameEl.textContent = p.name;
 
   const brandEl = document.querySelector('.detail-brand');
-  if (brandEl) brandEl.textContent = `${p.brand || 'Li Ning'} · ${p.category || ''}`;
+  if (brandEl) brandEl.textContent = p.category ? `${p.brand || 'Li Ning'} · ${p.category}` : (p.brand || 'Li Ning');
 
-  // Цена
+  // Цена + скидка + экономия
   const priceEl = document.querySelector('.detail-price .current');
-  if (priceEl) priceEl.textContent = (p.price || 0).toLocaleString('ru-RU') + ' сум';
+  if (priceEl) priceEl.textContent = p.price ? p.price.toLocaleString('ru-RU') + ' сум' : 'Цена по запросу';
 
   const oldPriceEl = document.querySelector('.detail-price .original');
-  if (oldPriceEl) {
-    oldPriceEl.style.display = p.old_price ? '' : 'none';
-    if (p.old_price) oldPriceEl.textContent = p.old_price.toLocaleString('ru-RU') + ' сум';
+  const badgeEl    = document.querySelector('.detail-price .discount-badge');
+  const saveWrap   = document.getElementById('detail-save-wrap');
+  const saveEl     = document.getElementById('detail-save');
+  const galleryBadge = document.getElementById('gallery-badge');
+  if (p.old_price && p.price && p.old_price > p.price) {
+    const pct  = Math.round((1 - p.price / p.old_price) * 100);
+    const diff = p.old_price - p.price;
+    if (oldPriceEl) { oldPriceEl.textContent = p.old_price.toLocaleString('ru-RU') + ' сум'; oldPriceEl.style.display = ''; }
+    if (badgeEl) { badgeEl.textContent = '−' + pct + '%'; badgeEl.style.display = ''; }
+    if (saveEl)  saveEl.textContent = 'Вы экономите ' + diff.toLocaleString('ru-RU') + ' сум';
+    if (saveWrap) saveWrap.style.display = '';
+    if (galleryBadge) { galleryBadge.textContent = '−' + pct + '%'; galleryBadge.style.display = ''; }
+  } else {
+    if (oldPriceEl) oldPriceEl.style.display = 'none';
+    if (badgeEl) badgeEl.style.display = 'none';
+    if (saveWrap) saveWrap.style.display = 'none';
+    if (galleryBadge) galleryBadge.style.display = 'none';
   }
 
-  // Описание
+  // Описание (в аккордеоне)
   const descEl = document.querySelector('.detail-desc p');
-  if (descEl && p.description) descEl.textContent = p.description;
+  if (descEl) descEl.textContent = p.description || 'Подробное описание появится позже.';
+  // пересчитать высоту открытого аккордеона после вставки текста
+  const openAcc = document.querySelector('.detail-acc .acc.open .acc-body');
+  if (openAcc) openAcc.style.maxHeight = openAcc.firstElementChild.scrollHeight + 'px';
 
-  // Размеры
+  // Размеры (поле sold-out зарезервировано под остатки из 1С)
   const sizeGrid = document.querySelector('.detail-size-grid');
   if (sizeGrid) {
     const sizes = Array.isArray(p.sizes) ? p.sizes : [];
-    sizeGrid.innerHTML = sizes.map(s => `
-      <button class="detail-size-btn" data-size="${s}">${s}</button>
-    `).join('');
+    sizeGrid.innerHTML = sizes.map(s => `<button class="detail-size-btn" data-size="${s}">${s}</button>`).join('');
     sizeGrid.querySelectorAll('.detail-size-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         sizeGrid.querySelectorAll('.detail-size-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
+        const lbl = document.getElementById('size-picked');
+        if (lbl) lbl.textContent = '· ' + btn.dataset.size;
       });
     });
   }
@@ -294,24 +311,23 @@ function fillProduct(p) {
   // Фото
   const images = Array.isArray(p.images) ? p.images : [];
   if (images.length > 0) {
-    const mainImg = document.querySelector('.gallery-main');
-    if (mainImg) {
-      mainImg.innerHTML = `<img src="${images[0]}" style="width:100%;height:100%;object-fit:cover;object-position:center">`;
-      mainImg.addEventListener('click', () => {
-        const allThumbs = [...document.querySelectorAll('.gallery-thumb')];
-        const idx = allThumbs.findIndex(t => t.classList.contains('active'));
-        openLightbox(idx >= 0 ? idx : 0);
-      });
-    }
+    const galleryImg = document.getElementById('gallery-img');
+    if (galleryImg) galleryImg.src = images[0];
     const thumbs = document.querySelector('.gallery-thumbs');
     if (thumbs) {
       thumbs.innerHTML = images.map((url, i) => `
         <div class="gallery-thumb ${i===0?'active':''}" onclick="switchImg('${url}',this)">
-          <img src="${url}" style="width:100%;height:100%;object-fit:cover">
+          <img src="${url}">
         </div>
       `).join('');
     }
   }
+
+  // Запуск анимации входа
+  requestAnimationFrame(() => {
+    document.querySelector('.product-gallery')?.classList.add('in');
+    document.querySelector('.product-info-panel')?.classList.add('in');
+  });
 
   document.title = `${p.name} — Li-Ning Store`;
 
@@ -395,8 +411,8 @@ async function loadRelatedProducts(category, currentId) {
 } 
 
 function switchImg(url, thumb) {
-  document.querySelector('.gallery-main').innerHTML =
-    `<img src="${url}" style="width:100%;height:100%;object-fit:cover;object-position:center">`;
+  const img = document.getElementById('gallery-img');
+  if (img) { img.style.opacity = '0'; setTimeout(() => { img.src = url; img.style.opacity = '1'; }, 150); }
   document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
   thumb.classList.add('active');
 }
