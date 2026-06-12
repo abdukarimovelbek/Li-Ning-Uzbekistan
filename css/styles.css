@@ -2444,14 +2444,14 @@ footer .footer-inner {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: top center;
+  object-position: center center;
   display: block;
   transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
   filter: brightness(0.85);
 }
 
 .collection-card:hover .collection-img-wrap img {
-  transform: translateY(-8px) scale(1.03);
+  transform: scale(1.03);
   filter: brightness(1);
 }
 
