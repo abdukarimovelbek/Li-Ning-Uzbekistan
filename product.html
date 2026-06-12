@@ -98,40 +98,45 @@
 
     <!-- Gallery -->
     <div class="product-gallery">
-      <div class="gallery-main" style="font-size:12rem;transition:transform .3s ease"> </div>
-      <div class="gallery-thumbs">
-        
+      <div class="gallery-thumbs"></div>
+      <div class="gallery-main">
+        <span class="gallery-badge" id="gallery-badge" style="display:none"></span>
+        <img id="gallery-img" src="" alt="">
+        <span class="gallery-zoomhint">Навести для зума</span>
       </div>
     </div>
 
     <!-- Info Panel -->
     <div class="product-info-panel">
-      <div class="detail-brand">Li Ning · Беговая обувь</div>
-      <div class="detail-name">Загрузка...</div>
+      <div class="detail-brand">Li Ning</div>
+      <h1 class="detail-name">Загрузка…</h1>
 
       <div class="detail-rating">
         <span class="stars">★★★★★</span>
         <span class="rating-count">4.9 · 128 отзывов</span>
-        <span style="font-size:.78rem;color:var(--gray-300)">|</span>
-        <span style="font-size:.78rem;color:var(--gray-500)">В наличии: 24 шт.</span>
+        <span class="rating-sep">•</span>
+        <span class="rating-stock">В наличии</span>
       </div>
 
       <div class="detail-price">
-        <span class="current">890 000 сум</span>
-        <span class="original">1 100 000 сум</span>
-        <span class="discount-badge">−19%</span>
+        <div class="detail-price-row">
+          <span class="current">—</span>
+          <span class="original" style="display:none"></span>
+          <span class="discount-badge" style="display:none"></span>
+        </div>
+        <div class="detail-price-foot" id="detail-save-wrap" style="display:none">
+          <span class="detail-save" id="detail-save"></span>
+        </div>
       </div>
 
-      <!-- Size Selection -->
-      <div class="size-label">
-        <span>Размер (EU)</span>
-        <a href="#">Таблица размеров →</a>
-      </div>
-      <div class="detail-size-grid">
-        
+      <div class="detail-size-block">
+        <div class="size-label">
+          <span>Размер (EU) <span class="size-picked" id="size-picked"></span></span>
+          <a href="#">Таблица размеров →</a>
+        </div>
+        <div class="detail-size-grid"></div>
       </div>
 
-      <!-- Actions -->
       <div class="detail-actions">
         <div class="detail-cta-row">
           <button class="btn-add-to-cart">
@@ -144,19 +149,36 @@
         </div>
       </div>
 
-
-      <!-- Meta -->
-      <div class="detail-meta">
-        <p>🚚 Бесплатная доставка по Ташкенту</p>
-        <p>🔄 Возврат в течение 30 дней</p>
-        <p>✅ Оригинальный товар Li Ning</p>
-        <p>🏆 Официальная гарантия 12 месяцев</p>
+      <!-- Trust -->
+      <div class="detail-trust">
+        <div class="trust">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7M5.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zM18.5 21a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></div>
+          <div class="t">Доставка 1–2 дня</div><div class="s">по Ташкенту</div>
+        </div>
+        <div class="trust">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div class="t">Оригинал</div><div class="s">гарантия 12 мес</div>
+        </div>
+        <div class="trust">
+          <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 12a9 9 0 1 0 9-9M3 12V7M3 12h5"/></svg></div>
+          <div class="t">Обмен 14 дней</div><div class="s">если не подошло</div>
+        </div>
       </div>
 
-      <!-- Description -->
-      <div class="detail-desc">
-        <h3>О товаре</h3>
-        <p id="detail-desc-text"></p>
+      <!-- Accordions -->
+      <div class="detail-acc">
+        <div class="acc open">
+          <button class="acc-head">Описание <span class="plus"></span></button>
+          <div class="acc-body"><div class="detail-desc"><p id="detail-desc-text"></p></div></div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">Доставка и оплата <span class="plus"></span></button>
+          <div class="acc-body"><div class="acc-text">Бесплатная доставка по Ташкенту 1–2 дня, по Узбекистану 2–4 дня. Оплата картой онлайн, наличными или переводом при получении.</div></div>
+        </div>
+        <div class="acc">
+          <button class="acc-head">Обмен и возврат <span class="plus"></span></button>
+          <div class="acc-body"><div class="acc-text">Обмен или возврат в течение 14 дней с сохранением товарного вида и бирок. Оригинальный товар Li-Ning с официальной гарантией.</div></div>
+        </div>
       </div>
     </div>
   </div>
