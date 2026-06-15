@@ -298,8 +298,9 @@ function fillProduct(p) {
   if (sizeGrid) {
     const order = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
     const sizes = (Array.isArray(p.sizes) ? p.sizes.slice() : []).sort((a, b) => {
-      const na = parseFloat(String(a).replace(',', '.')), nb = parseFloat(String(b).replace(',', '.'));
-      const aNum = !isNaN(na), bNum = !isNaN(nb);
+    const strA = String(a).replace(',','.'), strB = String(b).replace(',','.');
+    const na = parseFloat(strA), nb = parseFloat(strB);
+    const aNum = !isNaN(na) && isFinite(strA), bNum = !isNaN(nb) && isFinite(strB);
       if (aNum && bNum) return na - nb;
       if (!aNum && !bNum) return order.indexOf(String(a).toUpperCase()) - order.indexOf(String(b).toUpperCase());
       return aNum ? -1 : 1;

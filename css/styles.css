@@ -1139,7 +1139,7 @@ button {
 .detail-size-grid.err{ animation:qvShake .45s; }
 
 /* ── Actions ── */
-.detail-actions{ margin-bottom:0; }
+.detail-actions{ margin-top:1.4rem; margin-bottom:0; }
 .detail-cta-row{ display:flex; gap:.7rem; }
 .btn-add-to-cart{
   flex:1; position:relative; overflow:hidden; background:var(--red); color:#fff; border:none; border-radius:var(--radius-sm);
