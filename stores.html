@@ -83,7 +83,13 @@
     .store-addr { font-size: 0.75rem; color: var(--gray-500); line-height: 1.5; }
     .store-hours { font-size: 0.72rem; color: var(--green, #22c55e); margin-top: 0.2rem; font-weight: 600; }
 
-    .store-actions { display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-end; }
+    .store-actions { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 0.4rem; 
+      align-items: stretch; 
+      min-width: 90px;
+    }
     .store-btn {
       font-size: 0.68rem; font-weight: 600; letter-spacing: 0.5px;
       padding: 0.3rem 0.7rem;
@@ -96,6 +102,7 @@
       transition: all var(--transition);
       text-decoration: none;
       display: inline-block;
+      text-align: center;
     }
     .store-btn:hover { border-color: var(--red); color: var(--red); background: rgba(196,30,58,0.04); }
     .store-btn.primary { background: var(--red); color: var(--white); border-color: var(--red); }
@@ -121,35 +128,62 @@
     .stores-contact-row a { color: var(--red); }
 
     @media (max-width: 900px) {
-      /* карта закреплена сверху, список скроллится под ней */
-      .stores-page{ display:flex; flex-direction:column; height:calc(100vh - var(--nav-h)); min-height:0; }
-      .stores-map-side{ position:sticky; top:var(--nav-h); height:280px; flex:none; z-index:5; }
-      .stores-list-side{ flex:1; min-height:0; max-height:none; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+      /* карта сверху, список скроллится под ней */
+      .stores-page { display: flex; flex-direction: column; height: calc(100vh - var(--nav-h)); min-height: 0; }
+      .stores-map-side { position: sticky; top: var(--nav-h); height: 260px; flex: none; z-index: 5; }
+      .stores-list-side { flex: 1; min-height: 0; max-height: none; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 72px; }
 
-      /* шапка списка компактнее на мобиле */
-      .stores-list-header{ padding:1.1rem 1.2rem; }
-      .stores-list-header h1{ font-size:1.5rem; }
+      /* скрываем чёрный заголовок — его заменяет строка фильтров */
+      .stores-list-header { display: none; }
 
-      /* «липкие» названия городов при скролле */
-      .stores-city-label{ position:sticky; top:0; z-index:6; }
+      /* фильтр-чипсы по городам */
+      .stores-city-filter {
+        display: flex; gap: 8px; padding: 11px 14px;
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        background: #fff; border-bottom: 1px solid var(--gray-100);
+        position: sticky; top: 0; z-index: 8;
+      }
+      .stores-city-filter::-webkit-scrollbar { display: none; }
+      .scf-chip {
+        flex: none; display: flex; align-items: center; gap: 5px;
+        font-family: 'Oswald', sans-serif; font-size: .68rem; font-weight: 600;
+        letter-spacing: .06em; text-transform: uppercase;
+        padding: .5rem 1rem; border: 1.5px solid var(--gray-100);
+        border-radius: 100px; color: var(--gray-700); background: #fff;
+        white-space: nowrap; cursor: pointer; transition: .2s;
+      }
+      .scf-chip span { opacity: .55; font-size: .6rem; }
+      .scf-chip.on { background: var(--black); color: #fff; border-color: var(--black); }
+      .scf-chip.on span { opacity: .7; }
 
-      /* карточка магазина — компактнее, кнопки в ряд */
-      .store-card{ padding:1rem 1.2rem; }
-      .store-actions{ flex-direction:row; align-items:center; gap:.5rem; }
-      .store-btn{ padding:.45rem .7rem; }
+      /* липкий разделитель городов */
+      .stores-city-label { position: sticky; top: 0; z-index: 6; }
 
-      /* активная карточка заметнее */
-      .store-card.active{ background:rgba(196,30,58,.06); }
+      /* карточка магазина — перестраиваем в 2 строки */
+      .store-card { padding: 12px 14px; gap: .7rem; flex-wrap: wrap; }
 
-      /* запас под нижний таб-бар (если добавишь таб-бар из Этапа 1) */
-      .stores-list-side{ padding-bottom:72px; }
-    }
+      /* верхняя строка: номер + название */
+      .store-num { width: 24px; height: 24px; font-size: .7rem; }
+      .store-name { font-size: .88rem; }
 
-    /* плавная прокрутка к выбранной карточке */
-    @media (max-width: 900px){ 
-      .store-card{ 
-        scroll-margin-top:8px; 
-      } 
+      /* адрес и статус — на всю ширину, идут сразу под номером/названием */
+      .store-info { flex: 1 1 calc(100% - 36px); min-width: 0; }
+      .store-addr { font-size: .76rem; line-height: 1.4; white-space: normal; }
+      .store-hours { font-size: .72rem; margin-top: .2rem; }
+
+      /* кнопки — перенести на новую строку, друг под другом, на всю ширину */
+      .store-actions {
+        flex-direction: column; align-items: stretch;
+        width: 100%; gap: 6px;
+      }
+      .store-btn {
+        width: 100%; text-align: center; padding: .55rem .8rem;
+        font-size: .74rem; justify-content: center;
+        display: flex; align-items: center; gap: .4rem;
+      }
+
+      /* скролл к выбранной карточке */
+      .store-card { scroll-margin-top: 8px; }
     }
   </style>
 </head>
@@ -182,6 +216,14 @@
         <p>14 магазинов · Ташкент, Самарканд, Андижан</p>
       </div>
 
+      <!-- Фильтр по городам (мобильная версия) -->
+      <div class="stores-city-filter" id="stores-city-filter">
+        <button class="scf-chip on" data-city="all">Все <span>14</span></button>
+        <button class="scf-chip" data-city="Ташкент">Ташкент <span>11</span></button>
+        <button class="scf-chip" data-city="Самарканд">Самарканд <span>2</span></button>
+        <button class="scf-chip" data-city="Андижан">Андижан <span>1</span></button>
+      </div>
+
       <!-- ТАШКЕНТ -->
       <div class="stores-city-label">Ташкент — 11 магазинов</div>
 
@@ -194,7 +236,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/?ll=69.261373%2C41.313700&mode=poi&poi%5Bpoint%5D=69.252459%2C41.316264&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D18967724419&z=15.82" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Tashkent City Mall'})">На карте</a>
-          <a href="tel:+998993114884" class="store-btn">+998 98 311 48 84</a>
+          <a href="tel:+998993114884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -207,7 +249,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/?ll=69.293581%2C41.313901&mode=poi&poi%5Bpoint%5D=69.293622%2C41.313997&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D230730534133&z=20.8" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Eco Park'})">На карте</a>
-          <a href="tel:+998954784884" class="store-btn">+998 95 478 48 84</a>
+          <a href="tel:+998954784884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -220,7 +262,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/?ll=69.282795%2C41.322166&mode=poi&poi%5Bpoint%5D=69.282622%2C41.322157&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D82431816060&z=21" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Alayskiy'})">На карте</a>
-          <a href="tel:+998999704884" class="store-btn">+998 99 970 48 84</a>
+          <a href="tel:+998999704884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -233,7 +275,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/?ll=69.246655%2C41.304044&mode=poi&poi%5Bpoint%5D=69.246342%2C41.304067&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D102275017971&z=20.5" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Magic City'})">На карте</a>
-          <a href="tel:+998999714884" class="store-btn">+998 99 971 48 84</a>
+          <a href="tel:+998999714884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -246,7 +288,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/?ll=69.346710%2C41.348932&mode=poi&poi%5Bpoint%5D=69.353056%2C41.353827&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D33209482890&z=15.61" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Atlas Chimgan'})">На карте</a>
-          <a href="tel:+998951944884" class="store-btn">+998 95 194 48 84</a>
+          <a href="tel:+998951944884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -259,7 +301,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/?ll=69.310837%2C41.356395&mode=poi&poi%5Bpoint%5D=69.310508%2C41.356613&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D142451076268&z=18.55" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'High Town'})">На карте</a>
-          <a href="tel:+998954224884" class="store-btn">+998 95 422 48 84</a>
+          <a href="tel:+998954224884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -272,7 +314,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/house/YkAYdABjT0EBQFprfX9yeXlqYw==/?ll=69.273757%2C41.338573&z=20.55" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Malika'})">На карте</a>
-          <a href="tel:+998958914884" class="store-btn">+998 95 891 48 84</a>
+          <a href="tel:+998958914884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -285,7 +327,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/?ll=69.229060%2C41.289233&mode=poi&poi%5Bpoint%5D=69.228154%2C41.289398&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D126886813702&z=18.53" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Novza'})">На карте</a>
-          <a href="tel:+998954790009" class="store-btn">+998 95 479 00 09</a>
+          <a href="tel:+998954790009" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -298,7 +340,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/?ll=69.294020%2C41.357818&mode=poi&poi%5Bpoint%5D=69.275227%2C41.370753&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D39578624082&z=14.39" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Yunusabad Gallery'})">На карте</a>
-          <a href="tel:+998958904884" class="store-btn">+998 95 890 48 84</a>
+          <a href="tel:+998958904884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -311,7 +353,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10335/tashkent/house/YkAYdAFnSUMGQFprfX54dX9mbA==/?ll=69.267199%2C41.294281&z=19.98" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Shota Rustavely'})">На карте</a>
-          <a href="tel:+998991444884" class="store-btn">+998 99 144 48 84</a>
+          <a href="tel:+998991444884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -339,7 +381,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/10334/samarkand/?indoorLevel=1&ll=66.908104%2C39.663064&mode=poi&poi%5Bpoint%5D=66.907899%2C39.663049&poi%5Buri%5D=ymapsbm1%3A%2F%2Forg%3Foid%3D104778732221&z=19.43" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'Family Park'})">На карте</a>
-          <a href="tel:+998954334884" class="store-btn">+998 95 433 48 84</a>
+          <a href="tel:+998954334884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -352,7 +394,7 @@
         </div>
         <div class="store-actions">
           <a href="https://yandex.uz/maps/org/m_baraka/101179618695/?indoorLevel=1&ll=66.944329%2C39.658224&z=20" target="_blank" class="store-btn primary" onclick="trackEvent('click_map',{store:'M.Baraka'})">На карте</a>
-          <a href="tel:+998959784884" class="store-btn">+998 95 978 48 84</a>
+          <a href="tel:+998959784884" class="store-btn">Позвонить</a>
         </div>
       </div>
 
@@ -389,6 +431,29 @@
       if (mapSide) mapSide.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   }
+
+  // фильтр по городам (мобильная версия)
+  (function(){
+    const filter = document.getElementById('stores-city-filter');
+    if (!filter) return;
+    filter.addEventListener('click', function(e){
+      const chip = e.target.closest('.scf-chip'); if (!chip) return;
+      filter.querySelectorAll('.scf-chip').forEach(c => c.classList.remove('on'));
+      chip.classList.add('on');
+      const city = chip.dataset.city;
+      // показываем/скрываем карточки и разделители городов
+      document.querySelectorAll('.store-card').forEach(card => {
+        if (city === 'all') { card.style.display = ''; return; }
+        const addr = card.querySelector('.store-addr');
+        const cityMatch = addr && addr.textContent.includes(city);
+        card.style.display = cityMatch ? '' : 'none';
+      });
+      document.querySelectorAll('.stores-city-label').forEach(label => {
+        if (city === 'all') { label.style.display = ''; return; }
+        label.style.display = label.textContent.includes(city) ? '' : 'none';
+      });
+    });
+  })();
   </script>
 
   <!-- AUTH MODAL и CITY MODAL — скопируй из index.html -->
