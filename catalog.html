@@ -14,6 +14,13 @@
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-8K29V08VJM');
+
+    function toggleMobileFilter() {
+      const sidebar = document.querySelector('.filter-sidebar');
+      const btn = document.getElementById('filter-toggle-btn');
+      sidebar?.classList.toggle('open');
+      btn?.classList.toggle('active');
+    }
   </script>
 </head>
 <body>
@@ -236,9 +243,15 @@
 
 
     <!-- Products -->
-    <div>
+    <div class="catalog-products-col">
       <div class="catalog-toolbar">
-        <div class="catalog-count">Найдено <strong>12</strong> товаров</div>
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+            Фильтры
+          </button>
+          <div class="catalog-count">Найдено <strong>12</strong> товаров</div>
+        </div>
           <div class="catalog-sort">
             <select class="sort-select-styled">
               <option value="">По умолчанию</option>
