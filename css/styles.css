@@ -1541,9 +1541,19 @@ footer .footer-inner {
   .nav-links { display: none; }
   .nav-burger { display: flex; }
   .nav-search { width: 140px; }
-  .hero-left { padding: 3.5rem 1.5rem; }
-  .hero-h1 { font-size: clamp(3rem, 12vw, 5rem); }
-  .hero-stats { gap: 1.5rem; }
+  .hero-left {
+    padding: 0 1.4rem 2.4rem;    /* текст прижат к низу */
+    justify-content: flex-end;
+    display: flex; flex-direction: column;
+  }
+  .hero-h1 {
+    font-size: clamp(2.8rem, 11vw, 4.2rem);
+    line-height: .88;
+    letter-spacing: .5px;
+  }
+  .hero-stats { gap: 1.4rem; }
+  .hero-desc { font-size: .86rem; margin: .8rem 0 1.2rem; max-width: 100%; }
+  .hero-tag { font-size: .64rem; margin-bottom: .6rem; }
   .categories-grid { grid-template-columns: repeat(2, 1fr); }
   .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
   .section { padding: 3.5rem 1.2rem; }
@@ -2128,9 +2138,63 @@ footer .footer-inner {
 }
 
 @media (max-width: 768px) {
-  .hero-slide-bg { background-size: cover; }
-  .hero-slide  { height: 90vh; padding-top: calc(var(--nav-h) + 1rem); }
-  .hero-slider { height: 90vh; }
+  .hero-slider { height: 92vh; }
+
+  .hero-slide {
+    height: 92vh;
+    padding-top: 0;           /* убираем отступ сверху — контент будет внизу */
+    padding-bottom: 72px;     /* запас под нижний таб-бар */
+    display: flex;
+    align-items: flex-end;    /* весь контент прижат к низу */
+  }
+
+  .hero-slide-bg { background-size: cover; background-position: center top; }
+
+  /* на мобиле скрим вертикальный: тёмный снизу, прозрачный сверху */
+  .hero-slide-bg-overlay {
+    background: linear-gradient(
+      0deg,
+      rgba(12,12,12,.92) 0%,
+      rgba(12,12,12,.65) 35%,
+      rgba(12,12,12,.2)  60%,
+      rgba(12,12,12,.45) 100%
+    );
+  }
+
+  /* hero-left растягиваем на всю ширину */
+  .hero-slide .hero-left {
+    width: 100%;
+    padding: 0 1.4rem 2.4rem;
+  }
+
+  /* статистика адаптируем */
+  .hero-stats {
+    gap: 1.2rem;
+    padding-top: 1rem;
+    margin-top: .6rem;
+  }
+  .hero-stats .stat-num { font-size: 1.6rem; }
+  .hero-stats .stat-label { font-size: .6rem; }
+
+  /* кнопки вертикально */
+  .hero-cta {
+    flex-direction: row;     /* оставим в ряд — на мобиле 2 компактные кнопки */
+    gap: .7rem;
+    flex-wrap: wrap;
+  }
+  .hero-cta .btn { flex: 1; justify-content: center; min-width: 130px; }
+
+  /* прячем декоративный водяной знак */
+  .hero-mark-bg, .hero-slide-number { display: none; }
+
+}
+
+@media (max-width: 768px) {
+  /* Ken Burns на мобиле — чуть меньше движения, чтобы не укачивало */
+  @keyframes kenburns {
+    from { transform: scale(1.08) translate(1%, .5%); }
+    to   { transform: scale(1.01) translate(0, 0); }
+  }
 }
 
 /* Кинематографичный скрим: тёмный слева под текст, прозрачный справа */
