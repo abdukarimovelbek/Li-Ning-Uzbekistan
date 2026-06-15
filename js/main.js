@@ -1903,10 +1903,20 @@ const HeroSlider = (() => {
   };
 
   document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('hero-slider')) {
+    const slider = document.getElementById('hero-slider');
+    if (slider) {
       loadSlides();
+      let _tx = 0;
+      slider.addEventListener('touchstart', e => {
+        _tx = e.touches[0].clientX;
+      }, { passive: true });
+      slider.addEventListener('touchend', e => {
+        const d = _tx - e.changedTouches[0].clientX;
+        if (Math.abs(d) > 50) { goTo(current + (d > 0 ? 1 : -1)); startTimer(); }
+      }, { passive: true });
     }
   });
+
 
   window.goToSlide = (i) => { goTo(i); startTimer(); };
   window.nextSlide = () => { goTo(current + 1); startTimer(); };
