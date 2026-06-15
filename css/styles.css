@@ -2138,11 +2138,17 @@ footer .footer-inner {
 }
 
 @media (max-width: 768px) {
-  .hero-slider { height: 92vh; }
+  .hero-slider { 
+    height: 56.25vw;
+    min-height: 220px;
+    margin-top: 0; 
+  }
 
   .hero-slide {
-    height: 92vh;
+    height: 56.25vw;
+    min-height: 220px;
     padding-top: 0;           /* убираем отступ сверху — контент будет внизу */
+    padding-bottom: 1rem;
     padding-bottom: 72px;     /* запас под нижний таб-бар */
     display: flex;
     align-items: flex-end;    /* весь контент прижат к низу */
