@@ -1710,72 +1710,75 @@ body.menu-open { overflow: hidden; }
 
 /* ─── STICKY CART BAR ───────────────────────── */
 .sticky-cart-bar {
-  position: fixed;
-  bottom: -90px;
-  left: 0; right: 0;
-  z-index: 900;
-  background: var(--black);
-  border-top: 2px solid #222;
-  box-shadow: 0 -4px 32px rgba(0,0,0,0.35);
-  transition: bottom 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 120;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--gray-100);
+  box-shadow: 0 -6px 30px rgba(0,0,0,.09);
+  transform: translateY(110%);
+  transition: transform .45s cubic-bezier(.22,1,.36,1);
+  /* запас под нижний таб-бар и safe-area */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px));
 }
-.sticky-cart-bar.visible {
-  bottom: 0;
-}
+.sticky-cart-bar.visible { transform: none; }
+
 .sticky-cart-inner {
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: .8rem 2rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+  max-width: 1300px; margin: 0 auto;
+  display: flex; align-items: center; gap: 1rem;
+  padding: .8rem 1.2rem;
 }
 .sticky-cart-img {
-  width: 52px;
-  height: 52px;
-  object-fit: cover;
-  border-radius: 3px;
-  flex-shrink: 0;
+  width: 48px; height: 48px; border-radius: 10px;
+  object-fit: contain; background: var(--cream);
+  padding: 5%; flex: none;
 }
-.sticky-cart-info {
-  flex: 1;
-  min-width: 0;
-}
+.sticky-cart-info { flex: 1; min-width: 0; }
 .sticky-cart-name {
-  color: var(--white);
-  font-size: .88rem;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: .3px;
+  font-weight: 600; font-size: .84rem; color: var(--black);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.sticky-cart-meta { display: flex; align-items: center; gap: .6rem; margin-top: .15rem; }
 .sticky-cart-price {
-  color: var(--red);
-  font-size: .84rem;
-  font-weight: 700;
-  margin-top: .15rem;
+  font-family: var(--font-display); font-size: 1.1rem;
+  color: var(--red); letter-spacing: .5px; line-height: 1;
 }
+.sticky-cart-size {
+  font-size: .72rem; color: var(--gray-500);
+  background: var(--gray-100); padding: .18rem .5rem;
+  border-radius: 5px; font-weight: 600;
+  display: none; /* показывается после выбора размера */
+}
+.sticky-cart-size.show { display: inline-flex; }
 .sticky-cart-btn {
-  background: var(--red);
-  color: #fff;
-  border: none;
-  padding: .75rem 2rem;
-  font-family: var(--font-head);
-  font-size: .85rem;
-  font-weight: 700;
-  letter-spacing: .5px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background .2s;
-  flex-shrink: 0;
+  flex: none; display: flex; align-items: center; gap: .5rem;
+  background: var(--red); color: #fff;
+  font-family: 'Oswald', sans-serif; font-size: .88rem;
+  font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: .9rem 1.4rem; border-radius: 12px;
+  position: relative; overflow: hidden;
+  transition: .25s cubic-bezier(.22,1,.36,1);
 }
-.sticky-cart-btn:hover { background: var(--red-dark); }
+.sticky-cart-btn:hover { background: var(--red-dark); transform: translateY(-1px); }
+.sticky-cart-btn::after {
+  content: ''; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+  transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+  transition: .5s;
+}
+.sticky-cart-btn:hover::after { left: 130%; }
+.sticky-cart-btn.success {
+  background: #1e9e5a;
+  pointer-events: none;
+}
 
-@media (max-width: 600px) {
-  .sticky-cart-img { display: none !important; }
-  .sticky-cart-inner { padding: .7rem 1rem; gap: .7rem; }
-  .sticky-cart-btn { padding: .7rem 1.2rem; font-size: .8rem; }
+/* на мобиле: запас под таб-бар */
+@media (max-width: 768px) {
+  .sticky-cart-bar {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+  .sticky-cart-inner { padding: .7rem 1rem; gap: .8rem; }
+  .sticky-cart-btn { padding: .85rem 1.1rem; font-size: .82rem; }
+  .sticky-cart-img { width: 42px; height: 42px; }
 }
 
 /* ─── IMAGE LIGHTBOX ────────────────────────── */
