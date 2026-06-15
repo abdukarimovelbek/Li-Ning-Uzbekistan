@@ -698,12 +698,28 @@ function showSizeAlert() {
     gMain.addEventListener('mouseleave', () => gMain.classList.remove('zoom'));
   }
 
-  // клик по фото → лайтбокс (сохраняем твою функцию openLightbox)
+  // клик по фото → лайтбокс
   if (gMain) gMain.addEventListener('click', () => {
     const thumbs = [...document.querySelectorAll('.gallery-thumb')];
     const idx = thumbs.findIndex(t => t.classList.contains('active'));
     if (typeof openLightbox === 'function') openLightbox(idx >= 0 ? idx : 0);
   });
+
+  // свайп пальцем по главному фото → следующее/предыдущее
+  if (gMain) {
+    let _tx = 0;
+    gMain.addEventListener('touchstart', e => { _tx = e.touches[0].clientX; }, { passive: true });
+    gMain.addEventListener('touchend', e => {
+      const d = _tx - e.changedTouches[0].clientX;
+      if (Math.abs(d) < 50) return;
+      const thumbs = [...document.querySelectorAll('.gallery-thumb')];
+      if (!thumbs.length) return;
+      const idx = thumbs.findIndex(t => t.classList.contains('active'));
+      const next = (idx + (d > 0 ? 1 : -1) + thumbs.length) % thumbs.length;
+      const t = thumbs[next];
+      switchImg(t.querySelector('img').src, t);
+    }, { passive: true });
+  }
 
   // подстраховка: показать панели, даже если товар не загрузился
   setTimeout(() => {
