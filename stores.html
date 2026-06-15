@@ -121,9 +121,35 @@
     .stores-contact-row a { color: var(--red); }
 
     @media (max-width: 900px) {
-      .stores-page { grid-template-columns: 1fr; }
-      .stores-map-side { position: relative; height: 300px; }
-      .stores-list-side { max-height: none; }
+      /* карта закреплена сверху, список скроллится под ней */
+      .stores-page{ display:flex; flex-direction:column; height:calc(100vh - var(--nav-h)); min-height:0; }
+      .stores-map-side{ position:sticky; top:var(--nav-h); height:280px; flex:none; z-index:5; }
+      .stores-list-side{ flex:1; min-height:0; max-height:none; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+
+      /* шапка списка компактнее на мобиле */
+      .stores-list-header{ padding:1.1rem 1.2rem; }
+      .stores-list-header h1{ font-size:1.5rem; }
+
+      /* «липкие» названия городов при скролле */
+      .stores-city-label{ position:sticky; top:0; z-index:6; }
+
+      /* карточка магазина — компактнее, кнопки в ряд */
+      .store-card{ padding:1rem 1.2rem; }
+      .store-actions{ flex-direction:row; align-items:center; gap:.5rem; }
+      .store-btn{ padding:.45rem .7rem; }
+
+      /* активная карточка заметнее */
+      .store-card.active{ background:rgba(196,30,58,.06); }
+
+      /* запас под нижний таб-бар (если добавишь таб-бар из Этапа 1) */
+      .stores-list-side{ padding-bottom:72px; }
+    }
+
+    /* плавная прокрутка к выбранной карточке */
+    @media (max-width: 900px){ 
+      .store-card{ 
+        scroll-margin-top:8px; 
+      } 
     }
   </style>
 </head>
@@ -351,13 +377,17 @@
   <script src="js/main.js"></script>
   <script>
   function showStore(card, query) {
-    // Убираем active со всех карточек
     document.querySelectorAll('.store-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
 
-    // Обновляем карту
     const map = document.getElementById('stores-map');
     map.src = query.startsWith('https') ? query : `https://yandex.uz/map-widget/v1/?text=${encodeURIComponent(query)}&utm_source=share&z=15`;
+
+    // на мобиле: прокрутить карту наверх в зону видимости, чтобы пользователь увидел результат
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      const mapSide = document.getElementById('map-side');
+      if (mapSide) mapSide.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
   </script>
 

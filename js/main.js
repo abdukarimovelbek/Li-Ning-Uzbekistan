@@ -31,6 +31,9 @@ async function loadComponents() {
   highlightWishlist();
   window._updateMegaTop?.();
   initNavbarScroll();
+  // Bind auth modal close — модал загружен только сейчас
+  document.getElementById('auth-modal-close')?.addEventListener('click', () => window.Auth?.closeModal());
+  document.getElementById('auth-overlay')?.addEventListener('click', () => window.Auth?.closeModal());
 }
 loadComponents();
 
@@ -2257,4 +2260,35 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
   },{threshold:.3}):null;
   counters.forEach(function(el){ if(inView(el)) lnCount(el); else if(io) io.observe(el); else lnCount(el); });
   addEventListener('scroll',function(){ counters.forEach(function(el){ if(!el.dataset.lnC && inView(el)) lnCount(el); }); },{passive:true});
+})();
+
+/* ── Mobile tab bar: активная вкладка + бейдж корзины ── */
+(function(){
+  function markActiveTab(){
+    const bar = document.getElementById('tabbar'); if (!bar) return;
+    const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    const map = {
+      'index.html':'home', '':'home',
+      'catalog.html':'catalog', 'sale.html':'catalog', 'product.html':'catalog',
+      'stores.html':'stores',
+      'profile.html':'profile', 'account.html':'profile', 'login.html':'profile',
+      'order.html':'cart'
+    };
+    const active = map[page] || '';
+    bar.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === active));
+  }
+  function syncCartBadge(){
+    const badge = document.getElementById('tab-cart-badge'); if (!badge) return;
+    // берём количество из твоего хедер-бейджа корзины, если он есть
+    const src = document.querySelector('.cart-count, #cart-count, .nav-cart-badge');
+    const n = src ? parseInt(src.textContent.trim() || '0', 10) : 0;
+    badge.textContent = n; badge.style.display = n > 0 ? 'flex' : 'none';
+  }
+  // навбар грузится асинхронно — подождём его появления
+  const iv = setInterval(() => {
+    if (document.getElementById('tabbar')) { clearInterval(iv); markActiveTab(); syncCartBadge(); }
+  }, 100);
+  setTimeout(() => clearInterval(iv), 5000);
+  // обновлять бейдж при изменениях корзины
+  document.addEventListener('click', () => setTimeout(syncCartBadge, 300));
 })();
