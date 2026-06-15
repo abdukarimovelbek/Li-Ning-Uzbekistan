@@ -1542,6 +1542,7 @@ footer .footer-inner {
   :root { --nav-h: 60px; }
   .nav-links { display: none; }
   .nav-burger { display: flex; }
+  #auth-btn, #navWishBtn, #cartBtn { display: none; }
   .nav-search { width: 140px; }
   .hero-left {
     padding: 0 1.4rem 2.4rem;    /* текст прижат к низу */
