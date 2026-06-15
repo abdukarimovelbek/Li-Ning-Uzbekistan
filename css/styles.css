@@ -1544,6 +1544,8 @@ footer .footer-inner {
   .nav-burger { display: flex; }
   #auth-btn, #navWishBtn, #cartBtn { display: none; }
   .nav-search { width: 140px; }
+  .navbar { position: fixed; top: 0; left: 0; right: 0; }
+  body { padding-top: var(--nav-h); }
   .hero-left {
     padding: 0 1.4rem 2.4rem;    /* текст прижат к низу */
     justify-content: flex-end;
@@ -2228,7 +2230,6 @@ body.menu-open { overflow: hidden; }
   .hero-slider { 
     height: 56.25vw;
     min-height: 220px;
-    margin-top: calc(-1 * var(--nav-h));
   }
 
   .hero-slide {
