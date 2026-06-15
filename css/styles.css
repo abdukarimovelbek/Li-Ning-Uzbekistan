@@ -2810,7 +2810,12 @@ body.menu-open { overflow: hidden; }
   }
 
   /* чтобы таб-бар не перекрывал контент и футер внизу */
-  body{ padding-bottom:64px; }
+  body{ padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+
+  body:has(.sticky-cart-bar.visible){
+    padding-bottom: calc(130px + env(safe-area-inset-bottom, 0px));
+  }
+
 }
 
 /* ════════ MOBILE: карточки товара 2-в-ряд ════════ */
