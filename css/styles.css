@@ -1589,26 +1589,87 @@ footer .footer-inner {
   color: #fff;
 }
 
-.mobile-nav {
-  display: none; 
-  flex-direction: column;
-  background: var(--black); 
-  padding: 1rem 1.5rem 1.5rem;
-  border-top: 1px solid #222;
-}
-.mobile-nav.open { display: flex; }
-.mobile-nav a {
-  padding: 0.75rem 0; 
-  font-size: 1rem; 
-  font-weight: 500;
-  color: var(--gray-300); 
-  border-bottom: 1px solid #222;
-  transition: color var(--transition);
-}
+/* ════════ MOBILE DRAWER MENU ════════ */
 
-.mobile-nav a:hover { 
-  color: var(--red); 
+/* оверлей */
+.menu-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 190;
+  background: rgba(10,10,10,.55);
+  backdrop-filter: blur(3px);
+  opacity: 0; transition: opacity .4s var(--ease);
 }
+.menu-overlay.open { display: block; opacity: 1; }
+
+/* шторка */
+.mobile-nav {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: min(300px, 82vw); z-index: 195;
+  background: var(--black); color: #fff;
+  display: flex; flex-direction: column;
+  transform: translateX(-105%);
+  transition: transform .45s cubic-bezier(.22,1,.36,1);
+  overflow-y: auto;
+}
+.mobile-nav.open { transform: none; }
+
+/* шапка шторки */
+.mobile-nav-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.4rem 1.3rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.mobile-nav-logo { height: 32px; filter: invert(1) brightness(1.5); }
+.mobile-nav-close {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: rgba(255,255,255,.07); color: rgba(255,255,255,.8);
+  display: flex; align-items: center; justify-content: center;
+  transition: .25s var(--ease);
+}
+.mobile-nav-close:hover { background: rgba(255,255,255,.14); color: #fff; }
+
+/* строка города */
+.mobile-nav-city {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .9rem 1.3rem;
+  font-size: .75rem; font-weight: 600; letter-spacing: .04em;
+  color: rgba(255,255,255,.55);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  cursor: pointer; transition: color .2s;
+}
+.mobile-nav-city:hover { color: rgba(255,255,255,.85); }
+
+/* ссылки */
+.mobile-nav-links { flex: 1; padding: .5rem 0; }
+.mobile-nav-links a {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .95rem 1.3rem;
+  font-family: 'Oswald', sans-serif; font-size: 1rem; font-weight: 600;
+  letter-spacing: .04em; color: rgba(255,255,255,.82);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  transition: color .2s var(--ease), padding-left .2s var(--ease);
+}
+.mobile-nav-links a:hover { color: #fff; padding-left: 1.6rem; }
+.mobile-nav-links a.sale { color: var(--red-light); }
+.mobile-nav-links a svg { color: rgba(255,255,255,.3); flex: none; }
+
+/* подвал шторки */
+.mobile-nav-foot {
+  padding: 1rem 1rem 1.4rem;
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex; flex-direction: column; gap: .5rem;
+}
+.mnf-btn {
+  display: flex; align-items: center; gap: .7rem;
+  padding: .75rem 1rem; border-radius: 10px;
+  font-size: .84rem; font-weight: 600; color: rgba(255,255,255,.75);
+  background: rgba(255,255,255,.04); transition: .2s var(--ease);
+}
+.mnf-btn:hover { background: rgba(255,255,255,.09); color: #fff; }
+.mnf-btn svg { color: var(--red); flex: none; }
+
+/* блокировка скролла страницы при открытом меню */
+body.menu-open { overflow: hidden; }
 
 /* ─── Utility classes ────────────────────────── */
 .text-red { color: var(--red); }

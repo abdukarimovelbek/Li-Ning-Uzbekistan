@@ -970,10 +970,34 @@ const Navbar = (() => {
       }
     });
 
-    // Mobile menu toggle
-    const mobileBtn  = document.querySelector('.nav-burger');
-    const mobileNav  = document.querySelector('.mobile-nav');
-    mobileBtn?.addEventListener('click', () => mobileNav?.classList.toggle('open'));
+  // Mobile menu toggle
+    const mobileBtn = document.querySelector('.nav-burger');
+    mobileBtn?.addEventListener('click', openMobileMenu);
+
+    function openMobileMenu() {
+      document.getElementById('mobileNav')?.classList.add('open');
+      document.getElementById('menuOverlay')?.classList.add('open');
+      document.body.classList.add('menu-open');
+    }
+    function closeMobileMenu() {
+      document.getElementById('mobileNav')?.classList.remove('open');
+      document.getElementById('menuOverlay')?.classList.remove('open');
+      document.body.classList.remove('menu-open');
+    }
+    // Escape закрывает
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeMobileMenu();
+    });
+    // синхронизируем город в шторке с десктопом
+    const mobileCityEl = document.getElementById('mobile-selected-city');
+    const desktopCityEl = document.getElementById('selected-city');
+    if (mobileCityEl && desktopCityEl) {
+      const obs = new MutationObserver(() => {
+        mobileCityEl.textContent = desktopCityEl.textContent;
+      });
+      obs.observe(desktopCityEl, { childList: true, characterData: true, subtree: true });
+      mobileCityEl.textContent = desktopCityEl.textContent; // начальное значение
+    }
 
     // Live search
     const searchInput = document.querySelector('.nav-search');

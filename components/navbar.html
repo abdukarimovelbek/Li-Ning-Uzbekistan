@@ -196,11 +196,58 @@
       </button>
     </div>
   </div>
-  <div class="mobile-nav">
-    <a href="catalog.html">Каталог</a><a href="catalog.html?category=shoes">Обувь</a>
-    <a href="catalog.html?category=clothing">Одежда</a><a href="catalog.html?category=shoes">Бег</a>
-    <a href="catalog.html?category=training">Тренировка</a><a href="sale.html">Скидки</a>
+
+  <!-- оверлей-затемнение -->
+  <div class="menu-overlay" id="menuOverlay" onclick="closeMobileMenu()"></div>
+
+  <!-- шторка -->
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-head">
+      <img src="logo.jpg" alt="Li-Ning" class="mobile-nav-logo">
+      <button class="mobile-nav-close" onclick="closeMobileMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+          <path d="M18 6 6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mobile-nav-city" onclick="openCityModal && openCityModal()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+      <span id="mobile-selected-city">Ташкент</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    </div>
+
+    <nav class="mobile-nav-links">
+      <a href="index.html">
+        <span class="mnl-label">Новинки</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a href="catalog.html?gender=male">
+        <span class="mnl-label">Мужчины</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a href="catalog.html?gender=female">
+        <span class="mnl-label">Женщины</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a href="catalog.html?gender=kids">
+        <span class="mnl-label">Дети</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a href="stores.html">
+        <span class="mnl-label">Магазины</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+      <a href="sale.html" class="sale">
+        <span class="mnl-label">Распродажа</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+      </a>
+    </nav>
+    </div>
   </div>
+
 </nav>
 
 <div class="nav-search-bar" id="nav-search-bar">
