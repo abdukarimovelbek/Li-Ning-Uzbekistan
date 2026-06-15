@@ -1555,7 +1555,7 @@ footer .footer-inner {
   .hero-desc { font-size: .86rem; margin: .8rem 0 1.2rem; max-width: 100%; }
   .hero-tag { font-size: .64rem; margin-bottom: .6rem; }
   .categories-grid { grid-template-columns: repeat(2, 1fr); }
-  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .section { padding: 3.5rem 1.2rem; }
   .footer-top { grid-template-columns: 1fr; gap: 1.5rem; }
   .form-row { grid-template-columns: 1fr; }
@@ -2148,7 +2148,6 @@ footer .footer-inner {
     height: 56.25vw;
     min-height: 220px;
     padding-top: 0;           /* убираем отступ сверху — контент будет внизу */
-    padding-bottom: 1rem;
     padding-bottom: 72px;     /* запас под нижний таб-бар */
     display: flex;
     align-items: flex-end;    /* весь контент прижат к низу */
@@ -2748,4 +2747,95 @@ footer .footer-inner {
 
   /* чтобы таб-бар не перекрывал контент и футер внизу */
   body{ padding-bottom:64px; }
+}
+
+/* ════════ MOBILE: карточки товара 2-в-ряд ════════ */
+@media (max-width: 768px) {
+
+  /* сетка — плотнее на мобиле */
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  /* карточка — компактная, без hover-трансформа (на тач нет hover) */
+  .product-card {
+    border-radius: 12px;
+  }
+  .product-card:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--gray-100);
+  }
+  /* тап-эффект вместо hover */
+  .product-card:active {
+    transform: scale(.97);
+    transition: transform .15s;
+  }
+
+  /* фото — квадратное, чуть плотнее */
+  .product-img-wrap {
+    aspect-ratio: 1;
+  }
+
+  /* quick-view всегда скрыт на тач (нет hover) */
+  .quick-view-btn { display: none; }
+
+  /* кнопка избранного — всегда видна на мобиле (не только на hover) */
+  .product-actions {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .wishlist-btn {
+    width: 32px; height: 32px;
+    top: 8px; right: 8px;
+  }
+  .wishlist-btn svg { width: 15px; height: 15px; }
+
+  /* инфо-блок — компактнее */
+  .product-info {
+    padding: 8px 10px 11px;
+  }
+  .product-name {
+    font-size: .78rem;
+    margin-bottom: .35rem;
+    /* обрезаем длинные названия в 2 строки */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .product-price {
+    font-size: 1.05rem;
+    letter-spacing: .5px;
+  }
+  .product-price .old-price {
+    font-size: .72rem;
+  }
+
+  /* бейджи — меньше на мобиле */
+  .product-badge {
+    font-size: .56rem;
+    padding: .22rem .5rem;
+    top: .6rem; left: .6rem;
+  }
+  .badge--50, .badge--70, .badge-1eq3 {
+    left: 10px;
+    font-size: .6rem;
+    padding: .3rem .45rem .65rem;
+  }
+
+  /* категория товара — можно скрыть чтобы сэкономить место */
+  .product-category {
+    font-size: .58rem;
+    letter-spacing: .1em;
+  }
+}
+
+@media (max-width: 480px) {
+  /* на очень узких — gap ещё меньше */
+  .products-grid { gap: 8px; }
+  .product-name { font-size: .74rem; }
+  .product-price { font-size: 1rem; }
 }

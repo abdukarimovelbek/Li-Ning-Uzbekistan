@@ -1216,7 +1216,7 @@ const buildCard = (p) => {
         <div class="product-img${hasHover ? ' has-hover-img' : ''}" style="width:100%;height:100%;${images[0] ? 'position:relative;overflow:hidden' : 'display:flex;align-items:center;justify-content:center'}">
           ${imgHtml}
         </div>
-          <button class="btn-wishlist" data-wished="false">♡</button>
+          <button class="btn-wishlist" class="mob-visible" data-wished="false">♡</button>
           <button class="quick-view-btn" onclick="event.stopPropagation();openQuickView('${p.id}')">Быстрый просмотр</button>
       </div>
       <div class="product-info">
