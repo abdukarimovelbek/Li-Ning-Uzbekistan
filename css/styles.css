@@ -1566,9 +1566,9 @@ footer .footer-inner {
 }
 @media (max-width: 480px) {
   .categories-grid { grid-template-columns: 1fr; }
-  .products-grid { grid-template-columns: 1fr; }
-  .hero-cta { flex-direction: column; }
-  .btn { width: 100%; justify-content: center; }
+  .products-grid { gap: 8px; }   /* ← убрали 1fr, оставили 2 колонки */
+  .hero-cta { flex-direction: row; flex-wrap: wrap; }
+  .hero-cta .btn { flex: 1; min-width: 130px; justify-content: center; }
 }
 
 /* ─── Mobile Nav Toggle ──────────────────────── */
