@@ -2929,6 +2929,11 @@ body.menu-open { overflow: hidden; }
 
   .gallery-zoomhint { display: none; }
   .gallery-main { cursor: default; }
+
+  /* шапка мобиле: только поиск + бургер */
+  #auth-btn,
+  #navWishBtn,
+  #cartBtn { display: none; }
 }
 
 @media (max-width: 480px) {
