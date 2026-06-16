@@ -1566,10 +1566,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     } catch(e) {
       console.error(e);
-      // Запасной вариант
-      const products = await fetchProducts('&limit=8');
-      homeGrid.innerHTML = products.map(buildCard).join('');
-      window.ProductCards?.init(); 
+      try {
+        const products = await fetchProducts('&limit=8');
+        if (products?.length) {
+          homeGrid.innerHTML = products.map(buildCard).join('');
+          window.ProductCards?.init();
+        } else {
+          homeGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
+        }
+      } catch(e2) {
+        homeGrid.innerHTML = '<div style="padding:3rem;text-align:center;color:#aaa">Товары скоро появятся</div>';
+      }
     }
   }
 
