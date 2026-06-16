@@ -400,6 +400,7 @@ function fillProduct(p) {
   });
   // Загружаем похожие товары
   loadRelatedProducts(p.category, p.id);
+  setTimeout(() => window._recalcAccordion?.(), 80);
 }
 
 async function loadRelatedProducts(category, currentId) {
@@ -692,8 +693,11 @@ function showSizeAlert() {
       else { acc.classList.add('open'); body.style.maxHeight = body.firstElementChild.scrollHeight + 'px'; }
     });
   });
-  const first = document.querySelector('.detail-acc .acc.open .acc-body');
-  if (first) setTimeout(() => { first.style.maxHeight = first.firstElementChild.scrollHeight + 'px'; }, 60);
+  window._recalcAccordion = function() {
+    const first = document.querySelector('.detail-acc .acc.open .acc-body');
+    if (first) first.style.maxHeight = first.firstElementChild?.scrollHeight + 'px';
+  };
+  window._recalcAccordion();
 
   // зум по наведению (десктоп)
   const gMain = document.querySelector('.gallery-main');
