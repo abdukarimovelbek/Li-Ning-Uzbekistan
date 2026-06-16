@@ -294,6 +294,19 @@
 
   let deliveryPrice = 20000;
 
+  function updateTotal() {
+    const items = getCart();
+    const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+    const qty      = items.reduce((sum, i) => sum + i.qty, 0);
+    const total    = subtotal + (items.length > 0 ? deliveryPrice : 0);
+
+    const el = id => document.getElementById(id);
+    if (el('order-qty'))            el('order-qty').textContent            = qty;
+    if (el('order-subtotal'))       el('order-subtotal').textContent       = subtotal.toLocaleString('ru-RU') + ' сум';
+    if (el('order-delivery-price')) el('order-delivery-price').textContent = deliveryPrice.toLocaleString('ru-RU') + ' сум';
+    if (el('order-total-final'))    el('order-total-final').textContent    = total.toLocaleString('ru-RU') + ' сум';
+  }
+
   function renderOrderItems() {
     const items = getCart();
     const container = document.getElementById('order-items-list');
