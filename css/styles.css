@@ -2203,6 +2203,13 @@ body.menu-open { overflow: hidden; }
   display: flex; 
 }
 
+.hero-content {
+  position: relative; z-index: 2; width: 100%;
+  min-height: calc(100vh - var(--nav-h) - 36px);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 4rem;
+}
+
 @keyframes slideIn {
   from { opacity: 0; transform: scale(1.015); }
   to   { opacity: 1; transform: scale(1); }
@@ -2229,21 +2236,28 @@ body.menu-open { overflow: hidden; }
 
 @media (max-width: 768px) {
   .hero-slider { 
-    height: 56.25vw;
-    min-height: 220px;
+    height: 85vh;
+    min-height: 500px;
     margin-top: 0;
   }
 
   .hero-slide {
-    height: 56.25vw;
-    min-height: 220px;
+    height: 85vh;
+    min-height: 500px;
     padding-top: 0;           /* убираем отступ сверху — контент будет внизу */
     padding-bottom: 72px;     /* запас под нижний таб-бар */
     display: flex;
     align-items: flex-end;    /* весь контент прижат к низу */
   }
+  
+  .hero-content {
+    min-height: 0;
+    flex: 1;
+    justify-content: flex-end;
+    padding: 0 1.4rem 1.5rem;
+  }
 
-  .hero-slide-bg { background-size: cover; background-position: center top; }
+  .hero-slide-bg { background-size: cover; background-position: center center; }
 
   /* на мобиле скрим вертикальный: тёмный снизу, прозрачный сверху */
   .hero-slide-bg-overlay {

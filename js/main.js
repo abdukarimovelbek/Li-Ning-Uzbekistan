@@ -1830,8 +1830,9 @@ const HeroSlider = (() => {
     const skeleton = document.getElementById('slider-skeleton');
     if (skeleton) skeleton.remove();
 
-    // Очищаем
-    container.innerHTML = '';
+    // Очищаем только слайды, controls оставляем
+    const controls = document.getElementById('slider-controls');
+    container.querySelectorAll('.hero-slide').forEach(el => el.remove());
     dotsContainer.innerHTML = '';
 
     data.forEach((slide, i) => {
@@ -1846,7 +1847,7 @@ const HeroSlider = (() => {
           <div class="hero-slide-bg" style="background-image:url('${slide.bg_image}')"></div>
           <div class="hero-slide-bg-overlay"></div>
         ` : ''}
-        <div style="position:relative;z-index:2;width:100%;min-height:calc(100vh - var(--nav-h) - 36px);display:flex;flex-direction:column;justify-content:center;padding:0 4rem">
+        <div class="hero-content">
           <div class="hero-tag" style="color:rgba(255,255,255,0.7)">${slide.subtitle || ''}</div>
           <h1 class="hero-h1 ln-words" style="color:${slide.text_color || '#fff'};font-size:clamp(4rem,10vw,9rem)">
             ${(slide.title || '').replace(/\n/g,'<br>')}
@@ -1856,7 +1857,7 @@ const HeroSlider = (() => {
           </div>
         </div>
       `;
-      container.appendChild(el);
+      container.insertBefore(el, controls);
 
       // Создаём точку
       const dot = document.createElement('div');
