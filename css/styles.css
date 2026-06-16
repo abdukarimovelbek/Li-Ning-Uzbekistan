@@ -1676,7 +1676,7 @@ footer .footer-inner {
 /* оверлей */
 .menu-overlay {
   display: none;
-  position: fixed; inset: 0; z-index: 190;
+  position: fixed; inset: 0; z-index: 1050;
   background: rgba(10,10,10,.55);
   backdrop-filter: blur(3px);
   opacity: 0; transition: opacity .4s var(--ease);
@@ -1686,7 +1686,7 @@ footer .footer-inner {
 /* шторка */
 .mobile-nav {
   position: fixed; top: 0; left: 0; bottom: 0;
-  width: min(300px, 82vw); z-index: 195;
+  width: min(300px, 82vw); z-index: 1100;
   background: var(--black); color: #fff;
   display: flex; flex-direction: column;
   transform: translateX(-105%);
