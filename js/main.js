@@ -583,6 +583,8 @@ const ProductCards = (() => {
                 wishBtn.dataset.wished = 'false';
                 wishBtn.textContent = '♡';
                 window.Toast?.show('Убрано из избранного', '', '');
+                const _wb = document.getElementById('wishBadge');
+                if (_wb) _wb.textContent = Math.max(0, parseInt(_wb.textContent || '0') - 1);
               } else {
                 await fetch(`${SB_URL}/rest/v1/wishlists`, {
                   method: 'POST',
@@ -596,6 +598,8 @@ const ProductCards = (() => {
                 });
                 wishBtn.dataset.wished = 'true';
                 wishBtn.textContent = '♥';
+                const _wb = document.getElementById('wishBadge');
+                if (_wb) _wb.textContent = parseInt(_wb.textContent || '0') + 1;
                 wishBtn.classList.remove('heart-pop');
                 requestAnimationFrame(() => requestAnimationFrame(() => wishBtn.classList.add('heart-pop')));
                 setTimeout(() => wishBtn.classList.remove('heart-pop'), 420);
@@ -1475,6 +1479,8 @@ async function highlightWishlist() {
   );
   const data = await res.json();
   const wishedIds = new Set(data.map(w => w.product_id));
+  const _wb = document.getElementById('wishBadge');
+  if (_wb) _wb.textContent = wishedIds.size;
 
   document.querySelectorAll('.product-card').forEach(card => {
     const btn = card.querySelector('.btn-wishlist');
