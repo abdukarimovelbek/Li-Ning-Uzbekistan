@@ -1752,7 +1752,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const q = input.value.trim();
       if (q.length > 0) {
         trackEvent('search', { search_term: q.toLowerCase() });
-        window.location.href = `catalog.html?search=${encodeURIComponent(q)}`;
+        if (window.catalogSearchFilter) {
+          window.catalogSearchFilter(q);
+          toggleSearch();
+        } else {
+          window.location.href = `catalog.html?search=${encodeURIComponent(q)}`;
+        }
       }
     }
   });
