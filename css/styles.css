@@ -2249,23 +2249,21 @@ body.menu-open { overflow: hidden; }
     min-height: 500px;
     margin-top: calc(-1 * var(--nav-h));
   }
-
   .hero-slide {
     height: 85vh;
     min-height: 500px;
     padding-top: 0;           /* убираем отступ сверху — контент будет внизу */
     padding-bottom: 72px;     /* запас под нижний таб-бар */
-    display: flex;
-    align-items: flex-end;    /* весь контент прижат к низу */
   }
-  
+  .hero-slide.active {
+    align-items: flex-end;
+  }
   .hero-content {
     min-height: 0;
     flex: 1;
     justify-content: flex-end;
     padding: 0 1.4rem 1.5rem;
   }
-
   .hero-slide-bg { background-size: cover; background-position: center center; }
 
   /* на мобиле скрим вертикальный: тёмный снизу, прозрачный сверху */
