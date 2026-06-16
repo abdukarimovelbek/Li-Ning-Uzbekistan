@@ -401,16 +401,20 @@
 
     if (type === 'pickup') {
       storeList.classList.add('open');
+      if (addressInput) {
+        addressInput.required = false;
+        addressInput.removeAttribute('required');
+      }
     } else {
       storeList.classList.remove('open');
       document.querySelectorAll('input[name=pickup_store]').forEach(r => r.checked = false);
       document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
       document.getElementById('pickup-label').textContent = 'Бесплатно · Выберите магазин ниже';
 
-      // ── Разблокируем поле адреса ──
       if (addressInput) {
         addressInput.value = '';
         addressInput.readOnly = false;
+        addressInput.required = true;
         addressInput.style.background = '';
         addressInput.style.color = '';
         addressInput.style.cursor = '';
