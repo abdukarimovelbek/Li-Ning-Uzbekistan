@@ -2256,6 +2256,16 @@ body.menu-open { overflow: hidden; }
     min-height: 500px;
     margin-top: calc(-1 * var(--nav-h));
   }
+  .slider-arrows {
+    display: flex;
+    opacity: 1;
+  }
+  .slider-arrow {
+    width: 32px; height: 32px;
+    font-size: .85rem;
+    background: rgba(255,255,255,.12);
+    border-color: rgba(255,255,255,.2);
+  }
   .hero-slide {
     height: 85vh;
     min-height: 500px;
@@ -2370,7 +2380,13 @@ body.menu-open { overflow: hidden; }
   border-radius: 4px;
   background: #fff;
 }
-.slider-arrows { display: none; gap: 0.5rem; }
+.slider-arrows { 
+  display: flex; 
+  gap: 0.5rem; 
+  opacity: 0; 
+  transition: opacity .3s var(--ease); 
+}
+.hero-slider:hover .slider-arrows { opacity: 1; }
 .slider-arrow {
   width: 36px; height: 36px;
   background: rgba(255,255,255,0.15);
