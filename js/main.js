@@ -997,6 +997,8 @@ const Navbar = (() => {
       document.getElementById('menuOverlay')?.classList.remove('open');
       document.body.classList.remove('menu-open');
     }
+    window.closeMobileMenu = closeMobileMenu;
+    window.openMobileMenu  = openMobileMenu;
     // Escape закрывает
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeMobileMenu();
