@@ -2102,24 +2102,39 @@
     }
 
     // Feature Flags
-    function loadFeatureFlags() {
-      const flags = JSON.parse(localStorage.getItem('site_flags') || '{}');
-      document.getElementById('toggle-auth').checked     = flags.auth_enabled     ?? false;
-      document.getElementById('toggle-cart').checked     = flags.cart_enabled     ?? false;
-      document.getElementById('toggle-wishlist').checked = flags.wishlist_enabled ?? false;
-      document.getElementById('toggle-orders').checked   = flags.orders_enabled   ?? false;
+    async function loadFeatureFlags() {
+      try {
+        const res = await fetch(`${SB_URL}/rest/v1/site_settings?id=eq.main`,
+          { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
+        const data = await res.json();
+        if (data?.[0]) {
+          document.getElementById('toggle-auth').checked     = data[0].auth_enabled     ?? true;
+          document.getElementById('toggle-cart').checked     = data[0].cart_enabled     ?? true;
+          document.getElementById('toggle-wishlist').checked = data[0].wishlist_enabled ?? true;
+          document.getElementById('toggle-orders').checked   = data[0].orders_enabled   ?? true;
+        }
+      } catch(e) {}
     }
 
-    function saveFeatureFlags() {
+    async function saveFeatureFlags() {
       const flags = {
         auth_enabled:     document.getElementById('toggle-auth').checked,
         cart_enabled:     document.getElementById('toggle-cart').checked,
         wishlist_enabled: document.getElementById('toggle-wishlist').checked,
         orders_enabled:   document.getElementById('toggle-orders').checked,
+        updated_at:       new Date().toISOString(),
       };
-      localStorage.setItem('site_flags', JSON.stringify(flags));
-      showToast('Настройки сохранены ✓');
+      try {
+        await fetch(`${SB_URL}/rest/v1/site_settings?id=eq.main`, {
+          method: 'PATCH',
+          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
+                    'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify(flags),
+        });
+        showToast('Настройки сохранены ✓');
+      } catch(e) { showToast('Ошибка сохранения ✗'); }
     }
+
 
     document.addEventListener('DOMContentLoaded', loadFeatureFlags);
 

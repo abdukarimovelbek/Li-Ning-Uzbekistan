@@ -38,13 +38,26 @@ async function loadComponents() {
 loadComponents();
 
 /* ─── SITE FEATURE FLAGS ─────────────────────── */
-const _flags = JSON.parse(localStorage.getItem('site_flags') || '{}');
 const SITE_CONFIG = {
-  auth_enabled:     _flags.auth_enabled     ?? false,
-  cart_enabled:     _flags.cart_enabled     ?? false,
-  wishlist_enabled: _flags.wishlist_enabled ?? false,
-  orders_enabled:   _flags.orders_enabled   ?? false,
+  auth_enabled:     true,
+  cart_enabled:     true,
+  wishlist_enabled: true,
+  orders_enabled:   true,
 };
+(async () => {
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/site_settings?id=eq.main`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
+    const data = await res.json();
+    if (data?.[0]) Object.assign(SITE_CONFIG, {
+      auth_enabled:     data[0].auth_enabled     ?? true,
+      cart_enabled:     data[0].cart_enabled     ?? true,
+      wishlist_enabled: data[0].wishlist_enabled ?? true,
+      orders_enabled:   data[0].orders_enabled   ?? true,
+    });
+  } catch(e) {}
+})();
+
 
 const CACHE_KEY = 'lining_products_cache';
 const CACHE_TTL = 5 * 60 * 1000;
