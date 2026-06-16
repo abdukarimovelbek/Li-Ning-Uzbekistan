@@ -3087,24 +3087,23 @@ body.menu-open { overflow: hidden; }
   /* ── Cinematic header ── */
   .cat-header-mob {
     display: block; position: relative;
-    height: 210px; background: var(--black); overflow: hidden;
+    height: 170px; background: var(--black); overflow: hidden;
   }
+  /* Фото-полоса из 5 коллекций */
+  .ch-photos { position: absolute; inset: 0; z-index: 0; display: flex; }
+  .ch-photo { flex: 1; background-size: cover; background-position: center 25%; }
+  /* Тёмная пелена поверх фото */
   .ch-grad {
-    position: absolute; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 90% 70% at 15% 60%, rgba(196,30,58,.28) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 80% at 90% 10%, rgba(196,30,58,.14) 0%, transparent 50%),
-      linear-gradient(135deg, #141414 0%, #1a1a1a 60%, #0d0d0d 100%);
-    animation: chBreathe 7s ease-in-out infinite alternate;
+    position: absolute; inset: 0; z-index: 1;
+    background: rgba(0,0,0,.62);
   }
-  @keyframes chBreathe { to { filter: brightness(1.12); } }
   .ch-lines {
-    position: absolute; inset: 0; z-index: 1; opacity: .06; pointer-events: none;
+    position: absolute; inset: 0; z-index: 2; opacity: .06; pointer-events: none;
     background-image: repeating-linear-gradient(-55deg,
       rgba(255,255,255,.6) 0px, rgba(255,255,255,.6) 1px, transparent 1px, transparent 36px);
   }
   .ch-noise {
-    position: absolute; inset: 0; z-index: 2; opacity: .04; mix-blend-mode: overlay;
+    position: absolute; inset: 0; z-index: 3; opacity: .04; mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
   /* Красная вертикальная линия — анимация спуска */
@@ -3208,6 +3207,9 @@ body.menu-open { overflow: hidden; }
     margin-bottom: .5rem;
     border-bottom: 1px solid var(--gray-100);
   }
-  .catalog-count { flex: 1; font-size: .68rem; color: var(--gray-400); text-align: center; }
+  .catalog-count { display: none; }
   .catalog-sort { flex-shrink: 0; }
+
+  /* Убрать отступ секции каталога на мобильном */
+  .catalog-section { padding: 0 !important; }
 }

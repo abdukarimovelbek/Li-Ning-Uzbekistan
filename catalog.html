@@ -133,6 +133,13 @@
 
 <!-- ════ MOBILE CINEMATIC HEADER ════ -->
 <div class="cat-header-mob" id="catHeaderMob">
+  <div class="ch-photos">
+    <div class="ch-photo" style="background-image:url('images/collections/basketball.png')"></div>
+    <div class="ch-photo" style="background-image:url('images/collections/wade.png')"></div>
+    <div class="ch-photo" style="background-image:url('images/collections/Running.png')"></div>
+    <div class="ch-photo" style="background-image:url('images/collections/Fitness.png')"></div>
+    <div class="ch-photo" style="background-image:url('images/collections/Sportstyle.png')"></div>
+  </div>
   <div class="ch-grad"></div>
   <div class="ch-lines"></div>
   <div class="ch-noise"></div>
@@ -169,7 +176,7 @@
 </div>
 
 <!-- Catalog Layout -->
-<div class="section">
+<div class="section catalog-section">
   <div class="filter-sidebar-overlay" id="filter-overlay" onclick="toggleMobileFilter()"></div>
   <div class="catalog-layout">
 
@@ -338,10 +345,17 @@
     const n=parseInt(document.querySelector('.catalog-count strong')?.textContent)||0;
     if(n>0) countUpMob(n);
   });
-  setTimeout(()=>{
+  function attachCountObs(){
     const el=document.querySelector('.catalog-count strong');
-    if(el) obs.observe(el,{childList:true,characterData:true,subtree:true});
-  },800);
+    if(el){
+      obs.observe(el,{childList:true,characterData:true,subtree:true});
+      const n=parseInt(el.textContent)||0;
+      if(n>0) countUpMob(n);
+    } else {
+      setTimeout(attachCountObs,100);
+    }
+  }
+  attachCountObs();
 
   // Заголовок из URL
   const p=new URLSearchParams(location.search);
