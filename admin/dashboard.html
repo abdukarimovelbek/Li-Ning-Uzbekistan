@@ -2133,7 +2133,7 @@
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         showToast('Настройки сохранены ✓');
-      } catch(e) { showToast(`Ошибка сохранения: ${e.message}`); }
+      } catch(e) { showToast(`Ошибка сохранения: ${e.message}`, true); }
     }
 
     document.addEventListener('DOMContentLoaded', loadFeatureFlags);
