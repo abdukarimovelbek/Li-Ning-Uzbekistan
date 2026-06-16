@@ -941,7 +941,9 @@ button {
   position: relative;
   height: fit-content;
 }
-
+.filter-sidebar-overlay {
+  display: none;
+}
 .filter-block {
   border: 1px solid var(--gray-100);
   margin-bottom: 0.8rem; background: var(--white);
@@ -2793,11 +2795,11 @@ body.menu-open { overflow: hidden; }
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
-    scroll-padding-left: 1.6rem;
+    scroll-padding-left: 0.68rem;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-left: 1.6rem;
-    gap: 10px;
+    padding-left: 0.68rem;
+    gap: 11px;
     background: var(--cream);
   }
   .collections-grid::-webkit-scrollbar { display: none; }
