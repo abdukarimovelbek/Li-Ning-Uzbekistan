@@ -339,6 +339,16 @@ function fillProduct(p) {
 
   document.title = `${p.name} — Li-Ning Store`;
 
+  const _bc = document.querySelector('.breadcrumb');
+  if (_bc) {
+    const cat = p.category || '';
+    _bc.innerHTML = `
+      <a href="index.html">Главная</a><span>/</span>
+      <a href="catalog.html">Каталог</a><span>/</span>
+      ${cat ? `<a href="catalog.html?category=${encodeURIComponent(cat)}">${cat}</a><span>/</span>` : ''}
+      <span>${p.name}</span>`;
+  }
+
   // Сохраняем данные товара для корзины
   window._currentProduct = p;
 
