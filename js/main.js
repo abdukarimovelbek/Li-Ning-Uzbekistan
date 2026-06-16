@@ -2143,22 +2143,18 @@ function initMegaMenu() {
     const megaMenu = item.querySelector('.mega-menu');
     if (!megaMenu) return;
 
-    const show = () => {
-      clearTimeout(hideTimer);
-      megaMenu.style.display = 'grid';
-    };
-
-    const hide = () => {
-      hideTimer = setTimeout(() => {
-        megaMenu.style.display = '';
-      }, 200);
-    };
+    const show = () => { clearTimeout(hideTimer); megaMenu.style.display = 'grid'; };
+    const hide = () => { hideTimer = setTimeout(() => { megaMenu.style.display = ''; }, 200); };
 
     item.addEventListener('mouseenter', show);
     item.addEventListener('mouseleave', hide);
     megaMenu.addEventListener('mouseenter', show);
     megaMenu.addEventListener('mouseleave', hide);
   });
+
+  // Бургер-кнопка — привязываем здесь, т.к. navbar загружается асинхронно
+  document.querySelector('.nav-burger')
+    ?.addEventListener('click', () => window.openMobileMenu?.());
 }
 window.initMegaMenu = initMegaMenu;
 
