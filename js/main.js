@@ -1812,7 +1812,7 @@ const HeroSlider = (() => {
   const loadSlides = async () => {
     try {
       const res = await fetch(
-        `${SB_URL}/rest/v1/slides?is_active=eq.true&order=sort_order.asc`,
+        `${SB_URL}/rest/v1/slides?device_type=eq.${window.innerWidth <= 768 ? 'mobile' : 'desktop'}&is_active=eq.true&order=sort_order.asc`,
         { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
       );
       const data = await res.json();

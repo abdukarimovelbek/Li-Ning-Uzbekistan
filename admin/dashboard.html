@@ -527,8 +527,12 @@
 
     <!-- SLIDES SECTION -->
     <div class="section" id="section-slides">
-      <div style="margin-bottom:1.5rem;display:flex;justify-content:flex-end">
-        <button class="btn-add" onclick="openSlideModal()">+ Добавить слайд</button>
+      <div style="margin-bottom:1.2rem;display:flex;align-items:center;gap:.75rem">
+        <button id="tab-desktop" class="btn-save" onclick="switchSlideTab('desktop')"
+          style="padding:.45rem 1.2rem;font-size:.8rem">💻 Desktop</button>
+        <button id="tab-mobile" onclick="switchSlideTab('mobile')"
+          style="padding:.45rem 1.2rem;font-size:.8rem;background:#f0f0f0;color:#333;border:none;cursor:pointer;border-radius:4px">📱 Mobile</button>
+        <button class="btn-add" style="margin-left:auto" onclick="openSlideModal()">+ Добавить слайд</button>
       </div>
       <div class="table-card">
         <table>
@@ -1819,13 +1823,24 @@
     // LOAD INITIAL
     loadDashboard();
 
+    let currentSlideDevice = 'desktop';
+
+    function switchSlideTab(device) {
+      currentSlideDevice = device;
+      document.getElementById('tab-desktop').style.background = device === 'desktop' ? '' : '#f0f0f0';
+      document.getElementById('tab-desktop').style.color = device === 'desktop' ? '' : '#333';
+      document.getElementById('tab-mobile').style.background = device === 'mobile' ? 'var(--red)' : '#f0f0f0';
+      document.getElementById('tab-mobile').style.color = device === 'mobile' ? '#fff' : '#333';
+      loadSlides();
+    }
+
     /* ─── SLIDES MANAGEMENT ─────────────────────── */
     async function loadSlides() {
       const tbody = document.getElementById('slides-table-body');
       if (!tbody) return;
       tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
       try {
-        const slides = await sbFetch('slides', 'GET', null, '?order=sort_order.asc');
+        const slides = await sbFetch('slides', 'GET', null, `?device_type=eq.${currentSlideDevice}&order=sort_order.asc`);
         if (!slides.length) {
           tbody.innerHTML = '<tr><td colspan="7" class="empty">Слайдов нет</td></tr>';
           return;
@@ -1961,6 +1976,7 @@
         return;
       }
       const data = {
+        device_type: currentSlideDevice,
         title:       document.getElementById('slide-title').value.trim() || null,
         subtitle:    document.getElementById('slide-subtitle').value.trim() || null,
         bg_color:    '#000000',
