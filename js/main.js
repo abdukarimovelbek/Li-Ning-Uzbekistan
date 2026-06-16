@@ -2254,7 +2254,7 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
 
   document.addEventListener('click', function(e){
     if(e.defaultPrevented || e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    if(e.target.closest('button,[data-no-wipe],.tabbar')) return;  // клики по кнопкам (корзина/❤/размеры) — без шторки
+    if(e.target.closest('button,[data-no-wipe]')) return;  // клики по кнопкам (корзина/❤/размеры) — без шторки
     var a=e.target.closest('a[href]'); if(!a) return;
     if(a.target==='_blank' || a.hasAttribute('download')) return;
     var href=a.getAttribute('href');

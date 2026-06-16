@@ -2895,6 +2895,7 @@ body.menu-open { overflow: hidden; }
     padding-bottom: calc(130px + env(safe-area-inset-bottom, 0px));
   }
 
+  .ln-wipe { bottom: calc(64px + env(safe-area-inset-bottom)); }
 }
 
 /* ════════ MOBILE: карточки товара 2-в-ряд ════════ */
