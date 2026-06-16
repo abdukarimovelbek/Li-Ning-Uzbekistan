@@ -3103,7 +3103,7 @@ body.menu-open { overflow: hidden; }
   /* Тёмная пелена поверх фото */
   .ch-grad {
     position: absolute; inset: 0; z-index: 1;
-    background: rgba(0,0,0,.62);
+    background: rgba(0,0,0,.68);
   }
   .ch-lines {
     position: absolute; inset: 0; z-index: 2; opacity: .06; pointer-events: none;
