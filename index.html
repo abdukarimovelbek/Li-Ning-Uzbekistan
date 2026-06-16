@@ -200,6 +200,17 @@
   <div id="footer-placeholder"></div>
 
   <script src="js/main.js"></script>
+  <script>
+    window.addEventListener('load', () => {
+      if (window.innerWidth > 768) return;
+      const grid = document.querySelector('.collections-grid');
+      if (!grid) return;
+      setTimeout(() => {
+        grid.scrollTo({ left: 75, behavior: 'smooth' });
+        setTimeout(() => grid.scrollTo({ left: 0, behavior: 'smooth' }), 700);
+      }, 1400);
+    });
+  </script>
 
   <!-- MODALS -->
   <div id="modals-placeholder"></div>

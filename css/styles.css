@@ -2766,9 +2766,10 @@ body.menu-open { overflow: hidden; }
     overflow-x: auto;
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
+    scroll-padding-left: 1.6rem;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-left: 1.2rem;
+    padding-left: 1.6rem;
     gap: 10px;
     background: var(--cream);
   }
@@ -2783,6 +2784,21 @@ body.menu-open { overflow: hidden; }
     overflow: hidden;
   }
   .collection-card:last-child { margin-right: 1.2rem; }
+  
+  /* Правый fade — намёк что есть ещё карточки */
+  .collections-section { position: relative; }
+  .collections-section::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 56px;
+    height: 280px;
+    background: linear-gradient(to right, transparent, var(--cream) 90%);
+    pointer-events: none;
+    z-index: 3;
+  }
+
   .collection-card::before {
     content: '';
     position: absolute;
