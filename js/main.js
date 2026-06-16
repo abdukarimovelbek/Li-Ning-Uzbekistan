@@ -1867,8 +1867,11 @@ const HeroSlider = (() => {
     });
 
     startTimer();
-    lnReveal(container.querySelector('.hero-slide.active'));  // ← word-reveal первого слайда
+    lnReveal(container.querySelector('.hero-slide.active'));
+    const _nav = document.querySelector('.navbar');
+    if (_nav && slides[0]) _nav.classList.toggle('is-dark-slide', !!slides[0].text_dark);
   };
+
 
   // проиграть word-reveal на заголовке слайда (первый раз — разбить, далее — повторить)
   const lnReveal = (slideEl) => {
@@ -1895,7 +1898,9 @@ const HeroSlider = (() => {
 
     slideEls[current]?.classList.add('active');
     dotEls[current]?.classList.add('active');
-    lnReveal(slideEls[current]);   // ← анимация заголовка по словам
+    lnReveal(slideEls[current]);
+    const _nav = document.querySelector('.navbar');
+    if (_nav && slides[current]) _nav.classList.toggle('is-dark-slide', !!slides[current].text_dark);
   };
 
   const startTimer = () => {
@@ -2236,7 +2241,7 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
 
   document.addEventListener('click', function(e){
     if(e.defaultPrevented || e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    if(e.target.closest('button,[data-no-wipe]')) return;           // клики по кнопкам (корзина/❤/размеры) — без шторки
+    if(e.target.closest('button,[data-no-wipe],.tabbar')) return;  // клики по кнопкам (корзина/❤/размеры) — без шторки
     var a=e.target.closest('a[href]'); if(!a) return;
     if(a.target==='_blank' || a.hasAttribute('download')) return;
     var href=a.getAttribute('href');
