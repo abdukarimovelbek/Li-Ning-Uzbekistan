@@ -194,6 +194,7 @@ const Auth = (() => {
     updateNavUI();
     closeModal();
     window.Toast?.show(`Добро пожаловать! 👋`, _user?.user_metadata?.full_name || _user?.email || '', 'success');
+    document.dispatchEvent(new CustomEvent('auth:login', { detail: { user: _user } }));
     if (_pendingAction) {
       setTimeout(() => { _pendingAction?.(); _pendingAction = null; }, 300);
     }
