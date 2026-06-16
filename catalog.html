@@ -131,6 +131,43 @@
   </div>
 </div>
 
+<!-- ════ MOBILE CINEMATIC HEADER ════ -->
+<div class="cat-header-mob" id="catHeaderMob">
+  <div class="ch-grad"></div>
+  <div class="ch-lines"></div>
+  <div class="ch-noise"></div>
+  <div class="ch-vline"></div>
+  <div class="ch-kinetic" id="chKineticMob">
+    <div class="ch-k-row">LI-NING</div>
+    <div class="ch-k-row ch-k-accent">КАТАЛОГ</div>
+  </div>
+  <div class="ch-content-mob">
+    <div class="ch-eyebrow">Коллекция 2026 · Узбекистан</div>
+    <h1 class="ch-title-mob">
+      <span class="ch-title-w"><span id="ch-mob-title">КАТАЛОГ</span></span>
+    </h1>
+    <div class="ch-meta">
+      <div class="ch-cnt"><b id="ch-cnt-num">—</b> товаров</div>
+      <div class="ch-dot"></div>
+      <div class="ch-season">ANYTHING IS POSSIBLE</div>
+    </div>
+  </div>
+  <div class="ch-corner-num" id="chCornerNum">—</div>
+</div>
+
+<!-- ════ QUICK FILTER CHIPS ════ -->
+<div class="cat-chips-mob">
+  <div class="chips-scroll-mob" id="chipsScrollMob">
+    <button class="chip-mob on" data-cat="">Все</button>
+    <button class="chip-mob" data-cat="shoes">Обувь</button>
+    <button class="chip-mob" data-cat="clothing">Одежда</button>
+    <button class="chip-mob" data-cat="basketball">Баскетбол</button>
+    <button class="chip-mob" data-cat="running">Бег</button>
+    <button class="chip-mob" data-cat="fitness">Фитнес</button>
+    <button class="chip-mob" data-cat="accessories">Аксессуары</button>
+  </div>
+</div>
+
 <!-- Catalog Layout -->
 <div class="section">
   <div class="filter-sidebar-overlay" id="filter-overlay" onclick="toggleMobileFilter()"></div>
@@ -247,27 +284,23 @@
 
 
       <!-- Products -->
-      <div class="catalog-products-col">
-        <div class="catalog-toolbar">
-          <div style="display:flex;flex-direction:column;gap:.35rem">
-            <div style="display:flex;align-items:center;gap:.75rem">
-              <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-                Фильтры
-              </button>
-              <div class="catalog-sort">
-                <select class="sort-select-styled">
-                  <option value="">По умолчанию</option>
-                  <option value="price-asc">Цена: по возрастанию</option>
-                  <option value="price-desc">Цена: по убыванию</option>
-                  <option value="rating">По рейтингу</option>
-                  <option value="new">Новинки</option>
-                </select>
-              </div>
-            </div>
-            <div class="catalog-count">Найдено <strong>—</strong> товаров</div>
-          </div>
+      <div class="catalog-toolbar">
+        <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+          Фильтры
+        </button>
+        <div class="catalog-count">Найдено <strong>—</strong> товаров</div>
+        <div class="catalog-sort">
+          <select class="sort-select-styled">
+            <option value="">По умолчанию</option>
+            <option value="price-asc">Цена: по возрастанию</option>
+            <option value="price-desc">Цена: по убыванию</option>
+            <option value="rating">По рейтингу</option>
+            <option value="new">Новинки</option>
+          </select>
         </div>
+      </div>
+
 
         <div class="products-grid" id="catalog-products">
           <div style="padding:3rem;text-align:center;color:#aaa">Загрузка товаров...</div>
@@ -282,6 +315,62 @@
 <div id="modals-placeholder"></div>
 
 <script src="js/main.js"></script>
+
+<script>
+// Sync count + count-up для мобильного хедера
+(function(){
+  function countUpMob(n){
+    const el=document.getElementById('ch-cnt-num');
+    const corner=document.getElementById('chCornerNum');
+    if(!el) return;
+    let t0=null;
+    const dur=900;
+    (function tick(now){
+      if(!t0) t0=now;
+      const p=Math.min((now-t0)/dur,1);
+      const v=Math.round((1-Math.pow(1-p,3))*n);
+      el.textContent=v;
+      if(corner) corner.textContent=v;
+      if(p<1) requestAnimationFrame(tick);
+    })(performance.now());
+  }
+  // Следим за изменением счётчика товаров и синхронизируем мобильный хедер
+  const obs=new MutationObserver(()=>{
+    const n=parseInt(document.querySelector('.catalog-count strong')?.textContent)||0;
+    if(n>0) countUpMob(n);
+  });
+  setTimeout(()=>{
+    const el=document.querySelector('.catalog-count strong');
+    if(el) obs.observe(el,{childList:true,characterData:true,subtree:true});
+  },800);
+
+  // Заголовок из URL
+  const p=new URLSearchParams(location.search);
+  const titles={'male':'МУЖЧИНЫ','female':'ЖЕНЩИНЫ','kids':'ДЕТИ'};
+  const t=document.getElementById('ch-mob-title');
+  if(t && p.get('gender')) t.textContent=titles[p.get('gender')]||'КАТАЛОГ';
+
+  // Chips
+  document.getElementById('chipsScrollMob')?.addEventListener('click',e=>{
+    const btn=e.target.closest('.chip-mob');
+    if(!btn) return;
+    document.querySelectorAll('.chip-mob').forEach(c=>c.classList.remove('on'));
+    btn.classList.add('on');
+    window.setCategoryFilter?.(btn.dataset.cat);
+  });
+
+  // Параллакс кинетического текста при скролле
+  const kinetic=document.getElementById('chKineticMob');
+  const header=document.getElementById('catHeaderMob');
+  if(kinetic && header){
+    window.addEventListener('scroll',()=>{
+      const y=window.scrollY;
+      if(y < header.offsetHeight+80)
+        kinetic.style.transform=`translate(-50%,calc(-50% + ${y*.4}px))`;
+    },{passive:true});
+  }
+})();
+</script>
 
 </body>
 </html>
