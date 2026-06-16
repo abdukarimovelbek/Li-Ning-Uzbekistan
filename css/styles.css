@@ -3089,9 +3089,17 @@ body.menu-open { overflow: hidden; }
     display: block; position: relative;
     height: 170px; background: var(--black); overflow: hidden;
   }
-  /* Фото-полоса из 5 коллекций */
-  .ch-photos { position: absolute; inset: 0; z-index: 0; display: flex; }
+  /* Карусель из 5 коллекций */
+  .ch-photos { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  .ch-photos-track {
+    display: flex; width: 600%; height: 100%;
+    animation: chSlide 25s linear infinite;
+  }
   .ch-photo { flex: 1; background-size: cover; background-position: center 25%; }
+  @keyframes chSlide {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-83.333%); }
+  }
   /* Тёмная пелена поверх фото */
   .ch-grad {
     position: absolute; inset: 0; z-index: 1;
