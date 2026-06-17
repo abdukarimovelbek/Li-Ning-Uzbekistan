@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Li-Ning — Оформление заказа</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+<style>
+/* ══════════════════════════════════════
+   TOKENS
+══════════════════════════════════════ */
+:root{
+  --red:#C41E3A;--red-dark:#A01830;--red-bg:rgba(196,30,58,.08);
+  --black:#141414;--ink:#1A1A1A;--g700:#555;--g500:#888;--g400:#A7A099;--g300:#C0B8B0;--g100:#EDE9E3;
+  --white:#fff;--cream:#FAF8F5;--cream-d:#F2EEE8;--gold:#B8860B;--green:#1e9e5a;
+  --fd:'Bebas Neue',sans-serif;--fh:'Oswald',sans-serif;--fb:'Plus Jakarta Sans',sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --nav-h:54px;--tab-h:60px;--sum-h:62px;
+  --r:12px;--r-sm:9px;--r-lg:18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:#1A1A1A;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:calc(var(--tab-h)+var(--sum-h)+12px)}
+img{display:block;max-width:100%}
+a{text-decoration:none;color:inherit}
+button,input,select,textarea{font-family:var(--fb)}
+button{cursor:pointer;border:none;background:none}
+::selection{background:var(--red);color:#fff}
+
+/* ══════════════════════════════════════
+   TOP NAV
+══════════════════════════════════════ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav-h);
+  background:rgba(18,18,18,.97);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;padding:0 16px;gap:10px;
+}
+.nav-back{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
+.nav-back svg{width:18px;height:18px}
+.nav-title{font-family:var(--fd);font-size:1.1rem;letter-spacing:1.5px;color:#fff;flex:1}
+.nav-cart{position:relative;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.8);flex:none}
+.nav-cart svg{width:18px;height:18px}
+.nav-cart .bdg{position:absolute;top:3px;right:3px;min-width:14px;height:14px;background:var(--red);color:#fff;border-radius:7px;font-size:.52rem;font-weight:800;display:flex;align-items:center;justify-content:center;padding:0 2px}
+
+/* ══════════════════════════════════════
+   PROGRESS (horizontal pill)
+══════════════════════════════════════ */
+.prog-bar{
+  position:sticky;top:var(--nav-h);z-index:50;
+  background:var(--black);padding:.75rem 16px .9rem;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.prog{display:flex;align-items:center;gap:0}
+.ps{display:flex;align-items:center;gap:.4rem;flex:1;position:relative}
+.ps:last-child{flex:none}
+.pd{
+  width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;flex:none;
+  font-family:var(--fh);font-size:.72rem;font-weight:700;color:rgba(255,255,255,.38);
+  transition:.4s var(--ease);background:var(--black);
+}
+.ps.active .pd{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 0 0 4px rgba(196,30,58,.22)}
+.ps.done .pd{background:var(--green);border-color:var(--green);color:#fff}
+.pl{font-family:var(--fh);font-size:.58rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);transition:.3s}
+.ps.active .pl{color:rgba(255,255,255,.9)}
+.ps.done .pl{color:var(--green)}
+.pline{flex:1;height:2px;background:rgba(255,255,255,.1);margin:0 .4rem;overflow:hidden;border-radius:1px}
+.pline i{display:block;height:100%;width:0%;background:var(--green);transition:width .7s var(--ease)}
+
+/* ══════════════════════════════════════
+   PAGE CONTENT
+══════════════════════════════════════ */
+.page{padding-top:calc(var(--nav-h) + 52px)}
+
+/* ══════════════════════════════════════
+   STEPS
+══════════════════════════════════════ */
+.steps{padding:14px 14px 0;display:flex;flex-direction:column;gap:10px}
+.step{background:var(--white);border:1.5px solid var(--g100);border-radius:var(--r-lg);overflow:hidden;transition:box-shadow .3s var(--ease),border-color .3s}
+.step.active{box-shadow:0 6px 30px rgba(0,0,0,.09);border-color:rgba(196,30,58,.28)}
+.step.done{border-color:#b8dfc4}
+.step-head{display:flex;align-items:center;gap:.8rem;padding:1rem 1.1rem;cursor:pointer;user-select:none}
+.sn{
+  width:32px;height:32px;border-radius:50%;background:var(--g100);flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fh);font-size:.84rem;font-weight:700;color:var(--g500);
+  transition:.35s var(--ease);
+}
+.step.active .sn{background:var(--red);color:#fff;box-shadow:0 3px 12px rgba(196,30,58,.38)}
+.step.done .sn{background:var(--green);color:#fff}
+.st{font-family:var(--fh);font-size:.88rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--g700);flex:1;transition:.3s}
+.step.active .st{color:#1A1A1A}
+.ss{font-size:.72rem;color:var(--g400);font-weight:400;text-transform:none;letter-spacing:0;margin-top:.1rem}
+.se{font-family:var(--fh);font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--red);opacity:0;transition:.2s;white-space:nowrap}
+.step.done .se{opacity:1}
+.sch{color:var(--green);opacity:0;flex:none;transition:.2s}
+.step.done .sch{opacity:1}
+.sch svg{width:18px;height:18px}
+
+.step-body{max-height:0;overflow:hidden;transition:max-height .55s var(--ease)}
+.step-body.open{max-height:1600px}
+.step-in{padding:0 1.1rem 1.1rem}
+
+/* ══════════════════════════════════════
+   FORM FIELDS
+══════════════════════════════════════ */
+.fg{display:flex;flex-direction:column;gap:.9rem}
+.fld{position:relative}
+.fld input,.fld textarea{
+  width:100%;padding:1.3rem .9rem .4rem;border:1.5px solid var(--g100);border-radius:var(--r-sm);
+  font-size:.9rem;font-weight:500;color:#1A1A1A;background:var(--white);outline:none;
+  -webkit-appearance:none;transition:border-color .25s var(--ease),box-shadow .25s;
+}
+.fld textarea{padding:.85rem .9rem;resize:none;height:70px}
+.fld input:focus,.fld textarea:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(196,30,58,.1)}
+.fld input:not(:placeholder-shown):not(:focus){border-color:#b8dfc4}
+.fld label{
+  position:absolute;left:.9rem;top:1rem;font-size:.72rem;font-weight:700;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--g400);
+  transition:.22s var(--ease);pointer-events:none;
+}
+.fld input:focus~label,.fld input:not(:placeholder-shown)~label,
+.fld textarea:focus~label,.fld textarea:not(:placeholder-shown)~label{
+  top:.32rem;font-size:.54rem;color:var(--red);
+}
+.fld input::placeholder,.fld textarea::placeholder{color:transparent}
+@keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+
+/* ── DELIVERY OPTIONS ── */
+.del-opts{display:flex;flex-direction:column;gap:.65rem;margin-bottom:1rem}
+.dopt{
+  display:flex;align-items:center;gap:.8rem;padding:.9rem 1rem;
+  border:1.5px solid var(--g100);border-radius:var(--r);cursor:pointer;
+  background:var(--white);transition:border-color .25s,background .2s,box-shadow .25s;
+  position:relative;
+}
+.dopt.on{border-color:var(--red);background:var(--red-bg);box-shadow:0 4px 14px rgba(196,30,58,.1)}
+.dopt-rd{width:20px;height:20px;border-radius:50%;border:2px solid var(--g300);flex:none;display:flex;align-items:center;justify-content:center;transition:.25s}
+.dopt.on .dopt-rd{border-color:var(--red)}
+.dopt-rd i{width:10px;height:10px;border-radius:50%;background:var(--red);opacity:0;transform:scale(.3);transition:.25s var(--ease)}
+.dopt.on .dopt-rd i{opacity:1;transform:scale(1)}
+.dopt-ic{font-size:1.2rem;flex:none}
+.dopt-info{flex:1;min-width:0}
+.dopt-nm{font-weight:700;font-size:.82rem;color:#1A1A1A}
+.dopt-sb{font-size:.68rem;color:var(--g500);margin-top:.08rem}
+.dopt-pr{font-family:var(--fd);font-size:1rem;letter-spacing:.5px;color:#1A1A1A;flex:none;white-space:nowrap}
+.dopt.on .dopt-pr{color:var(--red)}
+.dopt-fr{font-family:var(--fh);font-size:.76rem;font-weight:700;color:var(--green);flex:none}
+.dopt-badge{position:absolute;top:-1px;right:10px;background:var(--red);color:#fff;font-family:var(--fh);font-size:.52rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.18rem .45rem;border-radius:0 0 6px 6px}
+
+/* ── PAYMENT ── */
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem}
+.popt{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.45rem;
+  padding:1rem .7rem;border:1.5px solid var(--g100);border-radius:var(--r);
+  cursor:pointer;background:var(--white);transition:border-color .25s,background .2s,box-shadow .2s;
+  min-height:86px;position:relative;
+}
+.popt:active{transform:scale(.97)}
+.popt.on{border-color:var(--red);background:var(--red-bg);box-shadow:0 4px 14px rgba(196,30,58,.1)}
+.popt-ic{font-size:1.7rem}
+.popt-nm{font-family:var(--fh);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--g700);text-align:center}
+.popt.on .popt-nm{color:var(--red)}
+.popt-chk{
+  position:absolute;top:7px;right:7px;width:18px;height:18px;border-radius:50%;
+  background:var(--red);display:flex;align-items:center;justify-content:center;
+  opacity:0;transform:scale(.3);transition:.28s var(--ease);
+}
+.popt-chk svg{width:10px;height:10px;stroke:#fff;stroke-width:3}
+.popt.on .popt-chk{opacity:1;transform:scale(1)}
+
+/* ── CTAs ── */
+.step-cta{display:flex;align-items:center;gap:.7rem;margin-top:1.1rem;flex-wrap:wrap}
+.btn-next{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:.5rem;
+  background:var(--red);color:#fff;border-radius:var(--r-sm);
+  font-family:var(--fh);font-size:.86rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  padding:1rem 1.4rem;transition:.25s var(--ease);position:relative;overflow:hidden;
+}
+.btn-next:active{background:var(--red-dark);transform:scale(.98)}
+.btn-next::after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);transition:.6s}
+.btn-next:active::after{left:130%}
+.btn-next svg{width:15px;height:15px}
+.btn-back{font-family:var(--fh);font-size:.74rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);padding:.8rem;transition:.2s}
+.btn-back:active{color:#1A1A1A}
+
+/* ── SUBMIT ── */
+.btn-submit{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:.6rem;
+  background:var(--red);color:#fff;border-radius:var(--r);
+  font-family:var(--fh);font-size:.95rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  padding:1.15rem;transition:.25s var(--ease);position:relative;overflow:hidden;
+}
+.btn-submit:active{background:var(--red-dark);transform:scale(.98)}
+.btn-submit.loading{pointer-events:none;background:var(--g300)}
+.sub-agree{text-align:center;font-size:.68rem;color:var(--g400);margin-top:.65rem;line-height:1.5}
+.sub-agree a{color:var(--g700);text-decoration:underline}
+
+/* ── TRUST ROW ── */
+.trust-row{display:flex;flex-direction:column;gap:.6rem;margin-top:1rem}
+.ti{display:flex;align-items:center;gap:.5rem;font-size:.74rem;color:var(--g500);padding:.7rem .9rem;background:var(--cream);border-radius:9px}
+.ti svg{width:16px;height:16px;color:var(--green);flex:none}
+
+/* ══════════════════════════════════════
+   BOTTOM: ORDER SUMMARY STRIP
+══════════════════════════════════════ */
+.sum-strip{
+  position:fixed;bottom:var(--tab-h);left:0;right:0;z-index:80;
+  background:rgba(20,20,20,.98);backdrop-filter:blur(14px);
+  border-top:1px solid rgba(255,255,255,.1);
+  padding:.85rem 16px;display:flex;align-items:center;gap:1rem;
+  cursor:pointer;
+}
+.sum-strip .ss-l{display:flex;flex-direction:column;flex:1}
+.sum-strip .ss-label{font-family:var(--fh);font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:.4rem}
+.sum-strip .ss-label svg{width:12px;height:12px;color:rgba(255,255,255,.35);transition:transform .3s}
+.sum-strip .ss-total{font-family:var(--fd);font-size:1.3rem;letter-spacing:1px;color:#fff;line-height:1;margin-top:.15rem}
+.sum-strip .ss-total b{color:var(--red)}
+.sum-strip .ss-cnt{font-family:var(--fh);font-size:.62rem;color:rgba(255,255,255,.4);margin-top:.1rem}
+
+/* ── DRAWER ── */
+.sum-ov{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .4s var(--ease)}
+.sum-ov.open{opacity:1;pointer-events:all}
+.sum-drawer{
+  position:fixed;left:0;right:0;bottom:0;z-index:91;
+  background:var(--black);border-radius:20px 20px 0 0;
+  transform:translateY(110%);transition:transform .5s var(--ease);
+  max-height:72vh;overflow-y:auto;
+}
+.sum-drawer.open{transform:none}
+.sum-drawer::-webkit-scrollbar{display:none}
+.sum-handle{width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:.85rem auto .4rem}
+.sd-head{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.08)}
+.sd-head h3{font-family:var(--fd);font-size:1.2rem;letter-spacing:1.5px;color:#fff}
+.sd-head .close{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7)}
+.sd-head .close svg{width:16px;height:16px}
+.sd-items{padding:.8rem 1.2rem;display:flex;flex-direction:column;gap:.8rem}
+.soi{display:flex;align-items:flex-start;gap:.8rem}
+.soi-img{width:52px;height:52px;border-radius:9px;background:rgba(255,255,255,.06);flex:none;display:flex;align-items:center;justify-content:center}
+.soi-body{flex:1;min-width:0}
+.soi-nm{font-size:.76rem;font-weight:600;line-height:1.3;color:rgba(255,255,255,.9);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.soi-meta{font-size:.66rem;color:rgba(255,255,255,.38);margin-top:.18rem}
+.soi-qty{display:flex;align-items:center;gap:.35rem;margin-top:.45rem}
+.soi-qty button{width:20px;height:20px;border:1px solid rgba(255,255,255,.14);border-radius:4px;color:rgba(255,255,255,.55);font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:.2s}
+.soi-qty button:active{border-color:rgba(255,255,255,.4);color:#fff}
+.soi-qty span{font-size:.76rem;font-weight:600;min-width:16px;text-align:center}
+.soi-price{font-family:var(--fd);font-size:.95rem;letter-spacing:.5px;color:#fff;flex:none;white-space:nowrap;margin-top:.1rem}
+
+.sd-promo{padding:.65rem 1.2rem;border-top:1px solid rgba(255,255,255,.06)}
+.promo-row{display:flex;gap:.5rem}
+.promo-row input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:.58rem .8rem;font-size:.8rem;color:#fff;outline:none;transition:.2s}
+.promo-row input::placeholder{color:rgba(255,255,255,.3)}
+.promo-row input:focus{border-color:var(--red)}
+.promo-row button{background:rgba(255,255,255,.1);color:#fff;border-radius:8px;padding:.58rem .9rem;font-family:var(--fh);font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:.2s}
+.promo-row button:active{background:var(--red)}
+
+.sd-totals{padding:.8rem 1.2rem;border-top:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:.45rem}
+.otr{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;color:rgba(255,255,255,.5)}
+.otr.total{border-top:1px solid rgba(255,255,255,.1);padding-top:.65rem;margin-top:.2rem}
+.otr.total .otl{font-family:var(--fh);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.otr.total .otv{font-family:var(--fd);font-size:1.6rem;letter-spacing:1px;color:#fff}
+.otr .del-free{color:var(--green);font-weight:600}
+.sd-guar{padding:.8rem 1.2rem;background:rgba(255,255,255,.03);border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.5rem;margin-bottom:8px}
+.sd-guar svg{width:14px;height:14px;color:var(--green);flex:none}
+.sd-guar span{font-size:.68rem;color:rgba(255,255,255,.38);line-height:1.45}
+
+/* ══════════════════════════════════════
+   BOTTOM TAB BAR
+══════════════════════════════════════ */
+.tabbar{
+  position:fixed;left:0;right:0;bottom:0;z-index:80;height:var(--tab-h);
+  background:rgba(255,255,255,.97);backdrop-filter:blur(18px);
+  border-top:1px solid var(--g100);display:flex;align-items:center;justify-content:space-around;
+}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:7px;
+  color:var(--g400);font-size:.56rem;font-weight:600;position:relative}
+.tab svg{width:21px;height:21px}
+.tab.on{color:var(--red)}
+.tab::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:20px;height:3px;border-radius:2px;background:var(--red);opacity:0;transition:.3s}
+.tab.on::before{opacity:1}
+
+/* ══════════════════════════════════════
+   SUCCESS
+══════════════════════════════════════ */
+.succ-wrap{display:none;flex-direction:column;align-items:center;text-align:center;padding:3rem 1.5rem;gap:1.1rem}
+.succ-wrap.show{display:flex;animation:succ .6s var(--ease)}
+@keyframes succ{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.succ-circle{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#1e9e5a,#27c96e);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(30,158,90,.4)}
+.succ-circle svg{width:34px;height:34px;stroke:#fff;stroke-width:2.5}
+.succ-title{font-family:var(--fd);font-size:2rem;letter-spacing:1.5px;color:#1A1A1A}
+.succ-sub{font-size:.84rem;color:var(--g500);max-width:300px;line-height:1.7;font-weight:300}
+.succ-order{background:var(--cream-d);border-radius:var(--r);padding:.9rem 1.4rem;font-family:var(--fh);font-size:.84rem;font-weight:600;letter-spacing:.04em;color:var(--g700)}
+.succ-order span{color:var(--red);font-family:var(--fd);font-size:1.1rem;letter-spacing:1px}
+.succ-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;background:var(--red);color:#fff;border-radius:var(--r-sm);font-family:var(--fh);font-size:.88rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:1rem}
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:300;overflow:hidden}
+@keyframes cffall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <button class="nav-back" onclick="history.back()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <div class="nav-title">ОФОРМЛЕНИЕ</div>
+  <div class="nav-cart">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <span class="bdg">3</span>
+  </div>
+</nav>
+
+<!-- PROGRESS -->
+<div class="prog-bar">
+  <div class="prog" id="prog">
+    <div class="ps active" data-s="1"><div class="pd">1</div><div class="pl">Контакты</div></div>
+    <div class="pline"><i></i></div>
+    <div class="ps" data-s="2"><div class="pd">2</div><div class="pl">Доставка</div></div>
+    <div class="pline"><i></i></div>
+    <div class="ps" data-s="3"><div class="pd">3</div><div class="pl">Оплата</div></div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="steps" id="steps">
+
+    <!-- STEP 1 -->
+    <div class="step active" data-step="1">
+      <div class="step-head" onclick="toggleStep(1)">
+        <div class="sn">1</div>
+        <div style="flex:1"><div class="st">Ваши данные</div><div class="ss" id="ss1"></div></div>
+        <span class="se">Изм.</span>
+        <span class="sch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+      </div>
+      <div class="step-body open" id="sb1">
+        <div class="step-in">
+          <div class="fg">
+            <div class="fld"><input type="text" id="fn" placeholder=" " value="Азиз" autocomplete="given-name"><label>Имя *</label></div>
+            <div class="fld"><input type="text" id="fl" placeholder=" " value="Мирзаев" autocomplete="family-name"><label>Фамилия *</label></div>
+            <div class="fld"><input type="tel" id="ft" placeholder=" " value="+998 90 123 45 67" autocomplete="tel"><label>Телефон *</label></div>
+            <div class="fld"><input type="email" id="fe" placeholder=" " autocomplete="email"><label>Email (необязательно)</label></div>
+          </div>
+          <div class="step-cta">
+            <button class="btn-next" onclick="goNext(1)">Далее — Доставка <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step" data-step="2">
+      <div class="step-head" onclick="toggleStep(2)">
+        <div class="sn">2</div>
+        <div style="flex:1"><div class="st">Доставка</div><div class="ss" id="ss2"></div></div>
+        <span class="se">Изм.</span>
+        <span class="sch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+      </div>
+      <div class="step-body" id="sb2">
+        <div class="step-in">
+          <div class="del-opts">
+            <div class="dopt on" data-v="courier" data-p="20000" onclick="selDel(this)">
+              <div class="dopt-rd"><i></i></div><div class="dopt-ic">🚚</div>
+              <div class="dopt-info"><div class="dopt-nm">Курьерская доставка</div><div class="dopt-sb">1–2 дня по Ташкенту</div></div>
+              <div class="dopt-pr">20 000</div>
+              <span class="dopt-badge">ТОП</span>
+            </div>
+            <div class="dopt" data-v="pickup" data-p="0" onclick="selDel(this)">
+              <div class="dopt-rd"><i></i></div><div class="dopt-ic">🏪</div>
+              <div class="dopt-info"><div class="dopt-nm">Самовывоз</div><div class="dopt-sb">Ближайший магазин</div></div>
+              <div class="dopt-fr">Бесплатно</div>
+            </div>
+            <div class="dopt" data-v="express" data-p="40000" onclick="selDel(this)">
+              <div class="dopt-rd"><i></i></div><div class="dopt-ic">⚡</div>
+              <div class="dopt-info"><div class="dopt-nm">Экспресс</div><div class="dopt-sb">В течение 3 часов</div></div>
+              <div class="dopt-pr">40 000</div>
+            </div>
+          </div>
+          <div class="fg" id="addrF">
+            <div class="fld"><input type="text" id="fa" placeholder=" " value="Чиланзар, ул. Катартал, д. 15, кв. 3" autocomplete="street-address"><label>Адрес доставки *</label></div>
+            <div class="fld"><input type="text" id="fc" placeholder=" " value="Ташкент" autocomplete="address-level2"><label>Город *</label></div>
+            <div class="fld"><textarea id="fcom" placeholder=" "></textarea><label>Комментарий</label></div>
+          </div>
+          <div class="step-cta">
+            <button class="btn-back" onclick="goPrev(2)">←</button>
+            <button class="btn-next" onclick="goNext(2)">Далее — Оплата <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step" data-step="3">
+      <div class="step-head" onclick="toggleStep(3)">
+        <div class="sn">3</div>
+        <div style="flex:1"><div class="st">Оплата</div><div class="ss" id="ss3"></div></div>
+        <span class="se">Изм.</span>
+        <span class="sch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+      </div>
+      <div class="step-body" id="sb3">
+        <div class="step-in">
+          <div class="pay-grid">
+            <div class="popt on" data-v="cash" onclick="selPay(this)">
+              <div class="popt-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="popt-ic">💵</div><div class="popt-nm">Наличными</div>
+            </div>
+            <div class="popt" data-v="card" onclick="selPay(this)">
+              <div class="popt-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="popt-ic">💳</div><div class="popt-nm">Карта / Uzcard</div>
+            </div>
+            <div class="popt" data-v="click" onclick="selPay(this)">
+              <div class="popt-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="popt-ic">📱</div><div class="popt-nm">Click / Payme</div>
+            </div>
+            <div class="popt" data-v="inst" onclick="selPay(this)">
+              <div class="popt-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+              <div class="popt-ic">📅</div><div class="popt-nm">Рассрочка</div>
+            </div>
+          </div>
+          <button class="btn-submit" id="submitBtn" onclick="doSubmit()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="19" height="19"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Подтвердить заказ
+          </button>
+          <div class="sub-agree">Нажимая кнопку, вы соглашаетесь с <a href="#">условиями обработки данных</a></div>
+          <div class="trust-row">
+            <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>Данные защищены SSL</div>
+            <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9M3 12V7M3 12h5"/></svg>Обмен и возврат 14 дней</div>
+            <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Оригинал Li-Ning · гарантия</div>
+          </div>
+          <div class="step-cta" style="margin-top:.6rem"><button class="btn-back" onclick="goPrev(3)">← К доставке</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="succ-wrap" id="sw">
+      <div class="succ-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+      <div class="succ-title">ЗАКАЗ ПРИНЯТ!</div>
+      <div class="succ-sub">Спасибо, <strong id="sNm">Азиз</strong>! Менеджер свяжется с вами в течение 10 минут для подтверждения.</div>
+      <div class="succ-order">Номер заказа: <span id="sNum">#LN-00000</span></div>
+      <button class="succ-btn">Мои заказы →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- BOTTOM SUMMARY STRIP -->
+<div class="sum-strip" onclick="toggleDrawer()">
+  <div class="ss-l">
+    <div class="ss-label">
+      <svg id="arrIco" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+      Ваш заказ
+    </div>
+    <div class="ss-total" id="stripTotal">0 <b>сум</b></div>
+    <div class="ss-cnt" id="stripCnt">3 товара</div>
+  </div>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="sum-ov" id="sumOv" onclick="toggleDrawer()"></div>
+<div class="sum-drawer" id="sumDrawer">
+  <div class="sum-handle"></div>
+  <div class="sd-head">
+    <h3>ВАШ ЗАКАЗ</h3>
+    <button class="close" onclick="toggleDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </div>
+  <div class="sd-items" id="sdItems"></div>
+  <div class="sd-promo">
+    <div class="promo-row"><input type="text" placeholder="Промокод"><button>Применить</button></div>
+  </div>
+  <div class="sd-totals" id="sdTots"></div>
+  <div class="sd-guar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
+    <span>Оригинальная продукция Li-Ning с гарантией</span>
+  </div>
+</div>
+
+<!-- TAB BAR -->
+<nav class="tabbar">
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>Главная</button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Каталог</button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Магазины</button>
+  <button class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Корзина</button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Профиль</button>
+</nav>
+
+<div class="confetti-wrap" id="cw"></div>
+
+<script>
+const fp=n=>n.toLocaleString('ru-RU').replace(/,/g,' ')+' сум';
+const ITEMS=[
+  {nm:'Кроссовки Li-Ning SOFT GO 3 V2 AGLW027',sz:'42',qty:1,price:890000},
+  {nm:'Кроссовки Li-Ning SOFT GO 3 V2 AGLW027',sz:'43',qty:1,price:890000},
+  {nm:'Куртка Li-Ning Fitness AWDV935',sz:'L',qty:1,price:560000},
+];
+let delP=20000,cur=1;
+
+function renderDrawer(){
+  document.getElementById('sdItems').innerHTML=ITEMS.map((it,i)=>`
+    <div class="soi">
+      <div class="soi-img"><svg viewBox="0 0 40 40" width="40" height="40" fill="none"><rect width="40" height="40" fill="rgba(255,255,255,.05)" rx="8"/><text x="20" y="25" text-anchor="middle" font-family="'Bebas Neue'" font-size="10" fill="rgba(255,255,255,.3)">LN</text></svg></div>
+      <div class="soi-body">
+        <div class="soi-nm">${it.nm}</div>
+        <div class="soi-meta">Размер: ${it.sz}</div>
+        <div class="soi-qty">
+          <button onclick="chQ(${i},-1)">−</button>
+          <span id="q${i}">${it.qty}</span>
+          <button onclick="chQ(${i},1)">+</button>
+        </div>
+      </div>
+      <div class="soi-price" id="ip${i}">${fp(it.price*it.qty)}</div>
+    </div>`).join('');
+  renderTots();
+}
+function chQ(i,d){ITEMS[i].qty=Math.max(1,ITEMS[i].qty+d);renderDrawer();updateStrip();}
+function renderTots(){
+  const sub=ITEMS.reduce((a,it)=>a+it.price*it.qty,0);
+  const tot=sub+delP;
+  document.getElementById('sdTots').innerHTML=`
+    <div class="otr"><span class="otl">Товары</span><span class="otv">${fp(sub)}</span></div>
+    <div class="otr"><span class="otl">Доставка</span><span class="otv ${delP?'':'del-free'}">${delP?fp(delP):'Бесплатно'}</span></div>
+    <div class="otr total"><span class="otl">ИТОГО</span><span class="otv">${fp(tot)}</span></div>`;
+}
+function updateStrip(){
+  const sub=ITEMS.reduce((a,it)=>a+it.price*it.qty,0);
+  const tot=sub+delP;
+  document.getElementById('stripTotal').innerHTML=fp(tot).replace(' сум','')+'<b> сум</b>';
+  document.getElementById('stripCnt').textContent=ITEMS.reduce((a,it)=>a+it.qty,0)+' товара';
+}
+
+function toggleDrawer(){
+  const d=document.getElementById('sumDrawer');
+  const ov=document.getElementById('sumOv');
+  const arr=document.getElementById('arrIco');
+  const open=d.classList.toggle('open');
+  ov.classList.toggle('open',open);
+  if(arr) arr.style.transform=open?'rotate(180deg)':'';
+}
+
+function setStep(n,open){
+  document.querySelectorAll('.step').forEach(s=>{
+    const sn=+s.dataset.step;if(!sn)return;
+    s.classList.remove('active','done');
+    const b=s.querySelector('.step-body');
+    if(sn<n){s.classList.add('done');b.classList.remove('open');b.style.maxHeight='0';}
+    else if(sn===n&&open){s.classList.add('active');b.classList.add('open');b.style.maxHeight=b.scrollHeight+'px';}
+    else{b.classList.remove('open');b.style.maxHeight='0';}
+  });
+  document.querySelectorAll('.ps').forEach(p=>{
+    const pn=+p.dataset.s;p.classList.remove('done','active');
+    if(pn<n)p.classList.add('done');else if(pn===n)p.classList.add('active');
+  });
+  document.querySelectorAll('.pline').forEach((l,i)=>{l.querySelector('i').style.width=i<n-1?'100%':'0';});
+}
+function toggleStep(n){
+  const el=document.querySelector(`.step[data-step="${n}"]`);
+  if(el.classList.contains('done')||n===cur){cur=n;setStep(n,true);}
+}
+function goNext(from){
+  if(from===1){
+    const nm=document.getElementById('fn').value.trim(),tel=document.getElementById('ft').value.trim();
+    if(!nm||!tel){shake(nm?'ft':'fn');return;}
+    document.getElementById('ss1').textContent=nm+' · '+tel;
+  }
+  if(from===2){
+    const sel=document.querySelector('.dopt.on');
+    const addr=document.getElementById('fa');
+    if(sel.dataset.v!=='pickup'&&addr&&!addr.value.trim()){shake('fa');return;}
+    document.getElementById('ss2').textContent=sel.querySelector('.dopt-nm').textContent+' · '+(delP?fp(delP):'Бесплатно');
+  }
+  if(from<3){
+    cur=from+1;setStep(cur,true);
+    window.scrollTo({top:document.querySelector('.steps').getBoundingClientRect().top+scrollY-90,behavior:'smooth'});
+  }
+}
+function goPrev(from){if(from>1){cur=from-1;setStep(cur,true);}}
+function shake(id){
+  const el=document.getElementById(id);if(!el)return;
+  const p=el.closest('.fld');p.style.animation='none';void p.offsetWidth;p.style.animation='shk .4s';el.focus();
+}
+function selDel(el){
+  document.querySelectorAll('.dopt').forEach(d=>d.classList.remove('on'));el.classList.add('on');
+  delP=+el.dataset.p;
+  const af=document.getElementById('addrF');if(af)af.style.display=el.dataset.v==='pickup'?'none':'flex';
+  renderTots();updateStrip();
+}
+function selPay(el){document.querySelectorAll('.popt').forEach(p=>p.classList.remove('on'));el.classList.add('on');}
+function doSubmit(){
+  const btn=document.getElementById('submitBtn');
+  btn.classList.add('loading');btn.textContent='Обрабатываем...';
+  setTimeout(()=>{
+    document.getElementById('steps').style.display='none';
+    const sw=document.getElementById('sw');sw.classList.add('show');
+    document.getElementById('sNm').textContent=document.getElementById('fn').value||'Азиз';
+    document.getElementById('sNum').textContent='#LN-'+String(Math.floor(Math.random()*90000)+10000);
+    document.querySelector('.sum-strip').style.display='none';
+    confetti();window.scrollTo({top:0,behavior:'smooth'});
+  },1400);
+}
+function confetti(){
+  const w=document.getElementById('cw');
+  const cols=['#C41E3A','#fff','#B8860B','#1e9e5a','#f0f0f0'];
+  for(let i=0;i<70;i++){
+    const c=document.createElement('div');
+    Object.assign(c.style,{position:'absolute',width:(Math.random()*7+3)+'px',height:(Math.random()*7+3)+'px',background:cols[i%cols.length],borderRadius:Math.random()>.5?'50%':'2px',left:Math.random()*100+'%',top:'-10px',animation:`cffall ${Math.random()*2+1.4}s ${Math.random()*1}s ease-in forwards`,transform:`rotate(${Math.random()*360}deg)`});
+    w.appendChild(c);
+  }
+  setTimeout(()=>w.innerHTML='',5000);
+}
+
+// init
+renderDrawer();updateStrip();setStep(1,true);
+</script>
+</body>
+</html>

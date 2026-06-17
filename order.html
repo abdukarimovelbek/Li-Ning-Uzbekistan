@@ -3,23 +3,1027 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <title>Оформление заказа — Li Ning Store</title>
   <link rel="stylesheet" href="css/styles.css">
-  
-  <!-- Google Analytics -->
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8K29V08VJM"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-8K29V08VJM');
-  </script>  
+    window.dataLayer=window.dataLayer||[];
+    function gtag(){
+      dataLayer.push(arguments);
+    }
+    gtag('js',new Date());
+    gtag('config','G-8K29V08VJM');
+  </script>
+  <style>
+    :root{--ec:cubic-bezier(.22,1,.36,1);--gco:#1e9e5a}
+    .co-head{
+      background:linear-gradient(135deg,#141414 0%,#1e1614 60%,#0e0e0e 100%);
+      color:#fff;
+      padding:2rem clamp(20px,4vw,56px) 1.6rem;
+      position:relative;
+      overflow:hidden
+    }
+    .co-head::before{content:'CHECKOUT';position:absolute;right:-2%;top:-20%;font-family:'Bebas Neue',sans-serif;font-size:clamp(6rem,15vw,18rem);color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.04);pointer-events:none;line-height:.8}
+    .co-head::after{content:'';position:absolute;left:0;bottom:0;right:0;height:3px;background:linear-gradient(90deg,var(--red) 0%,rgba(196,30,58,.3) 60%,transparent)}
+    .co-crumb{
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+      font-size:.63rem;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.35);
+      margin-bottom:.7rem
+    }
+    .co-crumb a:hover{color:rgba(255,255,255,.7)}
+    .co-head h1{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(2rem,5vw,3.2rem);
+      letter-spacing:2px;
+      line-height:.9
+    }
+    .co-sub{
+      font-size:.8rem;
+      color:rgba(255,255,255,.42);
+      margin-top:.4rem;
+      font-weight:300
+    }
+    .co-prog-wrap{
+      background:#141414;
+      padding:.95rem clamp(20px,4vw,56px) 1.2rem;
+      border-bottom:1px solid rgba(255,255,255,.05)
+    }
+    .co-prog{
+      display:flex;
+      align-items:center;
+      max-width:520px
+    }
+    .co-ps{
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      flex:1
+    }
+    .co-ps:last-child{flex:none}
+    .co-pd{
+      width:32px; height:32px;
+      border-radius:50%; border:2px solid rgba(255,255,255,.18);
+      display:flex; align-items:center; justify-content:center;
+      flex:none; font-family:'Oswald',sans-serif; font-size:.78rem;
+      font-weight:700; color:rgba(255,255,255,.38); 
+      transition:.45s var(--ec);background:#141414
+    }
+    .co-ps.active .co-pd{
+      background:var(--red); border-color:var(--red); 
+      color:#fff; box-shadow:0 0 0 5px rgba(196,30,58,.22)
+    }
+    .co-ps.done .co-pd{
+      background:var(--gco);border-color:var(--gco);color:#fff
+    }
+    .co-pl{
+      font-family:'Oswald',sans-serif;font-size:.62rem; font-weight:600;
+      letter-spacing:.08em; text-transform:uppercase; 
+      color:rgba(255,255,255,.32);transition:.3s
+    }
+    .co-ps.active .co-pl{
+      color:rgba(255,255,255,.9)
+    }
+    .co-ps.done .co-pl{color:var(--gco)}
+    .co-pline{
+      flex:1; height:2px; background:rgba(255,255,255,.1);
+      margin:0 .5rem; overflow:hidden; border-radius:1px
+    }
+    .co-pline i{
+      display:block; height:100%; width:0%; 
+      background:var(--gco);transition:width .8s var(--ec)
+    }
+    .co-body{
+      max-width:1360px; margin:0 auto; display:grid;
+      grid-template-columns:1fr 420px; gap:2.5rem; 
+      padding:2.5rem clamp(20px,4vw,56px) 8rem; align-items:start
+    }
+    .co-steps{
+      display:flex;flex-direction:column;gap:1rem
+    }
+    .co-step{
+      background:#fff; border:1.5px solid #EDE9E3;
+      border-radius:20px; overflow:hidden; 
+      transition:box-shadow .4s var(--ec),border-color .35s
+    }
+    .co-step.active{
+      box-shadow:0 8px 40px rgba(0,0,0,.1);
+      border-color:rgba(196,30,58,.3)
+    }
+    .co-step.done{border-color:#c0e4cc}
+    .co-step-head{
+      display:flex; align-items:center; gap:1rem;
+      padding:1.3rem 1.7rem; cursor:pointer; 
+      user-select:none;transition:background .2s
+    }
+    .co-step-head:hover{background:#FAF8F5}
+    .co-sn{
+      width:34px; height:34px; border-radius:50%;
+      background:#EDE9E3; display:flex; align-items:center;
+      justify-content:center; flex:none; font-family:'Oswald',sans-serif;
+      font-size:.88rem; font-weight:700; color:#888; transition:.35s var(--ec)
+    }
+    .co-step.active .co-sn{
+      background:var(--red); color:#fff; 
+      box-shadow:0 4px 16px rgba(196,30,58,.38)
+    }
+    .co-step.done .co-sn{background:var(--gco);color:#fff}
+    .co-st{
+      font-family:'Oswald',sans-serif; font-size:1rem; 
+      font-weight:600; letter-spacing:.06em; text-transform:uppercase; 
+      color:#555; flex:1;transition:.3s
+    }
+    .co-step.active .co-st{color:#1A1A1A}
+    .co-ss{
+      font-size:.75rem; color:#A7A099; font-weight:400;
+      text-transform:none; letter-spacing:0; margin-top:.15rem
+    }
+    .co-se{
+      font-family:'Oswald',sans-serif; font-size:.6rem;
+      font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+      color:var(--red); opacity:0; transition:.2s
+    }
+    .co-step.done .co-se{opacity:1}
+    .co-sch{
+      color:var(--gco); opacity:0; 
+      transition:.2s; flex:none
+    }
+    .co-step.done .co-sch{opacity:1}
+    .co-sch svg{width:20px; height:20px}
+    .co-step-body{
+      max-height:0; overflow:hidden; 
+      transition:max-height .6s var(--ec)
+    }
+    .co-step-body.open{max-height:2400px}
+    .co-step-in{padding:0 1.7rem 1.7rem}
+    .co-fg{
+      display:grid; grid-template-columns:1fr 1fr; 
+      gap:1rem
+    }
+    .co-ff{grid-column:1/-1}
+    .co-fld{position:relative}
+    .co-fld input,
+    .co-fld select,
+    .co-fld textarea{
+      width:100%; padding:1.35rem 1rem .45rem; 
+      border:1.5px solid #EDE9E3; border-radius:8px;
+      font-size:.9rem; font-weight:500; color:#1A1A1A;
+      background:#fff; outline:none;
+      -webkit-appearance:none; appearance:none; 
+      transition:border-color .25s var(--ec),box-shadow .25s
+    }
+    .co-fld textarea{
+      padding:.9rem 1rem; resize:vertical; min-height:72px
+    }
+    .co-fld input:focus,
+    .co-fld select:focus,
+    .co-fld textarea:focus{
+      border-color:var(--red);
+      box-shadow:0 0 0 3px rgba(196,30,58,.1)
+    }
+    .co-fld input:not(:placeholder-shown):not(:focus){border-color:#b8dfc4}
+    .co-fld label{
+      position:absolute; left:1rem; top:1rem; 
+      font-size:.73rem; font-weight:700; letter-spacing:.07em; 
+      text-transform:uppercase; color:#A7A099;
+      transition:.22s var(--ec);pointer-events:none
+    }
+    .co-fld input:focus~label,
+    .co-fld input:not(:placeholder-shown)~label,
+    .co-fld select:focus~label,
+    .co-fld textarea:focus~label,
+    .co-fld textarea:not(:placeholder-shown)~label{
+      top:.33rem;font-size:.55rem;color:var(--red)
+    }
+    .co-fld input::placeholder,
+    .co-fld textarea::placeholder{color:transparent}
+    .co-del-opts{
+      display:flex; flex-direction:column;
+      gap:.7rem; margin-bottom:1.1rem
+    }
+    .co-dopt{
+      display:flex; align-items:center; gap:.9rem;
+      padding:1rem 1.2rem; border:1.5px solid #EDE9E3;
+      border-radius:12px; cursor:pointer; background:#fff;
+      transition:border-color .25s var(--ec),background .25s,box-shadow .25s;
+      position:relative
+    }
+    .co-dopt:hover{border-color:#C0B8B0;background:#FAF8F5}
+    .co-dopt.on{
+      border-color:var(--red); 
+      background:rgba(196,30,58,.05);
+      box-shadow:0 4px 18px rgba(196,30,58,.1)
+    }
+    .co-dopt-rd{
+      width:20px;
+      height:20px;
+      border-radius:50%;
+      border:2px solid #C0B8B0;
+      flex:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:.25s var(--ec)
+    }
+    .co-dopt.on .co-dopt-rd{border-color:var(--red)}
+    .co-dopt-rd i{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--red);
+      opacity:0;
+      transform:scale(.3);
+      transition:.25s var(--ec)
+    }
+    .co-dopt.on .co-dopt-rd i{opacity:1;transform:scale(1)}
+    .co-dopt-ic{font-size:1.3rem;flex:none}
+    .co-dopt-info{flex:1}
+    .co-dopt-nm{
+      font-weight:700;
+      font-size:.88rem;
+      color:#1A1A1A
+    }
+    .co-dopt-sb{
+      font-size:.72rem;
+      color:#888;
+      margin-top:.1rem
+    }
+    .co-dopt-pr{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.1rem;
+      letter-spacing:.5px;
+      color:#1A1A1A;
+      flex:none
+    }
+    .co-dopt.on .co-dopt-pr{color:var(--red)}
+    .co-dopt-fr{
+      font-family:'Oswald',sans-serif;
+      font-size:.82rem;
+      font-weight:700;
+      color:var(--gco);
+      flex:none
+    }
+    .co-dopt-badge{
+      position:absolute;
+      top:-1px;
+      right:14px;
+      background:var(--red);
+      color:#fff;
+      font-family:'Oswald',sans-serif;
+      font-size:.55rem;
+      font-weight:700;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      padding:.2rem .5rem;
+      border-radius:0 0 7px 7px
+    }
+    .co-store-list{
+      display:none;
+      background:#FAF8F5;
+      border:1.5px solid #EDE9E3;
+      border-radius:12px;
+      padding:.8rem 1rem;
+      margin:.5rem 0 .8rem
+    }
+    .co-store-list.open{display:block}
+    .co-store-city{
+      font-size:.66rem;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:#888;
+      font-weight:600;
+      padding:.2rem 0 .5rem
+    }
+    .co-store-opt{
+      display:flex;
+      align-items:center;
+      gap:.7rem;
+      padding:.55rem .5rem;
+      cursor:pointer;
+      border-radius:8px;
+      transition:background .15s
+    }
+    .co-store-opt:hover{background:#EDE9E3}
+    .co-store-opt input{accent-color:var(--red);flex:none}
+    .co-store-opt-name{
+      font-size:.82rem; font-weight:600; color:#1A1A1A
+    }
+    .co-store-opt-addr{font-size:.7rem;color:#888}
+    .co-pay-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:.7rem; margin-bottom:1.2rem
+    }
+    .co-popt{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:.5rem;
+      padding:1.1rem .8rem;
+      border:1.5px solid #EDE9E3;
+      border-radius:12px;
+      cursor:pointer;
+      background:#fff;
+      transition:border-color .25s var(--ec),background .25s,box-shadow .25s,transform .2s;
+      min-height:90px;
+      position:relative
+    }
+    .co-popt:hover{
+      border-color:#C0B8B0;
+      background:#FAF8F5;
+      transform:translateY(-2px);
+      box-shadow:0 8px 24px rgba(0,0,0,.07)
+    }
+    .co-popt.on{
+      border-color:var(--red);
+      background:rgba(196,30,58,.05);
+      box-shadow:0 4px 18px rgba(196,30,58,.1)
+    }
+    .co-popt-ic{font-size:1.8rem}
+    .co-popt-nm{
+      font-family:'Oswald',sans-serif;
+      font-size:.76rem;
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      color:#555;
+      text-align:center
+    }
+    .co-popt.on .co-popt-nm{color:var(--red)}
+    .co-popt-chk{
+      position:absolute;
+      top:8px;
+      right:8px;
+      width:19px;
+      height:19px;
+      border-radius:50%;
+      background:var(--red);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      opacity:0;
+      transform:scale(.3);
+      transition:.28s var(--ec)
+    }
+    .co-popt-chk svg{
+      width:10px;
+      height:10px;
+      stroke:#fff;
+      stroke-width:3
+    }
+    .co-popt.on .co-popt-chk{opacity:1;transform:scale(1)}
+    .co-step-cta{
+      display:flex;
+      align-items:center;
+      gap:.8rem;
+      margin-top:1.4rem;
+      flex-wrap:wrap
+    }
+    .co-btn-next{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      background:var(--red);
+      color:#fff;
+      border-radius:8px;
+      font-family:'Oswald',sans-serif;
+      font-size:.88rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      padding:1rem 2rem;
+      transition:.3s var(--ec);
+      position:relative;
+      overflow:hidden
+    }
+    .co-btn-next:hover{
+      background:#A01830;
+      transform:translateY(-2px);
+      box-shadow:0 12px 32px rgba(196,30,58,.36)
+    }
+    .co-btn-next::after{
+      content:'';
+      position:absolute;
+      top:0; left:-120%;
+      width:60%; height:100%;
+      transform:skewX(-20deg);
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+      transition:.6s
+    }
+    .co-btn-next:hover::after{left:130%}
+    .co-btn-next svg{
+      width:15px; height:15px;
+      transition:transform .3s
+    }
+    .co-btn-next:hover svg{transform:translateX(4px)}
+    .co-btn-back{
+      font-family:'Oswald',sans-serif;
+      font-size:.76rem;
+      font-weight:600;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#A7A099;
+      padding:.8rem 1rem;
+      transition:.2s;
+      border-radius:8px
+    }
+    .co-btn-back:hover{
+      color:#1A1A1A; 
+      background:#F2EEE8
+    }
+    .co-step-hint{
+      font-size:.72rem;
+      color:#A7A099;
+      margin-left:auto
+    }
+    .co-btn-submit{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:.7rem;
+      background:var(--red);
+      color:#fff;
+      border-radius:12px;
+      font-family:'Oswald',sans-serif;
+      font-size:1.05rem;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      padding:1.25rem;
+      transition:.3s var(--ec);
+      position:relative;
+      overflow:hidden
+    }
+    .co-btn-submit:hover{
+      background:#A01830;
+      transform:translateY(-2px);
+      box-shadow:0 18px 44px rgba(196,30,58,.4)
+    }
+    .co-btn-submit::after{
+      content:'';
+      position:absolute;
+      top:0; left:-120%;
+      width:60%; height:100%;
+      transform:skewX(-20deg);
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);
+      transition:.7s
+    }
+    .co-btn-submit:hover::after{left:130%}
+    .co-btn-submit.loading{
+      pointer-events:none;
+      background:#C0B8B0;
+      transform:none;
+      box-shadow:none
+    }
+    .co-sub-agree{
+      text-align:center;
+      font-size:.72rem; color:#A7A099;
+      margin-top:.75rem
+    }
+    .co-sub-agree a{
+      color:#555; 
+      text-decoration:underline;
+      text-underline-offset:2px
+    }
+    .co-trust-row{
+      display:flex;
+      gap:1rem;
+      margin-top:1.2rem;
+      flex-wrap:wrap
+    }
+    .co-ti{
+      display:flex;
+      align-items:center;
+      gap:.45rem;
+      font-size:.74rem;
+      color:#888
+    }
+    .co-ti svg{
+      width:15px;
+      height:15px;
+      color:var(--gco);
+      flex:none
+    }
+    .co-osi{
+      position:sticky;
+      top:calc(80px + 24px);
+      background:#1A1A1A;
+      color:#fff;
+      border-radius:20px;
+      overflow:hidden;
+      box-shadow:0 24px 60px rgba(0,0,0,.25)
+    }
+    .co-osi-head{
+      padding:1.2rem 1.4rem;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between
+    }
+    .co-osi-head h3{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.35rem;
+      letter-spacing:1.5px
+    }
+    .co-osi-cnt{
+      font-family:'Oswald',sans-serif;
+      font-size:.62rem;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.38)
+    }
+    .co-osi-items{
+      padding:.9rem 1.4rem;
+      display:flex;
+      flex-direction:column;
+      gap:.85rem;
+      max-height:300px;
+      overflow-y:auto
+    }
+    .co-osi-items::-webkit-scrollbar{width:3px}
+    .co-osi-items::-webkit-scrollbar-thumb{
+      background:rgba(255,255,255,.15);
+      border-radius:2px
+    }
+    .co-oi{
+      display:flex;
+      gap:.85rem;
+      align-items:flex-start
+    }
+    .co-oi-img{
+      width:56px;
+      height:56px;
+      border-radius:9px;
+      background:rgba(255,255,255,.06);
+      flex:none;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center
+    }
+    .co-oi-img img{
+      width:100%;
+      height:100%;
+      object-fit:cover
+    }
+    .co-oi-body{flex:1; min-width:0}
+    .co-oi-nm{
+      font-size:.75rem;
+      font-weight:600;
+      line-height:1.35;
+      color:rgba(255,255,255,.9);
+      display:-webkit-box;
+      -webkit-line-clamp:2; line-clamp: 2;
+      -webkit-box-orient:vertical;
+      overflow:hidden
+    }
+    .co-oi-meta{
+      font-size:.67rem;
+      color:rgba(255,255,255,.38);
+      margin-top:.15rem
+    }
+    .co-oi-qty{
+      display:flex;
+      align-items:center;
+      gap:.35rem;
+      margin-top:.45rem
+    }
+    .co-oi-qty button{
+      width:22px;
+      height:22px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:5px;
+      color:rgba(255,255,255,.55);
+      font-size:.82rem;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:.2s
+    }
+    .co-oi-qty button:hover{
+      border-color:rgba(255,255,255,.4);
+      color:#fff
+    }
+    .co-oi-qty span{
+      font-size:.78rem;
+      font-weight:600;
+      min-width:18px;
+      text-align:center;
+      color:#fff
+    }
+    .co-oi-price{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1rem;
+      letter-spacing:.5px;
+      color:#fff;
+      flex:none;
+      white-space:nowrap
+    }
+    .co-osi-promo{
+      padding:.8rem 1.4rem;
+      border-top:1px solid rgba(255,255,255,.06)
+    }
+    .co-promo-row{display:flex; gap:.5rem}
+    .co-promo-row input{
+      flex:1;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:8px;
+      padding:.58rem .85rem;
+      font-size:.8rem;
+      color:#fff;
+      outline:none;
+      transition:.2s
+    }
+    .co-promo-row input::placeholder{color:rgba(255,255,255,.3)}
+    .co-promo-row input:focus{border-color:var(--red)}
+    .co-promo-row button{
+      background:rgba(255,255,255,.1);
+      color:#fff;
+      border-radius:8px;
+      padding:.58rem 1rem;
+      font-family:'Oswald',sans-serif;
+      font-size:.68rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      transition:.25s
+    }
+    .co-promo-row button:hover{background:var(--red)}
+    .co-osi-totals{
+      padding:.9rem 1.4rem;
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex;
+      flex-direction:column;
+      gap:.5rem
+    }
+    .co-otr{
+      display:flex;
+      justify-content:space-between;
+      align-items:baseline;
+      font-size:.8rem;
+      color:rgba(255,255,255,.5)
+    }
+    .co-otr.total{
+      border-top:1px solid rgba(255,255,255,.1);
+      padding-top:.7rem;
+      margin-top:.15rem
+    }
+    .co-otr.total .co-otl{
+      font-family:'Oswald',sans-serif;
+      font-size:.74rem;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.55)
+    }
+    .co-otr.total .co-otv{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.85rem;
+      letter-spacing:1px;
+      color:#fff
+    }
+    .co-del-free{color:var(--gco); font-weight:600}
+    .co-osi-guar{
+      padding:.85rem 1.4rem;
+      background:rgba(255,255,255,.03);
+      border-top:1px solid rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      gap:.55rem
+    }
+    .co-osi-guar svg{
+      width:15px;
+      height:15px;
+      color:var(--gco);
+      flex:none
+    }
+    .co-osi-guar span{
+      font-size:.7rem;
+      color:rgba(255,255,255,.38);
+      line-height:1.5
+    }
+    .co-sum-strip{
+      display:none;
+      position:fixed;
+      bottom:60px;
+      left:0;
+      right:0;
+      z-index:80;
+      background:rgba(20,20,20,.98);
+      backdrop-filter:blur(14px);
+      border-top:1px solid rgba(255,255,255,.1);
+      padding:.8rem 1rem;
+      cursor:pointer
+    }
+    .co-sum-strip .ss-label{
+      font-family:'Oswald',sans-serif;
+      font-size:.58rem;
+      font-weight:600;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.4);
+      display:flex;
+      align-items:center;
+      gap:.35rem
+    }
+    .co-sum-strip .ss-label svg{
+      width:11px;
+      height:11px;
+      color:rgba(255,255,255,.35);
+      transition:transform .3s
+    }
+    .co-sum-strip .ss-total{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.25rem;
+      letter-spacing:1px;
+      color:#fff;
+      margin-top:.1rem
+    }
+    .co-sum-strip .ss-total b{
+      color:var(--red)
+    }
+    .co-sum-strip .ss-cnt{
+      font-family:'Oswald',sans-serif;
+      font-size:.6rem;
+      color:rgba(255,255,255,.4);
+      margin-top:.05rem
+    }
+    .co-sum-ov{
+      position:fixed;
+      inset:0;
+      z-index:90;
+      background:rgba(0,0,0,.55);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .4s var(--ec)
+    }
+    .co-sum-ov.open{opacity:1; pointer-events:all}
+    .co-sum-drawer{
+      position:fixed;
+      left:0; right:0;
+      bottom:0; z-index:91;
+      background:#141414;
+      border-radius:20px 20px 0 0;
+      transform:translateY(110%);
+      transition:transform .5s var(--ec);
+      max-height:75vh;
+      overflow-y:auto
+    }
+    .co-sum-drawer.open{transform:none}
+    .co-sum-drawer::-webkit-scrollbar{display:none}
+    .co-sum-handle{
+      width:36px; height:4px;
+      border-radius:2px; 
+      background:rgba(255,255,255,.15);
+      margin:.85rem auto .35rem
+    }
+    .co-sd-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:.85rem 1.2rem;
+      border-bottom:1px solid rgba(255,255,255,.08)
+    }
+    .co-sd-head h3{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.2rem;
+      letter-spacing:1.5px;
+      color:#fff
+    }
+    .co-sd-close{
+      width:30px;
+      height:30px;
+      border-radius:50%;
+      background:rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:rgba(255,255,255,.7)
+    }
+    .co-sd-close svg{width:15px; height:15px}
+    .co-sd-items{
+      padding:.75rem 1.2rem;
+      display:flex;
+      flex-direction:column;
+      gap:.8rem
+    }
+    .co-soi{
+      display:flex;
+      align-items:flex-start;
+      gap:.8rem
+    }
+    .co-soi-img{
+      width:50px;
+      height:50px;
+      border-radius:9px;
+      background:rgba(255,255,255,.06);
+      flex:none;
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center
+    }
+    .co-soi-img img{
+      width:100%; height:100%;
+      object-fit:cover
+    }
+    .co-soi-body{flex:1; min-width:0}
+    .co-soi-nm{
+      font-size:.74rem;
+      font-weight:600;
+      line-height:1.3;
+      color:rgba(255,255,255,.9);
+      display:-webkit-box;
+      -webkit-line-clamp:2; line-clamp: 2;
+      -webkit-box-orient:vertical;
+      overflow:hidden
+    }
+    .co-soi-meta{
+      font-size:.64rem;
+      color:rgba(255,255,255,.38);
+      margin-top:.15rem
+    }
+    .co-soi-qty{
+      display:flex;
+      align-items:center;
+      gap:.32rem;
+      margin-top:.4rem
+    }
+    .co-soi-qty button{
+      width:20px;
+      height:20px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:4px;
+      color:rgba(255,255,255,.55);
+      font-size:.78rem;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:.2s
+    }
+    .co-soi-qty button:active{
+      border-color:rgba(255,255,255,.4);
+      color:#fff
+    }
+    .co-soi-qty span{
+      font-size:.74rem;
+      font-weight:600;
+      min-width:16px;
+      text-align:center;
+      color:#fff
+    }
+    .co-soi-price{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:.92rem;
+      letter-spacing:.5px;
+      color:#fff;
+      flex:none;
+      white-space:nowrap
+    }
+    .co-sd-totals{
+      padding:.75rem 1.2rem;
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex;
+      flex-direction:column;
+      gap:.4rem
+    }
+    .co-sd-guar{
+      padding:.75rem 1.2rem;
+      background:rgba(255,255,255,.03);
+      border-top:1px solid rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      margin-bottom:4px
+    }
+    .co-sd-guar svg{
+      width:13px;
+      height:13px;
+      color:var(--gco);
+      flex:none
+    }
+    .co-sd-guar span{
+      font-size:.66rem;
+      color:rgba(255,255,255,.38);
+      line-height:1.45
+    }
+    .co-success{
+      display:none;
+      flex-direction:column;
+      align-items:center;
+      text-align:center;
+      padding:5rem 2rem;
+      gap:1.2rem
+    }
+    .co-success.show{
+      display:flex;
+      animation:coSucc .7s var(--ec) both
+    }
+    @keyframes coSucc{
+      from{opacity:0; transform:translateY(20px)}
+      to  {opacity:1; transform:none}
+    }
+    .co-succ-circle{
+      width:86px; height:86px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#1e9e5a,#27c96e);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 16px 40px rgba(30,158,90,.4)
+    }
+    .co-succ-circle svg{
+      width:40px; height:40px;
+      stroke:#fff; stroke-width:2.5
+    }
+    .co-succ-title{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:2.6rem;
+      letter-spacing:2px;
+      color:#1A1A1A
+    }
+    .co-succ-sub{
+      font-size:.9rem;
+      color:#888;
+      max-width:380px;
+      line-height:1.75;
+      font-weight:300
+    }
+    .co-succ-order{
+      background:#F2EEE8;
+      border-radius:12px;
+      padding:1rem 1.7rem;
+      font-family:'Oswald',sans-serif;
+      font-size:.88rem;
+      font-weight:600;
+      letter-spacing:.04em;
+      color:#555
+    }
+    .co-succ-order span{
+      color:var(--red);
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.25rem; letter-spacing:1px
+    }
+    .co-cw{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:300;
+      overflow:hidden
+    }
+    @keyframes cffall{
+      to{transform:translateY(110vh) rotate(720deg); opacity:0}
+    }
+    @keyframes coShk{
+      0%,100% {transform:translateX(0)}
+      20%     {transform:translateX(-7px)}
+      40%     {transform:translateX(7px)}
+      60%     {transform:translateX(-4px)}
+      80%     {transform:translateX(4px)}
+    }
+    @media(max-width:900px){
+      .co-body{
+        grid-template-columns:1fr;
+        padding:1.2rem 1rem 2rem
+      }
+      .co-osi{display:none}
+      .co-sum-strip{display:block}
+      .co-fg{grid-template-columns:1fr}
+      .co-step-head{padding:1rem 1.1rem}
+      .co-step-in{padding:0 1.1rem 1.1rem}
+      .co-trust-row{
+        flex-direction:column;
+        gap:.5rem
+      }
+      .co-btn-next{
+        flex:1;
+        justify-content:center
+      }
+      body{padding-bottom:130px}
+    }
+    @media(min-width:901px){
+      .co-sum-strip,
+      .co-sum-ov,
+      .co-sum-drawer{
+        display:none!important
+      }
+    }
+  </style>
 </head>
-
 <body>
-    <!-- ════════ LI-NING CINEMATIC LOADER — Ink ════════ -->
+
+  <!-- LOADER (без изменений) -->
   <div id="ln-loader" aria-hidden="true">
     <div class="ln-load-stage">
       <img class="ln-load-logo" src="logo.jpg" alt="Li-Ning">
@@ -33,421 +1037,661 @@
     <div class="ln-load-curtain"><span></span><span></span><span></span><span></span><span></span></div>
   </div>
   <style>
-  #ln-loader{position:fixed;inset:0;z-index:99999;background:#141414;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
-  #ln-loader.ln-done{pointer-events:none}
-  .ln-load-stage{position:relative;text-align:center;z-index:2}
-  .ln-load-logo{height:clamp(46px,7vw,78px);width:auto;filter:invert(1) brightness(1.6);display:block;margin:0 auto;clip-path:inset(0 100% 0 0);opacity:0}
-  .ln-load-sub{margin-top:1.4rem;font-size:.7rem;letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.5);padding-left:.5em;opacity:0;transform:translateY(8px)}
-  .ln-load-bar{position:absolute;left:7vw;right:7vw;bottom:7%;height:2px;background:rgba(255,255,255,.12);z-index:2}
-  .ln-load-bar i{display:block;height:100%;width:0;background:#C41E3A;box-shadow:0 0 12px #C41E3A;transition:width .1s linear}
-  .ln-load-meta{position:absolute;left:0;right:0;bottom:9%;display:flex;align-items:flex-end;justify-content:space-between;padding:0 7vw;z-index:2}
-  .ln-load-num{font-family:'Bebas Neue','Oswald',sans-serif;font-size:clamp(3rem,9vw,7rem);line-height:.8;color:#fff;letter-spacing:2px}
-  .ln-load-num small{font-size:.32em;vertical-align:super;color:#C41E3A}
-  .ln-load-status{font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:600;text-align:right;max-width:45%}
-  .ln-load-curtain{position:absolute;inset:0;z-index:5;display:flex;pointer-events:none}
-  .ln-load-curtain span{flex:1;background:#141414;transform:translateY(0)}
-  @media(prefers-reduced-motion:reduce){#ln-loader{display:none!important}}
+    #ln-loader{
+      position:fixed;
+      inset:0;
+      z-index:99999;
+      background:#141414;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      font-family:'Plus Jakarta Sans',system-ui,sans-serif
+    }
+    #ln-loader.ln-done{
+      pointer-events:none
+    }
+    .ln-load-stage{
+      position:relative;
+      text-align:center;
+      z-index:2
+    }
+    .ln-load-logo{
+      height:clamp(46px,7vw,78px);
+      width:auto;
+      filter:invert(1) brightness(1.6);
+      display:block;
+      margin:0 auto;
+      clip-path:inset(0 100% 0 0);
+      opacity:0
+    }
+    .ln-load-sub{
+      margin-top:1.4rem;
+      font-size:.7rem;
+      letter-spacing:.5em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.5);
+      padding-left:.5em;
+      opacity:0;
+      transform:translateY(8px)
+    }
+    .ln-load-bar{
+      position:absolute;
+      left:7vw; right:7vw;
+      bottom:7%; height:2px;
+      background:rgba(255,255,255,.12);
+      z-index:2
+    }
+    .ln-load-bar i{
+      display:block;
+      height:100%; width:0;
+      background:#C41E3A;
+      box-shadow:0 0 12px #C41E3A;
+      transition:width .1s linear
+    }
+    .ln-load-meta{
+      position:absolute;
+      left:0; right:0;
+      bottom:9%; display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      padding:0 7vw;
+      z-index:2
+    }
+    .ln-load-num{
+      font-family:'Bebas Neue','Oswald',sans-serif;
+      font-size:clamp(3rem,9vw,7rem);
+      line-height:.8;
+      color:#fff;
+      letter-spacing:2px
+    }
+    .ln-load-num small{
+      font-size:.32em;
+      vertical-align:super;
+      color:#C41E3A
+    }
+    .ln-load-status{
+      font-size:.62rem;
+      letter-spacing:.32em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.55);
+      font-weight:600;
+      text-align:right;
+      max-width:45%
+    }
+    .ln-load-curtain{
+      position:absolute;
+      inset:0;
+      z-index:5;
+      display:flex;
+      pointer-events:none
+    }
+    .ln-load-curtain span{
+      flex:1;
+      background:#141414;
+      transform:translateY(0)
+    }
+    @media(prefers-reduced-motion:reduce){
+      #ln-loader{
+        display:none!important
+      }
+    }
   </style>
   <script>
   (function(){
-    var L=document.getElementById('ln-loader'); if(!L) return;
-    if(sessionStorage.getItem('ln_intro_seen')){ L.parentNode.removeChild(L); return; }
-    var logo=L.querySelector('.ln-load-logo'), sub=L.querySelector('.ln-load-sub'),
-        bar=L.querySelector('.ln-load-bar i'), num=L.querySelector('.ln-load-num'),
-        status=L.querySelector('.ln-load-status'), curtain=L.querySelector('.ln-load-curtain');
-    var statuses=['Подготовка коллекции','Загрузка витрины','Полировка пикселей','Почти готово'];
+    var L=document.getElementById('ln-loader');
+    if(!L)return;
+    if(sessionStorage.getItem('ln_intro_seen')){L.parentNode.removeChild(L);
+    return;
+    }
+    var logo=L.querySelector('.ln-load-logo'),
+        sub=L.querySelector('.ln-load-sub'),
+        bar=L.querySelector('.ln-load-bar i'),
+        num=L.querySelector('.ln-load-num'),
+        status=L.querySelector('.ln-load-status'),
+        curtain=L.querySelector('.ln-load-curtain');
+    var statuses=['Подготовка коллекции',
+                  'Загрузка витрины',
+                  'Полировка пикселей',
+                  'Почти готово'
+                ];
     document.documentElement.style.overflow='hidden';
-    setTimeout(function(){ logo.style.transition='clip-path 1.1s cubic-bezier(.76,0,.24,1),opacity .5s'; logo.style.clipPath='inset(0 0 0 0)'; logo.style.opacity='1'; },150);
-    setTimeout(function(){ sub.style.transition='opacity .8s,transform .8s cubic-bezier(.22,1,.36,1)'; sub.style.opacity='1'; sub.style.transform='none'; },700);
-    var t0=performance.now(), DUR=2000, done=false;
+    setTimeout(
+      function(){
+        logo.style.transition='clip-path 1.1s cubic-bezier(.76,0,.24,1),opacity .5s';
+        logo.style.clipPath='inset(0 0 0 0)';
+        logo.style.opacity='1';
+        },150);
+    setTimeout(
+      function(){
+        sub.style.transition='opacity .8s,transform .8s cubic-bezier(.22,1,.36,1)';
+        sub.style.opacity='1';
+        sub.style.transform='none';
+        },700);
+    var t0=performance.now(),
+      DUR=2000,done=false;
     function reveal(){
-      if(done) return; done=true;
+      if(done)return;
+      done=true;
       sessionStorage.setItem('ln_intro_seen','1');
-      document.documentElement.style.overflow='';
-      [].forEach.call(curtain.children,function(s,i){ s.style.transition='transform .75s cubic-bezier(.76,0,.24,1) '+(i*0.07)+'s'; s.style.transform='translateY(-101%)'; });
-      setTimeout(function(){ L.classList.add('ln-done'); L.style.transition='opacity .3s'; L.style.opacity='0'; },300);
-      setTimeout(function(){ if(L.parentNode) L.parentNode.removeChild(L); },1150);
-    }
+      document.documentElement.style.overflow='';[].forEach.call(curtain.children,
+        function(s,i){
+          s.style.transition='transform .75s cubic-bezier(.76,0,.24,1) '+(i*0.07)+'s';s.style.transform='translateY(-101%)';
+        });
+      setTimeout(
+        function(){
+          L.classList.add('ln-done');
+          L.style.transition='opacity .3s';
+          L.style.opacity='0';
+          },300);
+      setTimeout(
+        function(){
+          if(L.parentNode)L.parentNode.removeChild(L);
+          },1150);
+      }
     function tick(now){
-      var p=Math.min((now-t0)/DUR,1), e=1-Math.pow(1-p,3), v=Math.round(e*100);
-      num.firstChild.nodeValue=v; bar.style.width=v+'%';
+      var p=Math.min((now-t0)/DUR,1),e=1-Math.pow(1-p,3),v=Math.round(e*100);
+      num.firstChild.nodeValue=v;
+      bar.style.width=v+'%';
       status.textContent=statuses[Math.min(3,Math.floor(p*4))];
-      if(p<1) requestAnimationFrame(tick); else setTimeout(reveal,260);
-    }
+      if(p<1)requestAnimationFrame(tick);
+      else setTimeout(reveal,260);
+      }
     requestAnimationFrame(tick);
-    setTimeout(reveal, DUR+1500); // подстраховка, чтобы интро не зависло
-  })();
+    setTimeout(reveal,DUR+1500);
+    })
+  ();
   </script>
-  <!-- ════════ /LOADER ════════ -->
 
-  <!-- NAVBAR -->
   <div id="navbar-placeholder"></div>
 
-  <div class="page-header">
-    <div class="page-header-inner">
-      <div class="breadcrumb" data-manual="true">
-        <a href="index.html">Главная</a><span>/</span>
-        <a href="catalog.html">Каталог</a><span>/</span>
-        <span>Оформление заказа</span>
-      </div>
-      <h1>ОФОРМЛЕНИЕ<br>ЗАКАЗА</h1>
+  <!-- ТЁМНЫЙ ХЕДЕР -->
+  <div class="co-head">
+    <div class="co-crumb">
+      <a href="index.html">Главная</a><span style="opacity:.3">/</span>
+      <a href="catalog.html">Каталог</a><span style="opacity:.3">/</span>
+      <span>Оформление заказа</span>
+    </div>
+    <h1>ОФОРМЛЕНИЕ ЗАКАЗА</h1>
+    <div class="co-sub">3 шага до подтверждения — быстро и просто</div>
+  </div>
+
+  <!-- ПРОГРЕСС-БАР -->
+  <div class="co-prog-wrap">
+    <div class="co-prog" id="co-prog">
+      <div class="co-ps active" data-s="1"><div class="co-pd">1</div><div class="co-pl">Контакты</div></div>
+      <div class="co-pline"><i></i></div>
+      <div class="co-ps" data-s="2"><div class="co-pd">2</div><div class="co-pl">Доставка</div></div>
+      <div class="co-pline"><i></i></div>
+      <div class="co-ps" data-s="3"><div class="co-pd">3</div><div class="co-pl">Оплата</div></div>
     </div>
   </div>
 
-  <div class="order-page">
-    <div class="order-inner">
+  <div class="co-body">
 
-      <!-- Order Form -->
-      <form id="order-form" novalidate>
+    <!-- ЛЕВАЯ КОЛОНКА: ШАГИ -->
+    <div class="co-steps" id="co-steps">
 
-        <!-- Personal Info -->
-        <div class="form-section">
-          <div class="form-section-title">
-            <span class="step-num">1</span>
-            Личные данные
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="first-name">Имя *</label>
-              <input class="form-input" id="first-name" type="text" placeholder="Азиз" required>
-              <div class="form-error"></div>
+      <!-- ШАГ 1: Личные данные -->
+      <div class="co-step active" data-step="1">
+        <div class="co-step-head" onclick="coToggleStep(1)">
+          <div class="co-sn">1</div>
+          <div style="flex:1"><div class="co-st">Личные данные</div><div class="co-ss" id="co-ss1"></div></div>
+          <span class="co-se">Изменить</span>
+          <span class="co-sch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+        </div>
+        <div class="co-step-body open" id="co-sb1">
+          <div class="co-step-in">
+            <div class="co-fg">
+              <div class="co-fld"><input type="text" id="first-name" placeholder=" " autocomplete="given-name"><label>Имя *</label></div>
+              <div class="co-fld"><input type="text" id="last-name" placeholder=" " autocomplete="family-name"><label>Фамилия *</label></div>
+              <div class="co-fld"><input type="tel" id="phone" placeholder=" " autocomplete="tel"><label>Телефон *</label></div>
+              <div class="co-fld"><input type="email" id="email" placeholder=" " autocomplete="email"><label>Email (необязательно)</label></div>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="last-name">Фамилия *</label>
-              <input class="form-input" id="last-name" type="text" placeholder="Мирзаев" required>
-              <div class="form-error"></div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="phone">Телефон *</label>
-              <input class="form-input" id="phone" type="tel" placeholder="+998 90 123 45 67" required>
-              <div class="form-error"></div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="email">Email</label>
-              <input class="form-input" id="email" type="email" placeholder="email@mail.ru">
-              <div class="form-error"></div>
+            <div class="co-step-cta">
+              <button class="co-btn-next" onclick="coGoNext(1)">Далее — Доставка <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+              <span class="co-step-hint">Шаг 1 из 3</span>
             </div>
           </div>
         </div>
-
-        <!-- Delivery -->
-        <div class="form-section">
-          <div class="form-section-title">
-            <span class="step-num">2</span>
-            Способ доставки
-          </div>
-          <div class="delivery-options">
-            <div class="delivery-option selected" data-price="20000" onclick="selectDelivery(this, 'delivery')">
-              <input type="radio" name="delivery" value="courier" checked>
-                <div class="delivery-label">
-                  <strong>🚚 Курьерская доставка</strong>
-                  <span>Доставка по Ташкенту — 1-2 рабочих дня</span>
-                </div>
-                <div class="delivery-price">20 000 сум</div>
-            </div>
-            <div class="delivery-option" onclick="selectDelivery(this, 'pickup')">
-              <input type="radio" name="delivery" value="pickup" id="delivery-pickup">
-              <div class="delivery-label">
-                <strong>Самовывоз</strong>
-                <span id="pickup-label">Бесплатно · Выберите магазин ниже</span>
-              </div>
-              <div class="delivery-price">Бесплатно</div>
-              <button type="button" onclick="event.stopPropagation();document.getElementById('store-list').classList.toggle('open')" 
-                style="font-size:0.72rem;color:var(--red);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0">
-                Выбрать магазин
-              </button>
-            </div>
-
-            <div class="store-list" id="store-list">
-              <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);font-weight:600;padding:0.3rem 0.2rem">Ташкент</div>
-
-              <label class="store-option"><input type="radio" name="pickup_store" value="Tashkent City Mall"><div class="store-option-info"><div class="store-option-name">Tashkent City Mall</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Eco Park"><div class="store-option-info"><div class="store-option-name">Eco Park</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Alayskiy"><div class="store-option-info"><div class="store-option-name">Alayskiy</div><div class="store-option-addr">Yahyo Gulyamov ko'chasi 7, Ташкент</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Magic City"><div class="store-option-info"><div class="store-option-name">Magic City</div><div class="store-option-addr">Bobur ko'chasi 174, Ташкент</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Atlas Chimgan"><div class="store-option-info"><div class="store-option-name">Atlas Chimgan</div><div class="store-option-addr">Ташкент, Узбекистан</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="High Town Plaza"><div class="store-option-info"><div class="store-option-name">High Town Plaza</div><div class="store-option-addr">Yangi Shahar ko'chasi 67, Ташкент</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Malika"><div class="store-option-info"><div class="store-option-name">Malika</div><div class="store-option-addr">Buz Bozor ko'chasi, Ташкент</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Novza"><div class="store-option-info"><div class="store-option-name">Novza</div><div class="store-option-addr">Mukimi Street 25/1, Ташкент</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Yunusabad Gallery"><div class="store-option-info"><div class="store-option-name">Yunusabad Gallery</div><div class="store-option-addr">Юнусабад, Ташкент</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Shota Rustavely"><div class="store-option-info"><div class="store-option-name">Shota Rustavely</div><div class="store-option-addr">Shota Rustaveli ko'chasi, Ташкент</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="Scopus Mall"><div class="store-option-info"><div class="store-option-name">Scopus Mall</div><div class="store-option-addr">Чиланзар, Ташкент</div></div></label>
-
-              <div style="font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--gray-500);font-weight:600;padding:0.6rem 0.2rem 0.3rem">Самарканд</div>
-
-              <label class="store-option"><input type="radio" name="pickup_store" value="Family Park Samarkand"><div class="store-option-info"><div class="store-option-name">Family Park</div><div class="store-option-addr">Narpayskaya Ulitsa 76, Самарканд</div></div></label>
-              <label class="store-option"><input type="radio" name="pickup_store" value="M. Baraka Samarkand"><div class="store-option-info"><div class="store-option-name">M. Baraka</div><div class="store-option-addr">Mir Said Baraka Street 2, Самарканд</div></div></label>
-            </div>
-            <div class="delivery-option" data-price="40000" onclick="selectDelivery(this, 'delivery')">
-              <input type="radio" name="delivery" value="express">
-              <div class="delivery-label">
-                <strong>⚡ Экспресс-доставка</strong>
-                <span>Доставка в течение 3 часов</span>
-              </div>
-              <div class="delivery-price">40 000 сум</div>
-            </div>
-          </div>
-          <div class="form-group" style="margin-top:1rem">
-            <label class="form-label" for="address">Адрес доставки *</label>
-            <input class="form-input" id="address" type="text" placeholder="Ташкент, Чиланзар, ул. Катартал, дом 15, кв. 3" required>
-            <div class="form-error"></div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label" for="city">Город *</label>
-              <select class="form-select form-input" id="city" required>
-                <option value="">Выберите город</option>
-                <option value="tashkent" selected>Ташкент</option>
-                <option value="samarkand">Самарканд</option>
-                <option value="bukhara">Бухара</option>
-                <option value="namangan">Наманган</option>
-                <option value="andijan">Андижан</option>
-              </select>
-              <div class="form-error"></div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="comment">Комментарий к заказу</label>
-              <input class="form-input" id="comment" type="text" placeholder="Домофон не работает, позвоните">
-            </div>
-          </div>
-        </div>
-
-        <!-- Payment -->
-        <div class="form-section">
-          <div class="form-section-title">
-            <span class="step-num">3</span>
-            Способ оплаты
-          </div>
-          <div class="payment-options">
-            <div class="pay-option selected">
-              <input type="radio" name="payment" value="cash" checked style="display:none">
-              <div class="pay-icon">💵</div>
-              <div class="pay-name">Наличными</div>
-            </div>
-            <div class="pay-option">
-              <input type="radio" name="payment" value="card" style="display:none">
-              <div class="pay-icon">💳</div>
-              <div class="pay-name">Карта / Uzcard</div>
-            </div>
-            <div class="pay-option">
-              <input type="radio" name="payment" value="click" style="display:none">
-              <div class="pay-icon">📱</div>
-              <div class="pay-name">Click / Payme</div>
-            </div>
-            <div class="pay-option">
-              <input type="radio" name="payment" value="installment" style="display:none">
-              <div class="pay-icon">📆</div>
-              <div class="pay-name">Рассрочка</div>
-            </div>
-          </div>
-        </div>
-
-        <button type="submit" class="submit-order">Подтвердить заказ →</button>
-        <p style="font-size:.75rem;color:var(--gray-500);margin-top:.8rem;text-align:center">
-          Нажимая кнопку, вы соглашаетесь с <a href="#" style="color:var(--red)">условиями обработки данных</a>
-        </p>
-      </form>
-
-      <!-- Order Summary Panel -->
-      <div class="order-summary-panel">
-        <h3>ВАШ ЗАКАЗ</h3>
-
-        <!-- Товары из корзины -->
-        <div id="order-items-list">
-          <div style="color:var(--gray-500);font-size:.85rem">Загрузка...</div>
-        </div>
-
-        <hr class="order-divider">
-
-        <div class="order-totals">
-          <div class="order-total-row">
-            <span>Товары (<span id="order-qty">0</span> шт.)</span>
-            <span id="order-subtotal">0 сум</span>
-          </div>
-          <div class="order-total-row">
-            <span>Доставка</span>
-            <span id="order-delivery-price">0 сум</span>
-          </div>
-        </div>
-
-        <div class="order-total-final">
-          <span>ИТОГО</span>
-          <strong id="order-total-final">0 сум</strong>
-          </div>
-        </div>
-
       </div>
+
+      <!-- ШАГ 2: Доставка -->
+      <div class="co-step" data-step="2">
+        <div class="co-step-head" onclick="coToggleStep(2)">
+          <div class="co-sn">2</div>
+          <div style="flex:1"><div class="co-st">Доставка</div><div class="co-ss" id="co-ss2"></div></div>
+          <span class="co-se">Изменить</span>
+          <span class="co-sch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+        </div>
+        <div class="co-step-body" id="co-sb2">
+          <div class="co-step-in">
+            <div class="co-del-opts">
+              <div class="co-dopt on" data-v="courier" data-p="20000" onclick="coSelDel(this)">
+                <div class="co-dopt-rd"><i></i></div><div class="co-dopt-ic">🚚</div>
+                <div class="co-dopt-info"><div class="co-dopt-nm">Курьерская доставка</div><div class="co-dopt-sb">1–2 рабочих дня по Ташкенту</div></div>
+                <div class="co-dopt-pr">20 000 сум</div>
+                <span class="co-dopt-badge">Популярно</span>
+              </div>
+              <div class="co-dopt" data-v="pickup" data-p="0" onclick="coSelDel(this)">
+                <div class="co-dopt-rd"><i></i></div><div class="co-dopt-ic">🏪</div>
+                <div class="co-dopt-info"><div class="co-dopt-nm">Самовывоз</div><div class="co-dopt-sb">Выберите ближайший магазин</div></div>
+                <div class="co-dopt-fr">Бесплатно</div>
+              </div>
+              <div class="co-dopt" data-v="express" data-p="40000" onclick="coSelDel(this)">
+                <div class="co-dopt-rd"><i></i></div><div class="co-dopt-ic">⚡</div>
+                <div class="co-dopt-info"><div class="co-dopt-nm">Экспресс-доставка</div><div class="co-dopt-sb">В течение 3 часов</div></div>
+                <div class="co-dopt-pr">40 000 сум</div>
+              </div>
+            </div>
+
+            <!-- Список магазинов (для самовывоза) -->
+            <div class="co-store-list" id="co-store-list">
+              <div class="co-store-city">Ташкент</div>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Tashkent City Mall"><div><div class="co-store-opt-name">Tashkent City Mall</div><div class="co-store-opt-addr">Ташкент, Узбекистан</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Eco Park"><div><div class="co-store-opt-name">Eco Park</div><div class="co-store-opt-addr">Ташкент, Узбекистан</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Alayskiy"><div><div class="co-store-opt-name">Alayskiy</div><div class="co-store-opt-addr">Yahyo Gulyamov 7, Ташкент</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Magic City"><div><div class="co-store-opt-name">Magic City</div><div class="co-store-opt-addr">Bobur 174, Ташкент</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Atlas Chimgan"><div><div class="co-store-opt-name">Atlas Chimgan</div><div class="co-store-opt-addr">Ташкент, Узбекистан</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="High Town Plaza"><div><div class="co-store-opt-name">High Town Plaza</div><div class="co-store-opt-addr">Yangi Shahar 67, Ташкент</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Malika"><div><div class="co-store-opt-name">Malika</div><div class="co-store-opt-addr">Buz Bozor, Ташкент</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Novza"><div><div class="co-store-opt-name">Novza</div><div class="co-store-opt-addr">Mukimi 25/1, Ташкент</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Yunusabad Gallery"><div><div class="co-store-opt-name">Yunusabad Gallery</div><div class="co-store-opt-addr">Юнусабад, Ташкент</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Shota Rustavely"><div><div class="co-store-opt-name">Shota Rustavely</div><div class="co-store-opt-addr">Shota Rustaveli, Ташкент</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Scopus Mall"><div><div class="co-store-opt-name">Scopus Mall</div><div class="co-store-opt-addr">Чиланзар, Ташкент</div></div></label>
+              <div class="co-store-city" style="padding-top:.8rem">Самарканд</div>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="Family Park Samarkand"><div><div class="co-store-opt-name">Family Park</div><div class="co-store-opt-addr">Narpayskaya 76, Самарканд</div></div></label>
+              <label class="co-store-opt"><input type="radio" name="pickup_store" value="M. Baraka Samarkand"><div><div class="co-store-opt-name">M. Baraka</div><div class="co-store-opt-addr">Mir Said Baraka 2, Самарканд</div></div></label>
+            </div>
+
+            <!-- Поля адреса (скрываются при самовывозе) -->
+            <div class="co-fg" id="co-addr-f">
+              <div class="co-fld co-ff"><input type="text" id="address" placeholder=" " autocomplete="street-address"><label>Адрес доставки *</label></div>
+              <div class="co-fld"><input type="text" id="city" placeholder=" " value="Ташкент" autocomplete="address-level2"><label>Город *</label></div>
+              <div class="co-fld co-ff"><textarea id="comment" placeholder=" "></textarea><label>Комментарий к заказу</label></div>
+            </div>
+
+            <div class="co-step-cta">
+              <button class="co-btn-back" onclick="coGoPrev(2)">← Назад</button>
+              <button class="co-btn-next" onclick="coGoNext(2)">Далее — Оплата <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+              <span class="co-step-hint">Шаг 2 из 3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ШАГ 3: Оплата -->
+      <div class="co-step" data-step="3">
+        <div class="co-step-head" onclick="coToggleStep(3)">
+          <div class="co-sn">3</div>
+          <div style="flex:1"><div class="co-st">Способ оплаты</div><div class="co-ss" id="co-ss3"></div></div>
+          <span class="co-se">Изменить</span>
+          <span class="co-sch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg></span>
+        </div>
+        <div class="co-step-body" id="co-sb3">
+          <div class="co-step-in">
+            <div class="co-pay-grid">
+              <div class="co-popt on" data-v="cash" onclick="coSelPay(this)">
+                <div class="co-popt-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                <div class="co-popt-ic">💵</div><div class="co-popt-nm">Наличными</div>
+              </div>
+              <div class="co-popt" data-v="card" onclick="coSelPay(this)">
+                <div class="co-popt-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                <div class="co-popt-ic">💳</div><div class="co-popt-nm">Карта / Uzcard</div>
+              </div>
+              <div class="co-popt" data-v="click" onclick="coSelPay(this)">
+                <div class="co-popt-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                <div class="co-popt-ic">📱</div><div class="co-popt-nm">Click / Payme</div>
+              </div>
+              <div class="co-popt" data-v="installment" onclick="coSelPay(this)">
+                <div class="co-popt-chk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+                <div class="co-popt-ic">📅</div><div class="co-popt-nm">Рассрочка</div>
+              </div>
+            </div>
+            <button class="co-btn-submit" id="co-submit-btn" onclick="coDoSubmit()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="19" height="19"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              Подтвердить заказ
+            </button>
+            <div class="co-sub-agree">Нажимая кнопку, вы соглашаетесь с <a href="#">условиями обработки данных</a></div>
+            <div class="co-trust-row">
+              <div class="co-ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>Данные защищены SSL</div>
+              <div class="co-ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9M3 12V7M3 12h5"/></svg>Обмен 14 дней</div>
+              <div class="co-ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h15v13H1zM16 8h4l3 3v5h-7"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Оригинал Li-Ning</div>
+            </div>
+            <div class="co-step-cta" style="margin-top:.6rem">
+              <button class="co-btn-back" onclick="coGoPrev(3)">← К доставке</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ЭКРАН УСПЕХА -->
+      <div class="co-success" id="co-success">
+        <div class="co-succ-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="co-succ-title">ЗАКАЗ ОФОРМЛЕН!</div>
+        <div class="co-succ-sub">Спасибо, <strong id="co-succ-nm"></strong> Ваш заказ принят. Менеджер свяжется с вами в течение 10 минут.</div>
+        <div class="co-succ-order">Номер заказа: <span id="co-succ-num">#LN-00000</span></div>
+        <button class="co-btn-next" onclick="window.location.href='my-orders.html'">Мои заказы <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+      </div>
+
+    </div><!-- /co-steps -->
+
+    <!-- ПРАВАЯ КОЛОНКА: САЙДБАР (десктоп) -->
+    <aside class="co-osi">
+      <div class="co-osi-head"><h3>ВАШ ЗАКАЗ</h3><span class="co-osi-cnt" id="co-osi-cnt">0 товаров</span></div>
+      <div class="co-osi-items" id="co-osi-items"></div>
+      <div class="co-osi-promo">
+        <div class="co-promo-row"><input type="text" placeholder="Промокод"><button>Применить</button></div>
+      </div>
+      <div class="co-osi-totals" id="co-osi-totals"></div>
+      <div class="co-osi-guar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
+        <span>Оригинальные товары Li-Ning с официальной гарантией производителя</span>
+      </div>
+    </aside>
+
+  </div><!-- /co-body -->
+
+  <!-- МОБИЛЬНАЯ ПОЛОСКА ВНИЗУ -->
+  <div class="co-sum-strip" id="co-sum-strip" onclick="coToggleDrawer()">
+    <div class="ss-label">
+      <svg id="co-arr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 15l-6-6-6 6"/></svg>
+      Ваш заказ
+    </div>
+    <div class="ss-total" id="co-strip-total">0 <b>сум</b></div>
+    <div class="ss-cnt" id="co-strip-cnt">0 товаров</div>
   </div>
 
-  <!-- Footer -->
+  <!-- ШТОРКА (мобайл) -->
+  <div class="co-sum-ov" id="co-sum-ov" onclick="coToggleDrawer()"></div>
+  <div class="co-sum-drawer" id="co-sum-drawer">
+    <div class="co-sum-handle"></div>
+    <div class="co-sd-head">
+      <h3>ВАШ ЗАКАЗ</h3>
+      <button class="co-sd-close" onclick="coToggleDrawer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="co-sd-items" id="co-sd-items"></div>
+    <div class="co-sd-totals" id="co-sd-totals"></div>
+    <div class="co-sd-guar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
+      <span>Оригинальная продукция Li-Ning с гарантией</span>
+    </div>
+  </div>
+
+  <div class="co-cw" id="co-cw"></div>
+
   <div id="footer-placeholder"></div>
-
   <script src="js/main.js"></script>
-  <script>
-  // Получаем корзину
-  function getCart() {
-    try { return JSON.parse(localStorage.getItem('lining_cart') || '[]'); }
-    catch(e) { return []; }
-  }
-
-  let deliveryPrice = 20000;
-
-  function updateTotal() {
-    const items = getCart();
-    const subtotal = items.reduce((sum, i) => sum + i.price * i.qty, 0);
-    const qty      = items.reduce((sum, i) => sum + i.qty, 0);
-    const total    = subtotal + (items.length > 0 ? deliveryPrice : 0);
-
-    const el = id => document.getElementById(id);
-    if (el('order-qty'))            el('order-qty').textContent            = qty;
-    if (el('order-subtotal'))       el('order-subtotal').textContent       = subtotal.toLocaleString('ru-RU') + ' сум';
-    if (el('order-delivery-price')) el('order-delivery-price').textContent = deliveryPrice.toLocaleString('ru-RU') + ' сум';
-    if (el('order-total-final'))    el('order-total-final').textContent    = total.toLocaleString('ru-RU') + ' сум';
-  }
-
-  function renderOrderItems() {
-    const items = getCart();
-    const container = document.getElementById('order-items-list');
-
-    if (!container) return;
-
-    if (items.length === 0) {
-      container.innerHTML = `
-        <div style="text-align:center;padding:2rem 0;color:var(--gray-500)">
-          <div style="font-size:2rem;margin-bottom:.5rem">🛒</div>
-          <p style="font-size:.85rem">Корзина пуста</p>
-          <a href="catalog.html" style="color:var(--red);font-size:.82rem">← В каталог</a>
-        </div>`;
-      updateTotal();
-      return;
-    }
-
-    container.innerHTML = items.map(item => `
-      <div style="display:flex;align-items:center;gap:.8rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--gray-800)">
-        <div style="width:56px;height:56px;background:var(--gray-800);flex-shrink:0;overflow:hidden">
-          ${item.image
-            ? `<img src="${item.image}" style="width:100%;height:100%;object-fit:cover">`
-            : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.5rem">👟</div>'}
-        </div>
-        <div style="flex:1">
-          <div style="font-size:.85rem;font-weight:500;color:var(--white)">${item.name}</div>
-          <div style="font-size:.72rem;color:var(--gray-500);margin-top:.15rem">
-            Размер: ${item.size} · Кол-во: ${item.qty}
-          </div>
-          <div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem">
-            <button onclick="changeQty('${item.id}','${item.size}',-1)" style="width:44px;height:44px;background:var(--gray-800);border:none;color:var(--white);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center">−</button>
-            <span style="font-size:.82rem;color:var(--white);min-width:16px;text-align:center">${item.qty}</span>
-            <button onclick="changeQty('${item.id}','${item.size}',1)" style="width:44px;height:44px;background:var(--gray-800);border:none;color:var(--white);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center">+</button>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--white);white-space:nowrap">
-            ${(item.price * item.qty).toLocaleString('ru-RU')}
-          </div>
-          <button onclick="removeItem('${item.id}','${item.size}')" style="background:none;border:none;color:var(--gray-500);font-size:.75rem;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;transition:color .2s" onmouseover="this.style.color='#cc0000'" onmouseout="this.style.color='var(--gray-500)'">
-            ✕ Удалить
-          </button>
-        </div>
-      </div>
-    `).join('');
-
-    updateTotal();
-  }
-
-  function removeItem(id, size) {
-    let items = getCart();
-    items = items.filter(i => !(i.id === id && i.size === size));
-    localStorage.setItem('lining_cart', JSON.stringify(items));
-    renderOrderItems();
-  }
-
-  function changeQty(id, size, delta) {
-    let items = getCart();
-    const item = items.find(i => i.id === id && i.size === size);
-    if (!item) return;
-    item.qty += delta;
-    if (item.qty <= 0) {
-      items = items.filter(i => !(i.id === id && i.size === size));
-    }
-    localStorage.setItem('lining_cart', JSON.stringify(items));
-    renderOrderItems();
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    renderOrderItems();
-
-    // При отправке заказа очищаем корзину
-    document.querySelector('#order-form')?.addEventListener('submit', e => {
-      e.preventDefault();
-      // Валидация уже есть в main.js
-    });
-  });
-  </script>
-
-  <!-- CITY MODAL -->
   <div id="modals-placeholder"></div>
 
   <script>
+  /* ─── ДАННЫЕ ─── */
+  const coFP = n => n.toLocaleString('ru-RU') + ' сум';
+  function coGetCart() {
+    try { return JSON.parse(localStorage.getItem('lining_cart') || '[]'); } catch(e) { return []; }
+  }
+  let coDelP = 20000, coCur = 1;
 
-  function selectDelivery(el, type) {
-    document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-    el.querySelector('input[type=radio]').checked = true;
+  /* ─── РЕНДЕР ТОВАРОВ В САЙДБАР ─── */
+  function coRenderSidebar() {
+    const items = coGetCart();
+    const html = items.length ? items.map((it, i) => `
+      <div class="co-oi">
+        <div class="co-oi-img">${it.image ? `<img src="${it.image}" alt="">` : '<svg viewBox="0 0 40 40" width="40" fill="none"><rect width="40" height="40" fill="rgba(255,255,255,.06)" rx="8"/><text x="20" y="26" text-anchor="middle" font-family="Bebas Neue" font-size="11" fill="rgba(255,255,255,.3)">LN</text></svg>'}</div>
+        <div class="co-oi-body">
+          <div class="co-oi-nm">${it.name}</div>
+          <div class="co-oi-meta">Размер: ${it.size}</div>
+          <div class="co-oi-qty">
+            <button onclick="coChQty(${i},-1)">−</button>
+            <span>${it.qty}</span>
+            <button onclick="coChQty(${i},1)">+</button>
+          </div>
+        </div>
+        <div class="co-oi-price">${coFP(it.price * it.qty)}</div>
+      </div>`).join('') : '<div style="color:rgba(255,255,255,.4);font-size:.82rem;padding:.5rem 0">Корзина пуста</div>';
 
-    const storeList = document.getElementById('store-list');
-    const addressInput = document.getElementById('address');
+    const el = document.getElementById('co-osi-items');
+    if (el) el.innerHTML = html;
+    coRenderTotals();
+  }
 
-    if (type === 'pickup') {
-      storeList.classList.add('open');
-      if (addressInput) {
-        addressInput.required = false;
-        addressInput.removeAttribute('required');
-      }
-    } else {
-      storeList.classList.remove('open');
-      document.querySelectorAll('input[name=pickup_store]').forEach(r => r.checked = false);
-      document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
-      document.getElementById('pickup-label').textContent = 'Бесплатно · Выберите магазин ниже';
+  /* ─── РЕНДЕР ТОВАРОВ В ШТОРКУ ─── */
+  function coRenderDrawer() {
+    const items = coGetCart();
+    const html = items.map((it, i) => `
+      <div class="co-soi">
+        <div class="co-soi-img">${it.image ? `<img src="${it.image}" alt="">` : '<svg viewBox="0 0 40 40" width="36" fill="none"><rect width="40" height="40" fill="rgba(255,255,255,.06)" rx="8"/><text x="20" y="26" text-anchor="middle" font-family="Bebas Neue" font-size="11" fill="rgba(255,255,255,.3)">LN</text></svg>'}</div>
+        <div class="co-soi-body">
+          <div class="co-soi-nm">${it.name}</div>
+          <div class="co-soi-meta">Размер: ${it.size}</div>
+          <div class="co-soi-qty">
+            <button onclick="coChQty(${i},-1)">−</button>
+            <span>${it.qty}</span>
+            <button onclick="coChQty(${i},1)">+</button>
+          </div>
+        </div>
+        <div class="co-soi-price">${coFP(it.price * it.qty)}</div>
+      </div>`).join('');
+    const el = document.getElementById('co-sd-items');
+    if (el) el.innerHTML = html;
+    coRenderTotals();
+  }
 
-      if (addressInput) {
-        addressInput.value = '';
-        addressInput.readOnly = false;
-        addressInput.required = true;
-        addressInput.style.background = '';
-        addressInput.style.color = '';
-        addressInput.style.cursor = '';
-      }
+  function coChQty(idx, d) {
+    let items = coGetCart();
+    items[idx].qty = Math.max(1, items[idx].qty + d);
+    localStorage.setItem('lining_cart', JSON.stringify(items));
+    window.Cart?.updateUI();
+    coRenderAll();
+  }
+
+  function coRenderAll() { coRenderSidebar(); coRenderDrawer(); coUpdateStrip(); }
+
+  /* ─── ИТОГИ ─── */
+  function coRenderTotals() {
+    const items = coGetCart();
+    const sub = items.reduce((a, it) => a + it.price * it.qty, 0);
+    const tot = sub + (items.length > 0 ? coDelP : 0);
+    const cnt = items.reduce((a, it) => a + it.qty, 0);
+    const html = `
+      <div class="co-otr"><span class="co-otl">Товары (${cnt} шт.)</span><span class="co-otv">${coFP(sub)}</span></div>
+      <div class="co-otr"><span class="co-otl">Доставка</span><span class="co-otv ${coDelP ? '' : 'co-del-free'}">${coDelP ? coFP(coDelP) : 'Бесплатно'}</span></div>
+      <div class="co-otr total"><span class="co-otl">ИТОГО</span><span class="co-otv">${coFP(tot)}</span></div>`;
+    const a = document.getElementById('co-osi-totals');
+    const b = document.getElementById('co-sd-totals');
+    if (a) a.innerHTML = html;
+    if (b) b.innerHTML = html;
+    const cntEl = document.getElementById('co-osi-cnt');
+    if (cntEl) cntEl.textContent = cnt + ' товара';
+  }
+
+  function coUpdateStrip() {
+    const items = coGetCart();
+    const tot = items.reduce((a, it) => a + it.price * it.qty, 0) + (items.length > 0 ? coDelP : 0);
+    const cnt = items.reduce((a, it) => a + it.qty, 0);
+    const t = document.getElementById('co-strip-total');
+    const c = document.getElementById('co-strip-cnt');
+    if (t) t.innerHTML = tot.toLocaleString('ru-RU') + ' <b>сум</b>';
+    if (c) c.textContent = cnt + ' товара';
+  }
+
+  /* ─── ШТОРКА ─── */
+  function coToggleDrawer() {
+    const d = document.getElementById('co-sum-drawer');
+    const ov = document.getElementById('co-sum-ov');
+    const arr = document.getElementById('co-arr');
+    const open = d.classList.toggle('open');
+    ov.classList.toggle('open', open);
+    coRenderDrawer();
+    if (arr) arr.style.transform = open ? 'rotate(180deg)' : '';
+  }
+
+  /* ─── WIZARD ЛОГИКА ─── */
+  function coSetStep(n, open) {
+    document.querySelectorAll('.co-step').forEach(s => {
+      const sn = +s.dataset.step; if (!sn) return;
+      s.classList.remove('active', 'done');
+      const b = s.querySelector('.co-step-body');
+      if (sn < n) { s.classList.add('done'); b.classList.remove('open'); b.style.maxHeight = '0'; }
+      else if (sn === n && open) { s.classList.add('active'); b.classList.add('open'); b.style.maxHeight = b.scrollHeight + 'px'; }
+      else { b.classList.remove('open'); b.style.maxHeight = '0'; }
+    });
+    document.querySelectorAll('.co-ps').forEach(p => {
+      const pn = +p.dataset.s; p.classList.remove('done', 'active');
+      if (pn < n) p.classList.add('done'); else if (pn === n) p.classList.add('active');
+    });
+    document.querySelectorAll('.co-pline').forEach((l, i) => {
+      l.querySelector('i').style.width = i < n - 1 ? '100%' : '0';
+    });
+  }
+
+  function coToggleStep(n) {
+    const el = document.querySelector(`.co-step[data-step="${n}"]`);
+    if (el.classList.contains('done') || n === coCur) { coCur = n; coSetStep(n, true); }
+  }
+
+  function coGoNext(from) {
+    if (from === 1) {
+      const nm = document.getElementById('first-name').value.trim();
+      const tel = document.getElementById('phone').value.trim();
+      if (!nm || !tel) { coShake(nm ? 'phone' : 'first-name'); return; }
+      document.getElementById('co-ss1').textContent = nm + ' · ' + tel;
+    }
+    if (from === 2) {
+      const sel = document.querySelector('.co-dopt.on');
+      const addr = document.getElementById('address');
+      if (sel.dataset.v !== 'pickup' && addr && !addr.value.trim()) { coShake('address'); return; }
+      document.getElementById('co-ss2').textContent = sel.querySelector('.co-dopt-nm').textContent + ' · ' + (coDelP ? coFP(coDelP) : 'Бесплатно');
+    }
+    if (from < 3) {
+      coCur = from + 1; coSetStep(coCur, true);
+      const top = document.querySelector('.co-steps').getBoundingClientRect().top + scrollY - 100;
+      window.scrollTo({ top, behavior: 'smooth' });
     }
   }
 
-  document.querySelectorAll('.store-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('.store-option').forEach(o => o.classList.remove('selected'));
-      opt.classList.add('selected');
+  function coGoPrev(from) { if (from > 1) { coCur = from - 1; coSetStep(coCur, true); } }
 
-      const name = opt.querySelector('.store-option-name').textContent;
-      const addr = opt.querySelector('.store-option-addr').textContent;
+  function coShake(id) {
+    const el = document.getElementById(id); if (!el) return;
+    const p = el.closest('.co-fld');
+    p.style.animation = 'none'; void p.offsetWidth; p.style.animation = 'coShk .4s'; el.focus();
+  }
 
-      document.getElementById('pickup-label').innerHTML =
-        `<strong>${name}</strong> · <span style="color:var(--gray-500);font-size:0.78rem">${addr}</span>`;
+  function coSelDel(el) {
+    document.querySelectorAll('.co-dopt').forEach(d => d.classList.remove('on'));
+    el.classList.add('on');
+    coDelP = +el.dataset.p;
+    const store = document.getElementById('co-store-list');
+    const addrF = document.getElementById('co-addr-f');
+    if (el.dataset.v === 'pickup') {
+      store?.classList.add('open');
+      if (addrF) addrF.style.display = 'none';
+    } else {
+      store?.classList.remove('open');
+      if (addrF) addrF.style.display = '';
+    }
+    coRenderTotals(); coUpdateStrip();
+  }
 
-      document.getElementById('store-list').classList.remove('open');
+  function coSelPay(el) {
+    document.querySelectorAll('.co-popt').forEach(p => p.classList.remove('on'));
+    el.classList.add('on');
+  }
 
-      // ── Автозаполняем поле адреса ──
-      const addressInput = document.getElementById('address');
-      if (addressInput) {
-        addressInput.value = addr;
-        addressInput.readOnly = true;
-        addressInput.style.background = 'var(--gray-100)';
-        addressInput.style.color = 'var(--gray-500)';
-        addressInput.style.cursor = 'not-allowed';
-      }
-    });
+  /* ─── ОТПРАВКА В SUPABASE ─── */
+  async function coDoSubmit() {
+    const items = coGetCart();
+    if (!items.length) { window.Toast?.show('Корзина пуста', 'Добавьте товары', ''); return; }
+
+    const btn = document.getElementById('co-submit-btn');
+    btn.classList.add('loading');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10" stroke-dasharray="31.4"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur=".8s" repeatCount="indefinite"/></circle></svg> Обрабатываем...';
+
+    const selDel = document.querySelector('.co-dopt.on');
+    const selPay = document.querySelector('.co-popt.on');
+
+    const orderData = {
+      first_name:     document.getElementById('first-name').value.trim(),
+      last_name:      document.getElementById('last-name').value.trim(),
+      phone:          document.getElementById('phone').value.trim(),
+      email:          document.getElementById('email')?.value.trim() || null,
+      delivery_type:  selDel?.dataset.v || 'courier',
+      pickup_store:   document.querySelector('input[name=pickup_store]:checked')?.value || null,
+      address:        document.getElementById('address')?.value.trim() || '',
+      city:           document.getElementById('city')?.value.trim() || 'Ташкент',
+      comment:        document.getElementById('comment')?.value.trim() || null,
+      payment_method: selPay?.dataset.v || 'cash',
+      items: items.map(it => ({ article: it.article || it.id, name: it.name, price: it.price, quantity: it.qty, size: it.size, image: it.image || null })),
+      total: items.reduce((s, it) => s + it.price * it.qty, 0) + (items.length > 0 ? coDelP : 0),
+      status: 'new', source: 'website'
+    };
+
+    try {
+      const res = await fetch(`${SB_URL}/rest/v1/orders`, {
+        method: 'POST',
+        headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      const orderId = data[0]?.id?.slice(0, 8).toUpperCase() || String(Math.floor(Math.random() * 90000) + 10000);
+
+      document.getElementById('co-steps').style.display = 'none';
+      const strip = document.getElementById('co-sum-strip');
+      if (strip) strip.style.display = 'none';
+      document.getElementById('co-succ-nm').textContent = orderData.first_name + '!';
+      document.getElementById('co-succ-num').textContent = '#LN-' + orderId;
+      document.getElementById('co-success').classList.add('show');
+      window.Cart?.clear(); window.Cart?.updateUI();
+      coConfetti(); window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      typeof trackEvent === 'function' && trackEvent('purchase', {
+        transaction_id: data[0]?.id, value: orderData.total, currency: 'UZS',
+        items: orderData.items.map(i => ({ item_id: i.article, item_name: i.name, price: i.price, quantity: i.quantity }))
+      });
+    } catch(e) {
+      console.error(e);
+      window.Toast?.show('Ошибка', 'Попробуйте снова', '');
+      btn.classList.remove('loading');
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="19" height="19"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> Подтвердить заказ';
+    }
+  }
+
+  /* ─── КОНФЕТТИ ─── */
+  function coConfetti() {
+    const w = document.getElementById('co-cw');
+    const cols = ['#C41E3A', '#fff', '#B8860B', '#1e9e5a', '#f0f0f0'];
+    for (let i = 0; i < 90; i++) {
+      const c = document.createElement('div');
+      Object.assign(c.style, { position: 'absolute', width: (Math.random() * 9 + 4) + 'px', height: (Math.random() * 9 + 4) + 'px', background: cols[i % cols.length], borderRadius: Math.random() > .5 ? '50%' : '2px', left: Math.random() * 100 + '%', top: '-12px', animation: `cffall ${Math.random() * 2 + 1.5}s ${Math.random() * 1.2}s ease-in forwards`, transform: `rotate(${Math.random() * 360}deg)` });
+      w.appendChild(c);
+    }
+    setTimeout(() => w.innerHTML = '', 5000);
+  }
+
+  /* ─── МАСКА ТЕЛЕФОНА ─── */
+  document.getElementById('phone')?.addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '');
+    if (!v.startsWith('998')) v = '998' + v;
+    e.target.value = ('+' + v).slice(0, 13);
   });
 
-  </script> 
+  /* ─── ИНИТ ─── */
+  document.addEventListener('DOMContentLoaded', () => {
+    coRenderSidebar();
+    coUpdateStrip();
+    coSetStep(1, true);
+    document.querySelectorAll('.co-store-opt').forEach(opt => {
+      opt.addEventListener('change', () => {
+        const name = opt.querySelector('.co-store-opt-name').textContent;
+        const addr = opt.querySelector('.co-store-opt-addr').textContent;
+        document.getElementById('co-ss2').textContent = name + ' · ' + addr;
+      });
+    });
+  });
+  </script>
 
 </body>
 </html>

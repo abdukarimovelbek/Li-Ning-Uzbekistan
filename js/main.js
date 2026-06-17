@@ -252,58 +252,60 @@ const Auth = (() => {
 
   // ── Обработчики форм ──
   const initForms = () => {
-    // Вход
-    document.getElementById('auth-form-login')?.addEventListener('submit', async e => {
-      e.preventDefault();
-      clearErrors();
-      const email = document.getElementById('login-email').value.trim();
-      const password = document.getElementById('login-password').value;
-      const btn = e.target.querySelector('.auth-submit');
-      btn.textContent = 'Входим...'; btn.disabled = true;
-      try {
-        await signIn(email, password);
-      } catch(err) {
-        showError('auth-form-login', err.message);
-        btn.textContent = 'Войти'; btn.disabled = false;
-      }
-    });
+    document.addEventListener('submit', async e => {
+      const form = e.target;
 
-    // Регистрация
-    document.getElementById('auth-form-register')?.addEventListener('submit', async e => {
-      e.preventDefault();
-      clearErrors();
-      const name = document.getElementById('reg-name').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const password = document.getElementById('reg-password').value;
-      const btn = e.target.querySelector('.auth-submit');
-
-      if (password.length < 6) { showError('auth-form-register', 'Пароль минимум 6 символов'); return; }
-      btn.textContent = 'Регистрируем...'; btn.disabled = true;
-
-      try {
-        await signUp(email, password, name);
-        // Автоматически входим после регистрации
-        const loginData = await signIn(email, password);
-        // Создаём профиль используя токен сессии (надёжнее чем в signUp)
-        if (loginData?.access_token && loginData?.user?.id) {
-          await fetch(`${SB_URL}/rest/v1/profiles`, {
-            method: 'POST',
-            headers: {
-              'apikey': SB_KEY,
-              'Authorization': `Bearer ${loginData.access_token}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'resolution=ignore-duplicates,return=minimal'
-            },
-            body: JSON.stringify({
-              id: loginData.user.id,
-              email: email,
-              full_name: name
-            })
-          });
+      // ── Вход ──
+      if (form.id === 'auth-form-login') {
+        e.preventDefault();
+        clearErrors();
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const btn = form.querySelector('.auth-submit');
+        btn.textContent = 'Входим...'; btn.disabled = true;
+        try {
+          await signIn(email, password);
+        } catch(err) {
+          showError('auth-form-login', err.message);
+          btn.textContent = 'Войти'; btn.disabled = false;
         }
-      } catch(err) {
-        showError('auth-form-register', err.message);
-        btn.textContent = 'Зарегистрироваться'; btn.disabled = false;
+      }
+
+      // ── Регистрация ──
+      if (form.id === 'auth-form-register') {
+        e.preventDefault();
+        clearErrors();
+        const name = document.getElementById('reg-name').value.trim();
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-password').value;
+        const btn = form.querySelector('.auth-submit');
+
+        if (password.length < 6) { showError('auth-form-register', 'Пароль минимум 6 символов'); return; }
+        btn.textContent = 'Регистрируем...'; btn.disabled = true;
+
+        try {
+          await signUp(email, password, name);
+          const loginData = await signIn(email, password);
+          if (loginData?.access_token && loginData?.user?.id) {
+            await fetch(`${SB_URL}/rest/v1/profiles`, {
+              method: 'POST',
+              headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${loginData.access_token}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=ignore-duplicates,return=minimal'
+              },
+              body: JSON.stringify({
+                id: loginData.user.id,
+                email: email,
+                full_name: name
+              })
+            });
+          }
+        } catch(err) {
+          showError('auth-form-register', err.message);
+          btn.textContent = 'Зарегистрироваться'; btn.disabled = false;
+        }
       }
     });
 
