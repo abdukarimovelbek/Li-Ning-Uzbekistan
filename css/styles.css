@@ -3184,7 +3184,7 @@ body.menu-open { overflow: hidden; }
     box-shadow: 0 3px 14px rgba(0,0,0,.05);
   }
   .chips-scroll-mob {
-    display: flex; gap: 6px; padding: 9px 12px;
+    display: flex; gap: 6px; padding: 9px 1rem;
     overflow-x: auto; -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory; scrollbar-width: none;
   }
@@ -3200,6 +3200,9 @@ body.menu-open { overflow: hidden; }
   }
   .chip-mob.on { background: var(--black); color: #fff; border-color: var(--black); }
   .chip-mob:active { transform: scale(.95); }
+  
+  /* Горизонтальный отступ для тулбара и карточек */
+  .catalog-products-col { padding: 0 1rem; }
 
   /* ── Toolbar ── */
   .catalog-toolbar {
