@@ -3040,14 +3040,8 @@ body.menu-open { overflow: hidden; }
     letter-spacing:.01em; position:relative; transition:color .25s var(--ease); text-decoration:none;
   }
   .tabbar .tab svg{ width:23px; height:23px; }
-  .tabbar .tab.active{ color:#fff; }
-  .tabbar .tab.active svg{ stroke:#fff; }
-  .tabbar .tab::before{
-    content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
-    width:22px; height:3px; border-radius:2px; background:var(--red); /* красная полоска наверху */
-    opacity:0; transition:opacity .3s var(--ease);
-  }
-  .tabbar .tab.active::before{ opacity:1; }
+  .tabbar .tab.active{ color:var(--red); }
+  .tabbar .tab.active svg{ stroke:var(--red); }
   .tab-badge{
     position:absolute; top:3px; right:50%; margin-right:-20px;
     min-width:16px; height:16px; padding:0 4px; background:var(--red); color:#fff;
