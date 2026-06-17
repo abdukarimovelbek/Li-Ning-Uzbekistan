@@ -955,11 +955,11 @@ button {
 }
 .ch-photos { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 .ch-photos-track {
-  display: flex; width: 600%; height: 100%;
-  animation: chSlide 25s linear infinite;
+  display: flex; width: 200%; height: 100%;
+  animation: chSlide 40s linear infinite;
 }
 .ch-photo { 
-  flex: 0 0 calc(100% / 6); 
+  flex: 0 0 calc(100% / 18); 
   height: 100%; 
   background-size: cover; 
   background-position: center top; 
@@ -967,7 +967,7 @@ button {
 
 @keyframes chSlide {
   from { transform: translateX(0); }
-  to   { transform: translateX(-83.333%); }
+  to   { transform: translateX(-50%); }
 }
 .ch-grad { position: absolute; inset: 0; z-index: 1; background: rgba(0,0,0,.62); }
 .ch-lines {
