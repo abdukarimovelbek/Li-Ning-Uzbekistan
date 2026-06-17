@@ -484,7 +484,7 @@ const Cart = (() => {
   };
 
   // Expose globally
-  window.Cart = { add, remove, clear, changeQty, getTotal, getItems };
+  window.Cart = { add, remove, clear, changeQty, getTotal, getItems, updateUI};
   window.cartRemove = remove;
   window.cartChangeQty = changeQty;
 
