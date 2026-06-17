@@ -3095,7 +3095,7 @@ body.menu-open { overflow: hidden; }
     display: flex; width: 600%; height: 100%;
     animation: chSlide 25s linear infinite;
   }
-  .ch-photo { flex: 1; background-size: cover; background-position: center 25%; }
+  .ch-photo { flex: 0 0 calc(100% / 6); height: 100%; background-size: cover; background-position: center top; }
   @keyframes chSlide {
     from { transform: translateX(0); }
     to   { transform: translateX(-83.333%); }
