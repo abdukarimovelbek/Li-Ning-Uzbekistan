@@ -507,6 +507,8 @@ const CartDrawer = (() => {
     overlay?.classList.add('open');
     drawer?.classList.add('open');
     document.body.style.overflow = 'hidden';
+    document.querySelectorAll('.tabbar .tab').forEach(t=>t.classList.remove('active'));
+    document.querySelector('.tabbar .tab[data-tab="cart"]')?.classList.add('active');
   };
 
   const close = () => {
@@ -515,6 +517,7 @@ const CartDrawer = (() => {
     overlay?.classList.remove('open');
     drawer?.classList.remove('open');
     document.body.style.overflow = '';
+    document.querySelector('.tabbar .tab[data-tab="cart"]')?.classList.remove('active');
   };
 
   const init = () => {
@@ -1143,16 +1146,6 @@ const PageTransition = (() => {
     document.body.style.opacity = '0';
     document.body.style.transition = 'opacity 0.35s ease';
     requestAnimationFrame(() => requestAnimationFrame(() => document.body.style.opacity = '1'));
-
-    document.querySelectorAll('a[href]').forEach(link => {
-      const href = link.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto')) return;
-      link.addEventListener('click', e => {
-        e.preventDefault();
-        document.body.style.opacity = '0';
-        setTimeout(() => window.location.href = href, 300);
-      });
-    });
   });
 })();
 
