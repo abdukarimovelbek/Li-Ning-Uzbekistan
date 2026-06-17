@@ -1610,11 +1610,18 @@
     const selDel = document.querySelector('.co-dopt.on');
     const selPay = document.querySelector('.co-popt.on');
 
+    const loggedUser = window.Auth?.getUser();
+    const emailField = document.getElementById('email');
+    if (loggedUser?.email && emailField && !emailField.value.trim()) {
+      emailField.value = loggedUser.email;
+    }
+
     const orderData = {
       first_name:     document.getElementById('first-name').value.trim(),
       last_name:      document.getElementById('last-name').value.trim(),
       phone:          document.getElementById('phone').value.trim(),
-      email:          document.getElementById('email')?.value.trim() || null,
+      email:          document.getElementById('email')?.value.trim() || loggedUser?.email || null,
+      user_id:        loggedUser?.id || null,
       delivery_type:  selDel?.dataset.v || 'courier',
       pickup_store:   document.querySelector('input[name=pickup_store]:checked')?.value || null,
       address:        document.getElementById('address')?.value.trim() || '',

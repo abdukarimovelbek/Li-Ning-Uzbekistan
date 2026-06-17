@@ -220,7 +220,7 @@
                 <div class="product-img-wrap">
                   <div class="product-img" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center">${imgHtml}</div>
                   <div class="product-actions">
-                    <button class="btn-addcart" onclick="event.stopPropagation();window.location.href='product.html?id=${p.id}'">+ В корзину</button>
+                    <button class="btn-addcart" onclick="event.stopPropagation();if(typeof openQuickView==='function'){openQuickView('${p.id}');}else{window.location.href='product.html?id=${p.id}';}">В корзину</button>
                   </div>
                 </div>
                 <div class="product-info">
@@ -254,21 +254,17 @@
     renderWishlist();
   }
 
-  // При загрузке — проверяем авторизацию
   document.addEventListener('DOMContentLoaded', () => {
-    // Ждём инициализации Auth
-    setTimeout(() => {
+    const tryLoad = () => {
+      if (!document.getElementById('auth-btn')) { setTimeout(tryLoad, 100); return; }
       if (!window.Auth?.isLoggedIn()) {
-        // Не вошёл — открываем модал, после входа остаёмся на этой странице
         window.Auth?.openModal('login');
       } else {
         renderWishlist();
       }
-    }, 100);
-
-    // Когда пользователь войдёт — рендерим список
-    const origOnLogin = window.Auth?._onLogin;
-    document.addEventListener('auth:login', () => renderWishlist());
+    };
+    tryLoad();
+    document.addEventListener('auth:login', renderWishlist);
   });
   </script>
 

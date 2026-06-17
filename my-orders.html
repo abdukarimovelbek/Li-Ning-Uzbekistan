@@ -249,13 +249,16 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
+    const tryLoad = () => {
+      if (!document.getElementById('auth-btn')) { setTimeout(tryLoad, 100); return; }
       if (!window.Auth?.isLoggedIn()) {
         window.Auth?.openModal('login');
       } else {
         loadMyOrders();
       }
-    }, 100);
+    };
+    tryLoad();
+    document.addEventListener('auth:login', loadMyOrders);
   });
   </script>
 

@@ -27,6 +27,7 @@ async function loadComponents() {
   initMegaMenu();
   window.Auth?.initAuthBtn();
   window.Auth?.updateNavUI();
+  window._initNavbar?.();
   CartDrawer.init();
   Cart.updateUI();
   highlightWishlist();
@@ -351,19 +352,13 @@ const Auth = (() => {
 
   document.addEventListener('DOMContentLoaded', () => {
     loadUser();
-    updateNavUI();
     initForms();
-    initAuthBtn();
 
-    // Таб-переключение
     document.addEventListener('click', e => {
       const tab = e.target.closest('.auth-tab');
       if (tab) switchTab(tab.dataset.tab);
     });
 
-    // Закрытие оверлея
-    document.getElementById('auth-overlay')?.addEventListener('click', closeModal);
-    document.getElementById('auth-modal-close')?.addEventListener('click', closeModal);
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   });
 
@@ -993,14 +988,13 @@ const OrderForm = (() => {
 
 /* ─── 10. NAVBAR — SCROLL & MOBILE ─────────── */
 const Navbar = (() => {
-  document.addEventListener('DOMContentLoaded', () => {
+  const init = () => {
     const navbar = document.querySelector('.navbar');
 
     // Active link highlighting
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     const params = new URLSearchParams(window.location.search);
     const gender = params.get('gender');
-
     const urlCategory = params.get('category');
 
     document.querySelectorAll('.nav-links > li > a').forEach(link => {
@@ -1009,24 +1003,16 @@ const Navbar = (() => {
       const linkGender = linkParams.get('gender');
       const linkCategory = linkParams.get('category');
       const linkPage = href.split('?')[0];
-
       link.classList.remove('active');
-
-      // Аксессуары
       if (urlCategory === 'accessories' && linkCategory === 'accessories' && !linkGender) {
         link.classList.add('active');
-      }
-      // Мужчины / Женщины / Дети по gender
-      else if (gender && linkGender === gender && !linkCategory && linkPage === currentPage) {
+      } else if (gender && linkGender === gender && !linkCategory && linkPage === currentPage) {
         link.classList.add('active');
-      }
-      // Прямое совпадение (Новинки, Распродажа)
-      else if (!gender && !urlCategory && href === currentPage) {
+      } else if (!gender && !urlCategory && href === currentPage) {
         link.classList.add('active');
       }
     });
 
-  // Mobile menu toggle
     const mobileBtn = document.querySelector('.nav-burger');
     mobileBtn?.addEventListener('click', openMobileMenu);
 
@@ -1042,11 +1028,11 @@ const Navbar = (() => {
     }
     window.closeMobileMenu = closeMobileMenu;
     window.openMobileMenu  = openMobileMenu;
-    // Escape закрывает
+
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') closeMobileMenu();
     });
-    // синхронизируем город в шторке с десктопом
+
     const mobileCityEl = document.getElementById('mobile-selected-city');
     const desktopCityEl = document.getElementById('selected-city');
     if (mobileCityEl && desktopCityEl) {
@@ -1054,10 +1040,9 @@ const Navbar = (() => {
         mobileCityEl.textContent = desktopCityEl.textContent;
       });
       obs.observe(desktopCityEl, { childList: true, characterData: true, subtree: true });
-      mobileCityEl.textContent = desktopCityEl.textContent; // начальное значение
+      mobileCityEl.textContent = desktopCityEl.textContent;
     }
 
-    // Live search
     const searchInput = document.querySelector('.nav-search');
     if (searchInput) {
       searchInput.addEventListener('input', () => {
@@ -1073,8 +1058,10 @@ const Navbar = (() => {
         });
       });
     }
-  });
+  };
+  window._initNavbar = init;
 })();
+
 
 
 /* ─── 11. SCROLL ANIMATIONS ─────────────────── */
