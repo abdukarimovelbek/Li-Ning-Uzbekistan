@@ -379,7 +379,7 @@ button {
 
 
 /* ─── Section Utilities ──────────────────────── */
-.section { padding: 5rem 2rem; }
+.section { padding: 2rem 2rem; }
 .section-inner { max-width: 1400px; margin: 0 auto; }
 .section-label {
   font-size: 0.72rem; letter-spacing: 3px;
@@ -948,10 +948,11 @@ button {
 /* ════════ CINEMATIC CATALOG HEADER ════════ */
 .catalog-page-header { display: none; }
 .cat-chips-mob { display: none; }
+.catalog-section { padding: 0; }
 
 .cat-header-mob {
   display: block; position: relative;
-  height: 340px; background: var(--black); overflow: hidden;
+  height: 240px; background: var(--black); overflow: hidden;
 }
 .ch-photos { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 .ch-photos-track {
@@ -3215,5 +3216,4 @@ body.menu-open { overflow: hidden; }
   }
   .catalog-count { display: none; }
   .catalog-sort { flex-shrink: 0; }
-  .catalog-section { padding: 0 !important; }
 }
