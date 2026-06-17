@@ -283,7 +283,24 @@ const Auth = (() => {
       try {
         await signUp(email, password, name);
         // Автоматически входим после регистрации
-        await signIn(email, password);
+        const loginData = await signIn(email, password);
+        // Создаём профиль используя токен сессии (надёжнее чем в signUp)
+        if (loginData?.access_token && loginData?.user?.id) {
+          await fetch(`${SB_URL}/rest/v1/profiles`, {
+            method: 'POST',
+            headers: {
+              'apikey': SB_KEY,
+              'Authorization': `Bearer ${loginData.access_token}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'resolution=ignore-duplicates,return=minimal'
+            },
+            body: JSON.stringify({
+              id: loginData.user.id,
+              email: email,
+              full_name: name
+            })
+          });
+        }
       } catch(err) {
         showError('auth-form-register', err.message);
         btn.textContent = 'Зарегистрироваться'; btn.disabled = false;
@@ -1444,7 +1461,7 @@ const openQuickView = async (productId) => {
         setTimeout(() => sizeGrid.classList.remove('qv-size-err'), 600);
         return;
       }
-      Cart.add({ id: p.id, article: p.article || p.id, name: p.name,
+      window.Cart.add({ id: p.id, article: p.article || p.id, name: p.name,
         brand: p.brand || 'Li Ning', price: p.price,
         size: sel?.dataset.size || '', image: images[0] || null, qty: 1 });
       closeQuickView();
