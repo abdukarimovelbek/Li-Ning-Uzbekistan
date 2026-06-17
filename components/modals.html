@@ -96,7 +96,7 @@
 
     <p class="auth-switch">
       Нет аккаунта?
-      <a href="#" onclick="document.querySelector('.auth-tab[data-tab=register]').click();return false">Зарегистрироваться</a>
+      <a href="#" onclick="event.preventDefault();document.querySelector('.auth-tab[data-tab=register]').click()">Зарегистрироваться</a>
     </p>
   </form>
 

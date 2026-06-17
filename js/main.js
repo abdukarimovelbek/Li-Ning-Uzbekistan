@@ -319,8 +319,9 @@ const Auth = (() => {
     initAuthBtn();
 
     // Таб-переключение
-    document.querySelectorAll('.auth-tab').forEach(tab => {
-      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    document.addEventListener('click', e => {
+      const tab = e.target.closest('.auth-tab');
+      if (tab) switchTab(tab.dataset.tab);
     });
 
     // Закрытие оверлея
