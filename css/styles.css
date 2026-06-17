@@ -933,7 +933,7 @@ button {
   grid-template-columns: 280px 1fr;
   gap: 2.5rem;
   max-width: 1400px; margin: 0 auto;
-  padding: 0 2rem;
+  padding: 2rem 2rem;
   align-items: stretch;
 }
 
