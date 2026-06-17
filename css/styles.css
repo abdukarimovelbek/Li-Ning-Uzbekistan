@@ -1729,7 +1729,7 @@ footer .footer-inner {
 }
 @media (max-width: 480px) {
   .categories-grid { grid-template-columns: 1fr; }
-  .products-grid { gap: 8px; }   /* ← убрали 1fr, оставили 2 колонки */
+  .products-grid { gap: 10px; }   /* ← убрали 1fr, оставили 2 колонки */
   .hero-cta { flex-direction: row; flex-wrap: wrap; }
   .hero-cta .btn { flex: 1; min-width: 130px; justify-content: center; }
 }
@@ -3153,7 +3153,7 @@ body.menu-open { overflow: hidden; }
 
 @media (max-width: 480px) {
   /* на очень узких — gap ещё меньше */
-  .products-grid { gap: 8px; }
+  .products-grid { gap: 10px; }
   .product-name { font-size: .74rem; }
   .product-price { font-size: 1rem; }
 }
@@ -3197,9 +3197,6 @@ body.menu-open { overflow: hidden; }
   }
   .chip-mob.on { background: var(--black); color: #fff; border-color: var(--black); }
   .chip-mob:active { transform: scale(.95); }
-  
-  /* Горизонтальный отступ для тулбара и карточек */
-  .catalog-products-col { padding: 0 1rem; }
 
   /* ── Toolbar ── */
   .catalog-toolbar {
