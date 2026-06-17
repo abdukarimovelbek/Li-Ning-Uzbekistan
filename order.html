@@ -160,10 +160,15 @@
       max-height:0; overflow:hidden; 
       transition:max-height .6s var(--ec)
     }
-    .co-step-body.open{max-height:2400px}
-    .co-step-in{padding:0 1.7rem 1.7rem}
+    .co-step-body.open{
+      max-height:2400px
+    }
+    .co-step-in{
+      padding:0.8rem 1.5rem 1.5rem
+    }
     .co-fg{
-      display:grid; grid-template-columns:1fr 1fr; 
+      display:grid; 
+      grid-template-columns:1fr 1fr; 
       gap:1rem
     }
     .co-ff{grid-column:1/-1}
@@ -283,14 +288,8 @@
       padding:.2rem .5rem;
       border-radius:0 0 7px 7px
     }
-    .co-store-list{
-      display:none;
-      background:#FAF8F5;
-      border:1.5px solid #EDE9E3;
-      border-radius:12px;
-      padding:.8rem 1rem;
-      margin:.5rem 0 .8rem
-    }
+    .co-store-list{display:none;background:#FAF8F5;border:1.5px solid #EDE9E3;border-radius:12px;padding:.8rem 1rem;margin:.5rem 0 .8rem;max-height:240px;overflow-y:auto;scroll-behavior:smooth}
+    .co-store-list::-webkit-scrollbar{width:4px}.co-store-list::-webkit-scrollbar-thumb{background:#D5CFC7;border-radius:2px}
     .co-store-list.open{display:block}
     .co-store-city{
       font-size:.66rem;
@@ -1687,7 +1686,13 @@
       opt.addEventListener('change', () => {
         const name = opt.querySelector('.co-store-opt-name').textContent;
         const addr = opt.querySelector('.co-store-opt-addr').textContent;
+        // Обновить summary (когда шаг свёрнут)
         document.getElementById('co-ss2').textContent = name + ' · ' + addr;
+        // Обновить subtitle в карточке "Самовывоз"
+        const pickupSub = document.querySelector('.co-dopt[data-v="pickup"] .co-dopt-sb');
+        if (pickupSub) pickupSub.innerHTML = `<strong style="color:#1A1A1A;font-size:.78rem">${name}</strong><br>${addr}`;
+        // Закрыть список
+        document.getElementById('co-store-list')?.classList.remove('open');
       });
     });
   });
