@@ -961,9 +961,10 @@ button {
 .ch-photo { 
   flex: 0 0 calc(100% / 6); 
   height: 100%; 
-  background-size: auto 100%; 
+  background-size: cover; 
   background-position: center top; 
 }
+
 @keyframes chSlide {
   from { transform: translateX(0); }
   to   { transform: translateX(-83.333%); }
@@ -3178,6 +3179,10 @@ body.menu-open { overflow: hidden; }
     background: rgba(250,248,245,.97); backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--gray-100);
     box-shadow: 0 3px 14px rgba(0,0,0,.05);
+  }
+  .ch-photo { 
+    background-size: auto 100%; 
+    background-repeat: no-repeat; 
   }
   .chips-scroll-mob {
     display: flex; gap: 6px; padding: 9px 1rem;
