@@ -137,12 +137,12 @@ const Auth = (() => {
     if (!res.ok) throw new Error(data.error_description || data.msg || 'Ошибка регистрации');
     
     // Создаём профиль сразу после регистрации
-    if (data.user?.id) {
+    if (data.user?.id && data.session?.access_token) {
       await fetch(`${SB_URL}/rest/v1/profiles`, {
         method: 'POST',
         headers: {
           'apikey': SB_KEY,
-          'Authorization': `Bearer ${SB_KEY}`,
+          'Authorization': `Bearer ${data.session.access_token}`,
           'Content-Type': 'application/json',
           'Prefer': 'return=minimal'
         },
