@@ -945,10 +945,96 @@ button {
   display: none;
 }
 
-/* Mobile catalog header — скрыт по умолчанию */
-.cat-header-mob { display: none; }
-.cat-chips-mob  { display: none; }
+/* ════════ CINEMATIC CATALOG HEADER ════════ */
+.catalog-page-header { display: none; }
+.cat-chips-mob { display: none; }
 
+.cat-header-mob {
+  display: block; position: relative;
+  height: 340px; background: var(--black); overflow: hidden;
+}
+.ch-photos { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.ch-photos-track {
+  display: flex; width: 600%; height: 100%;
+  animation: chSlide 25s linear infinite;
+}
+.ch-photo { flex: 0 0 calc(100% / 6); height: 100%; background-size: cover; background-position: center top; }
+@keyframes chSlide {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-83.333%); }
+}
+.ch-grad { position: absolute; inset: 0; z-index: 1; background: rgba(0,0,0,.62); }
+.ch-lines {
+  position: absolute; inset: 0; z-index: 2; opacity: .06; pointer-events: none;
+  background-image: repeating-linear-gradient(-55deg,
+    rgba(255,255,255,.6) 0px, rgba(255,255,255,.6) 1px, transparent 1px, transparent 36px);
+}
+.ch-noise {
+  position: absolute; inset: 0; z-index: 3; opacity: .04; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.ch-vline {
+  position: absolute; left: 32px; top: 0; bottom: 0; z-index: 4;
+  width: 2.5px;
+  background: linear-gradient(180deg, transparent 0%, var(--red) 25%, var(--red) 75%, transparent 100%);
+  transform: scaleY(0); transform-origin: top;
+  animation: chVline .9s cubic-bezier(.22,1,.36,1) .15s forwards;
+}
+@keyframes chVline { to { transform: scaleY(1); } }
+.ch-kinetic {
+  position: absolute; inset: 0; z-index: 3;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  overflow: hidden; pointer-events: none;
+}
+.ch-k-row {
+  font-family: var(--font-display);
+  font-size: clamp(60px, 12vw, 160px);
+  line-height: .82; letter-spacing: 6px;
+  color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.07);
+  white-space: nowrap; user-select: none;
+}
+.ch-k-accent { -webkit-text-stroke: 1px rgba(196,30,58,.2); }
+.ch-content-mob {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 0 3rem 2.5rem;
+  background: linear-gradient(0deg, rgba(10,10,10,.88) 0%, rgba(10,10,10,.35) 45%, transparent 80%);
+}
+.ch-eyebrow {
+  font-family: var(--font-head); font-size: .7rem; letter-spacing: .3em;
+  text-transform: uppercase; color: var(--red); font-weight: 600;
+  display: flex; align-items: center; gap: .45rem; margin-bottom: .5rem;
+  opacity: 0; transform: translateY(10px);
+  animation: chFadeUp .7s cubic-bezier(.22,1,.36,1) .35s forwards;
+}
+.ch-eyebrow::before { content: ''; width: 20px; height: 2px; background: var(--red); flex-shrink: 0; }
+.ch-title-mob {
+  font-family: var(--font-display); color: #fff;
+  font-size: clamp(2.8rem, 6vw, 6rem); line-height: .9; letter-spacing: 2px; overflow: hidden;
+}
+.ch-title-w { display: block; overflow: hidden; }
+.ch-title-w span {
+  display: block; transform: translateY(110%);
+  animation: chWordUp .9s cubic-bezier(.22,1,.36,1) .5s forwards;
+}
+@keyframes chWordUp { to { transform: none; } }
+@keyframes chFadeUp { to { opacity: 1; transform: none; } }
+.ch-meta {
+  display: flex; align-items: center; gap: 10px; margin-top: .6rem;
+  opacity: 0; transform: translateY(8px);
+  animation: chFadeUp .7s cubic-bezier(.22,1,.36,1) .75s forwards;
+}
+.ch-cnt { font-family: var(--font-head); font-size: .75rem; color: rgba(255,255,255,.65); display: flex; align-items: baseline; gap: .3rem; }
+.ch-cnt b { font-family: var(--font-display); font-size: 1.6rem; color: #fff; letter-spacing: .5px; }
+.ch-dot { width: 4px; height: 4px; border-radius: 50%; background: rgba(255,255,255,.3); }
+.ch-season { font-family: var(--font-head); font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.38); }
+.ch-corner-num {
+  position: absolute; right: 2.5rem; bottom: 2rem; z-index: 6;
+  font-family: var(--font-display); font-size: 7rem; line-height: 1;
+  color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.05);
+  opacity: 0; animation: chFadeUp .7s cubic-bezier(.22,1,.36,1) .85s forwards;
+  pointer-events: none; user-select: none;
+}
 
 .filter-block {
   border: 1px solid var(--gray-100);
@@ -3078,107 +3164,17 @@ body.menu-open { overflow: hidden; }
   .product-price { font-size: 1rem; }
 }
 
-/* ════════ MOBILE CATALOG HEADER & CHIPS ════════ */
+/* ════════ MOBILE CATALOG OVERRIDES ════════ */
 @media (max-width: 768px) {
 
-  /* Скрываем десктопный хедер */
-  .page-header { display: none !important; }
-
-  /* ── Cinematic header ── */
-  .cat-header-mob {
-    display: block; position: relative;
-    height: 170px; background: var(--black); overflow: hidden;
-  }
-  /* Карусель из 5 коллекций */
-  .ch-photos { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
-  .ch-photos-track {
-    display: flex; width: 600%; height: 100%;
-    animation: chSlide 25s linear infinite;
-  }
-  .ch-photo { flex: 0 0 calc(100% / 6); height: 100%; background-size: cover; background-position: center top; }
-  @keyframes chSlide {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-83.333%); }
-  }
-  /* Тёмная пелена поверх фото */
-  .ch-grad {
-    position: absolute; inset: 0; z-index: 1;
-    background: rgba(0,0,0,.68);
-  }
-  .ch-lines {
-    position: absolute; inset: 0; z-index: 2; opacity: .06; pointer-events: none;
-    background-image: repeating-linear-gradient(-55deg,
-      rgba(255,255,255,.6) 0px, rgba(255,255,255,.6) 1px, transparent 1px, transparent 36px);
-  }
-  .ch-noise {
-    position: absolute; inset: 0; z-index: 3; opacity: .04; mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
-  /* Красная вертикальная линия — анимация спуска */
-  .ch-vline {
-    position: absolute; left: 16px; top: 0; bottom: 0; z-index: 3;
-    width: 2.5px;
-    background: linear-gradient(180deg, transparent 0%, var(--red) 25%, var(--red) 75%, transparent 100%);
-    transform: scaleY(0); transform-origin: top;
-    animation: chVline .9s cubic-bezier(.22,1,.36,1) .15s forwards;
-  }
-  @keyframes chVline { to { transform: scaleY(1); } }
-  /* Кинетический фоновый текст */
-  .ch-kinetic {
-    position: absolute; inset: 0; z-index: 3;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    overflow: hidden; pointer-events: none;
-  }
-  .ch-k-row {
-    font-family: var(--font-display);
-    font-size: clamp(52px, 20vw, 90px);
-    line-height: .82; letter-spacing: 4px;
-    color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.07);
-    white-space: nowrap; user-select: none;
-  }
-  .ch-k-accent { -webkit-text-stroke: 1px rgba(196,30,58,.2); }
-  /* Контент поверх */
-  .ch-content-mob {
-    position: absolute; inset: 0; z-index: 5;
-    display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 0 18px 16px;
-    background: linear-gradient(0deg, rgba(10,10,10,.88) 0%, rgba(10,10,10,.35) 45%, transparent 80%);
-  }
-  .ch-eyebrow {
-    font-family: var(--font-head); font-size: .58rem; letter-spacing: .3em;
-    text-transform: uppercase; color: var(--red); font-weight: 600;
-    display: flex; align-items: center; gap: .45rem; margin-bottom: .35rem;
-    opacity: 0; transform: translateY(10px);
-    animation: chFadeUp .7s cubic-bezier(.22,1,.36,1) .35s forwards;
-  }
-  .ch-eyebrow::before { content: ''; width: 16px; height: 2px; background: var(--red); flex-shrink: 0; }
-  .ch-title-mob {
-    font-family: var(--font-display); color: #fff;
-    font-size: clamp(2rem, 12vw, 3.2rem); line-height: .9; letter-spacing: 1px; overflow: hidden;
-  }
-  .ch-title-w { display: block; overflow: hidden; }
-  .ch-title-w span {
-    display: block; transform: translateY(110%);
-    animation: chWordUp .9s cubic-bezier(.22,1,.36,1) .5s forwards;
-  }
-  @keyframes chWordUp  { to { transform: none; } }
-  @keyframes chFadeUp  { to { opacity: 1; transform: none; } }
-  .ch-meta {
-    display: flex; align-items: center; gap: 8px; margin-top: .45rem;
-    opacity: 0; transform: translateY(8px);
-    animation: chFadeUp .7s cubic-bezier(.22,1,.36,1) .75s forwards;
-  }
-  .ch-cnt { font-family: var(--font-head); font-size: .68rem; color: rgba(255,255,255,.65); display: flex; align-items: baseline; gap: .25rem; }
-  .ch-cnt b { font-family: var(--font-display); font-size: 1.2rem; color: #fff; letter-spacing: .5px; }
-  .ch-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,.3); }
-  .ch-season { font-family: var(--font-head); font-size: .56rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.38); }
-  .ch-corner-num {
-    position: absolute; right: 14px; bottom: 12px; z-index: 6;
-    font-family: var(--font-display); font-size: 3.4rem; line-height: 1;
-    color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,.06);
-    opacity: 0; animation: chFadeUp .7s cubic-bezier(.22,1,.36,1) .85s forwards;
-    pointer-events: none; user-select: none;
-  }
+  /* Уменьшаем высоту хедера на мобиле */
+  .cat-header-mob { height: 170px; }
+  /* Сдвигаем красную линию ближе к краю */
+  .ch-vline { left: 16px; }
+  /* Уменьшаем padding контента */
+  .ch-content-mob { padding: 0 18px 16px; }
+  /* Уменьшаем угловое число */
+  .ch-corner-num { right: 14px; bottom: 12px; font-size: 3.4rem; }
 
   /* ── Quick filter chips ── */
   .cat-chips-mob {
@@ -3205,19 +3201,14 @@ body.menu-open { overflow: hidden; }
   .chip-mob.on { background: var(--black); color: #fff; border-color: var(--black); }
   .chip-mob:active { transform: scale(.95); }
 
-  /* ── Toolbar: filter left | count center | sort right ── */
+  /* ── Toolbar ── */
   .catalog-toolbar {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    gap: .5rem;
-    padding: .6rem 0 .5rem;
-    margin-bottom: .5rem;
+    display: flex !important; align-items: center;
+    justify-content: space-between; gap: .5rem;
+    padding: .6rem 0 .5rem; margin-bottom: .5rem;
     border-bottom: 1px solid var(--gray-100);
   }
   .catalog-count { display: none; }
   .catalog-sort { flex-shrink: 0; }
-
-  /* Убрать отступ секции каталога на мобильном */
   .catalog-section { padding: 0 !important; }
 }
