@@ -26,6 +26,7 @@ async function loadComponents() {
   // После загрузки всех компонентов — инициализируем навбар
   initMegaMenu();
   window.Auth?.initAuthBtn();
+  window.Auth?.updateNavUI();
   CartDrawer.init();
   Cart.updateUI();
   highlightWishlist();
@@ -220,6 +221,23 @@ const Auth = (() => {
     const modal = document.getElementById('auth-modal');
     const overlay = document.getElementById('auth-overlay');
     if (!modal) return;
+
+    // Скрыть табы "Войти/Регистрация" если открываем кабинет
+    const tabsEl = modal.querySelector('.auth-tabs');
+    if (tabsEl) tabsEl.style.display = tab === 'account' ? 'none' : '';
+
+    // Заполнить данные пользователя в кабинете
+    if (tab === 'account' && _user) {
+      const name = _user.user_metadata?.full_name || _user.email || '';
+      const initials = name.split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2) || '?';
+      const avatarEl = document.getElementById('auth-avatar-big');
+      const nameEl   = document.getElementById('auth-account-name');
+      const emailEl  = document.getElementById('auth-account-email');
+      if (avatarEl) avatarEl.textContent = initials;
+      if (nameEl)   nameEl.textContent   = name || 'Пользователь';
+      if (emailEl)  emailEl.textContent  = _user.email || '';
+    }
+
     modal.style.display = 'block';
     requestAnimationFrame(() => { modal.classList.add('open'); overlay.classList.add('open'); });
     switchTab(tab);
@@ -349,7 +367,7 @@ const Auth = (() => {
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   });
 
-  window.Auth = { getUser, isLoggedIn, requireAuth, signOut, openModal, closeModal, initAuthBtn };
+  window.Auth = { getUser, isLoggedIn, requireAuth, signOut, openModal, closeModal, initAuthBtn, updateNavUI};
   return { getUser, isLoggedIn, requireAuth };
 })();
 

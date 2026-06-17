@@ -160,12 +160,10 @@
 
   <script src="js/main.js"></script>
   <script>
-
   document.addEventListener('DOMContentLoaded', () => {
-    const flags = JSON.parse(localStorage.getItem('site_flags') || '{}');
-    if (!flags.orders_enabled) {
-      showFeatureDisabledModal('orders');
-    }
+    setTimeout(() => {
+      if (SITE_CONFIG.orders_enabled === false) showFeatureDisabledModal('orders');
+    }, 1500);
   });
 
   const statusMap = {
