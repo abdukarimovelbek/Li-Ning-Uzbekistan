@@ -362,6 +362,26 @@ button {
   box-shadow: 0 4px 16px rgba(196,30,58,0.3);
 }
 
+.btn-continue-shopping {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding: .65rem;
+  margin-top: .3rem;
+  font-size: .76rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: color .2s, background .2s;
+}
+.btn-continue-shopping:hover {
+  color: var(--gray-900);
+  background: var(--gray-100);
+}
+
 .btn { 
   display: inline-flex; 
   align-items: center; 
@@ -1741,8 +1761,7 @@ footer .footer-inner {
   .cart-body { max-height: calc(72vh - 210px); overflow-y: auto; }
   .cart-total strong { font-size: 1.3rem; }
   .btn-checkout { padding: .8rem; font-size: .8rem; }
-  .btn-continue-shopping { display: block; text-align: center; padding: .65rem; margin-top: .4rem; font-size: .76rem; font-weight: 600; color: var(--gray-500); letter-spacing: .5px; text-transform: uppercase; transition: color .2s; }
-  .btn-continue-shopping:hover { color: var(--gray-900); }
+  .btn-continue-shopping { font-size: .72rem; }
   .brands-list { gap: 2rem; }
   .payment-options { grid-template-columns: 1fr; }
   .nav-logo img { height: 28px; }
