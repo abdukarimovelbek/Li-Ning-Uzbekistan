@@ -992,11 +992,39 @@
     .co-succ-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A1A;color:#fff;padding:.65rem 1.3rem;border-radius:100px;font-size:.82rem;opacity:0;pointer-events:none;transition:.35s var(--ec);z-index:400}
     .co-succ-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    @media(max-width:680px){
-      .co-succ-perks{grid-template-columns:1fr;gap:.7rem}
-      .co-succ-perk{display:flex;align-items:center;gap:1rem;text-align:left;padding:1rem}
-      .co-succ-perk-ic{margin:0;flex:none}
-      .co-succ-btn-pri,.co-succ-btn-gh{min-width:100%}
+    @media(max-width:680px) {
+      .co-succ-hero {
+          padding-bottom: 3.5rem;
+      }
+      .co-succ-body {
+          margin-top: 0;
+          padding-top: 2rem;
+          gap: 1.5rem;
+      }
+      .co-succ-cta {
+          flex-direction: column;
+          gap: 0.75rem;
+      }
+      .co-succ-btn-pri,
+      .co-succ-btn-gh {
+          min-width: 100%;
+          padding: 1rem 1.4rem;
+      }
+      .co-succ-perks {
+          grid-template-columns: 1fr;
+          gap: .5rem;
+      }
+      .co-succ-perk {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          text-align: left;
+          padding: 1rem;
+      }
+      .co-succ-perk-ic {
+          margin: 0;
+          flex: none;
+      }
     }
 
     .co-cw{
