@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Li-Ning — Мои заказы</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+<style>
+:root{
+  --red:#C41E3A;--red-dark:#A01830;--red-bg:rgba(196,30,58,.08);
+  --black:#141414;--ink:#1A1A1A;--g900:#2C2C2C;--g700:#555;--g500:#888;--g400:#A7A099;--g300:#C0B8B0;--g100:#EDE9E3;
+  --white:#fff;--cream:#FAF8F5;--cream-d:#F2EEE8;--gold:#B8860B;--green:#1e9e5a;--blue:#3b82f6;
+  --fd:'Bebas Neue',sans-serif;--fh:'Oswald',sans-serif;--fb:'Plus Jakarta Sans',sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);--nav-h:64px;
+  --r:14px;--r-sm:9px;--r-lg:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:var(--g700);-webkit-font-smoothing:antialiased;overflow-x:hidden;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;background:none;font-family:var(--fb)}
+::selection{background:var(--red);color:#fff}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nav-h);background:rgba(18,18,18,.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 clamp(16px,4vw,48px)}
+.nav-logo{font-family:var(--fd);font-size:1.55rem;letter-spacing:2px;color:#fff}
+.nav-logo b{color:var(--red)}
+.nav-links{display:flex;gap:.1rem;margin-left:2rem}
+.nav-links a{font-family:var(--fh);font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.72);padding:.5rem .85rem;border-radius:6px;transition:.2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.07)}
+.nav-r{margin-left:auto;display:flex;gap:.3rem}
+.nav-ico{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.78);transition:.25s}
+.nav-ico:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-ico svg{width:18px;height:18px}
+.nav-ico.acc{background:var(--red);color:#fff;font-family:var(--fh);font-size:.78rem;font-weight:700}
+@media(max-width:768px){.nav-links{display:none}}
+
+/* PAGE HEADER */
+.page-head{
+  background:linear-gradient(135deg,#141414 0%,#1e1614 60%,#0d0d0d 100%);
+  color:#fff;padding:calc(var(--nav-h) + 2.4rem) clamp(16px,4vw,48px) 2.2rem;
+  position:relative;overflow:hidden;
+}
+.page-head::before{content:'ORDERS';position:absolute;right:-1%;top:-15%;font-family:var(--fd);font-size:15rem;letter-spacing:4px;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.04);pointer-events:none;line-height:.8}
+.page-head .crumb{font-family:var(--fh);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.35);display:flex;gap:.4rem;margin-bottom:.9rem}
+.page-head .crumb a:hover{color:rgba(255,255,255,.7)}
+.page-head h1{font-family:var(--fd);font-size:clamp(2.4rem,6vw,4.4rem);letter-spacing:2px;line-height:.88}
+.page-head .sub{font-size:.84rem;color:rgba(255,255,255,.42);margin-top:.5rem;font-weight:300}
+
+/* PROFILE TABS (context: orders lives in profile) */
+.ptabs{background:var(--black);padding:0 clamp(16px,4vw,48px);display:flex;gap:.3rem;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.06)}
+.ptabs::-webkit-scrollbar{display:none}
+.ptab{font-family:var(--fh);font-size:.74rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.4);padding:1rem 1.1rem;white-space:nowrap;position:relative;transition:.2s;display:flex;align-items:center;gap:.5rem}
+.ptab svg{width:15px;height:15px}
+.ptab:hover{color:rgba(255,255,255,.8)}
+.ptab.on{color:#fff}
+.ptab.on::after{content:'';position:absolute;left:1.1rem;right:1.1rem;bottom:0;height:2px;background:var(--red)}
+.ptab .cnt{background:var(--red);color:#fff;font-size:.6rem;font-weight:700;padding:.05rem .4rem;border-radius:8px;font-family:var(--fb)}
+
+/* CONTENT */
+.wrap{max-width:920px;margin:0 auto;padding:2.4rem clamp(16px,4vw,40px) 6rem}
+.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem;gap:1rem;flex-wrap:wrap}
+.toolbar .lab{font-family:var(--fh);font-size:.84rem;letter-spacing:.04em;color:var(--g500)}
+.toolbar .lab b{color:var(--ink)}
+.filters{display:flex;gap:.5rem;overflow-x:auto}
+.filters::-webkit-scrollbar{display:none}
+.fchip{font-family:var(--fh);font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.5rem .9rem;border:1.5px solid var(--g100);border-radius:100px;color:var(--g700);background:var(--white);white-space:nowrap;transition:.2s}
+.fchip:hover{border-color:var(--g300)}
+.fchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* ORDER CARD */
+.ocard{
+  background:var(--white);border:1px solid var(--g100);border-radius:var(--r-lg);
+  margin-bottom:1.3rem;overflow:hidden;transition:box-shadow .4s var(--ease),border-color .3s;
+  opacity:0;transform:translateY(24px);animation:rise .7s var(--ease) forwards;
+}
+@keyframes rise{to{opacity:1;transform:none}}
+.ocard:hover{box-shadow:0 14px 44px rgba(0,0,0,.09)}
+.ocard-head{display:flex;align-items:center;gap:1rem;padding:1.3rem 1.5rem;border-bottom:1px solid var(--g100);flex-wrap:wrap}
+.ocard-id{font-family:var(--fd);font-size:1.3rem;letter-spacing:.5px;color:var(--ink)}
+.ocard-date{font-size:.74rem;color:var(--g500);margin-top:.15rem}
+.ocard-status{margin-left:auto;font-family:var(--fh);font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .85rem;border-radius:100px;display:flex;align-items:center;gap:.4rem}
+.ocard-status .dot{width:7px;height:7px;border-radius:50%}
+.st-new{background:rgba(184,134,11,.14);color:var(--gold)}.st-new .dot{background:var(--gold)}
+.st-processing{background:rgba(59,130,246,.12);color:var(--blue)}.st-processing .dot{background:var(--blue);animation:blink 1.4s infinite}
+.st-delivered{background:rgba(30,158,90,.12);color:var(--green)}.st-delivered .dot{background:var(--green)}
+.st-cancelled{background:rgba(196,30,58,.1);color:var(--red)}.st-cancelled .dot{background:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* TRACKER */
+.otrack{padding:1.6rem 1.5rem;background:linear-gradient(180deg,var(--cream),transparent)}
+.otrack.cancelled{background:rgba(196,30,58,.03)}
+.otrack-wrap{position:relative}
+.otline{position:absolute;top:18px;left:6%;right:6%;height:3px;background:var(--g100);border-radius:2px;overflow:hidden;z-index:0}
+.otline i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--green),#27c96e);transform:scaleX(0);transform-origin:left;transition:transform 1.3s var(--ease)}
+.otrack-row{display:flex;justify-content:space-between;position:relative;z-index:1}
+.onode{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1}
+.onode .ball{width:38px;height:38px;border-radius:50%;background:var(--white);border:2px solid var(--g100);color:var(--g300);display:flex;align-items:center;justify-content:center;transition:.4s var(--ease)}
+.onode .ball svg{width:16px;height:16px}
+.onode.done .ball{background:var(--green);border-color:var(--green);color:#fff}
+.onode.current .ball{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 0 0 5px rgba(30,158,90,.18);animation:pulseB 2s ease-in-out infinite}
+@keyframes pulseB{0%,100%{box-shadow:0 0 0 5px rgba(30,158,90,.18)}50%{box-shadow:0 0 0 9px rgba(30,158,90,.06)}}
+.onode .nl{font-family:var(--fh);font-size:.64rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--g500);margin-top:.55rem;line-height:1.25}
+.onode.done .nl,.onode.current .nl{color:var(--ink)}
+.onode .nt{font-size:.62rem;color:var(--g400);margin-top:.15rem}
+.otrack-cancel{display:flex;align-items:center;gap:.7rem;color:var(--red);font-weight:600;font-size:.86rem;padding:.4rem 0}
+.otrack-cancel svg{width:20px;height:20px;flex:none}
+
+/* ETA strip inside tracker */
+.oeta{display:flex;align-items:center;gap:.7rem;margin-top:1.3rem;padding:.85rem 1.1rem;background:var(--white);border:1px solid var(--g100);border-radius:var(--r);font-size:.82rem;color:var(--g700)}
+.oeta .ic{font-size:1.2rem}
+.oeta b{color:var(--ink)}
+.oeta .when{margin-left:auto;font-family:var(--fd);font-size:1.15rem;letter-spacing:.5px;color:var(--red);white-space:nowrap}
+
+/* ITEMS */
+.oitems{padding:.5rem 1.5rem 1rem;display:flex;flex-direction:column}
+.oitem{display:flex;align-items:center;gap:1rem;padding:.9rem 0;border-bottom:1px solid var(--g100)}
+.oitem:last-child{border-bottom:none}
+.oitem-img{width:56px;height:56px;border-radius:10px;background:var(--cream);flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.oitem-img img{width:100%;height:100%;object-fit:contain;padding:8%}
+.oitem-img .ph{font-family:var(--fd);font-size:1rem;color:var(--g400)}
+.oitem-b{flex:1;min-width:0}
+.oitem-nm{font-weight:600;font-size:.86rem;color:var(--ink);line-height:1.3}
+.oitem-m{font-size:.72rem;color:var(--g500);margin-top:.15rem}
+.oitem-p{font-family:var(--fd);font-size:1.1rem;letter-spacing:.5px;color:var(--ink);flex:none;white-space:nowrap}
+.omore{font-size:.74rem;color:var(--g500);text-align:center;padding:.6rem 0}
+
+/* ITEMS TOGGLE */
+.oitems-toggle{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.5rem;cursor:pointer;border-top:1px solid var(--g100);transition:background .2s}
+.oitems-toggle:hover{background:var(--cream)}
+.oitems-toggle .lbl{font-family:var(--fh);font-size:.76rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--g700);display:flex;align-items:center;gap:.55rem}
+.oitems-toggle:hover .lbl{color:var(--ink)}
+.oitems-toggle .lbl svg{width:16px;height:16px;color:var(--g500)}
+.oitems-toggle .chev2{width:28px;height:28px;border-radius:50%;background:var(--cream-d);display:flex;align-items:center;justify-content:center;color:var(--g500);transition:transform .35s var(--ease),background .2s}
+.oitems-toggle.open .chev2{transform:rotate(180deg);background:var(--red);color:#fff}
+.oitems-collapse{max-height:0;overflow:hidden;transition:max-height .5s var(--ease)}
+
+/* FOOTER OF CARD */
+.ocard-foot{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.5rem;border-top:1px solid var(--g100);background:var(--cream);flex-wrap:wrap}
+.ocard-tot{font-family:var(--fh);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--g500)}
+.ocard-tot b{font-family:var(--fd);font-size:1.5rem;letter-spacing:.5px;color:var(--red);margin-left:.5rem}
+.ocard-acts{margin-left:auto;display:flex;gap:.6rem;flex-wrap:wrap}
+.oact{font-family:var(--fh);font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.65rem 1.1rem;border-radius:var(--r-sm);transition:.25s var(--ease);display:inline-flex;align-items:center;gap:.45rem}
+.oact svg{width:14px;height:14px}
+.oact-pri{background:var(--red);color:#fff}
+.oact-pri:hover{background:var(--red-dark);transform:translateY(-2px);box-shadow:0 8px 22px rgba(196,30,58,.3)}
+.oact-gh{background:var(--white);color:var(--g700);box-shadow:inset 0 0 0 1.5px var(--g100)}
+.oact-gh:hover{box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink)}
+
+/* expand toggle */
+.ocard-head .chev{margin-left:.4rem;width:30px;height:30px;border-radius:50%;background:var(--cream);display:flex;align-items:center;justify-content:center;color:var(--g500);transition:.3s var(--ease)}
+.ocard.collapsed .chev{transform:rotate(-90deg)}
+.ocard .collapsible{overflow:hidden;transition:max-height .5s var(--ease)}
+.ocard.collapsed .collapsible{max-height:0!important}
+
+/* EMPTY */
+.empty{text-align:center;padding:5rem 2rem;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.empty .ic{width:88px;height:88px;border-radius:50%;background:var(--cream-d);display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+.empty h3{font-family:var(--fd);font-size:2rem;letter-spacing:1.5px;color:var(--ink)}
+.empty p{color:var(--g500);font-size:.9rem}
+
+/* TAB BAR (mobile) */
+.tabbar{display:none}
+@media(max-width:768px){
+  body{padding-bottom:64px}
+  .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:120;height:60px;background:rgba(255,255,255,.97);backdrop-filter:blur(18px);border-top:1px solid var(--g100);display:flex;align-items:center;justify-content:space-around}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding-top:7px;color:var(--g400);font-size:.56rem;font-weight:600;position:relative}
+  .tab svg{width:21px;height:21px}
+  .tab.on{color:var(--red)}
+  .tab::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:20px;height:3px;border-radius:2px;background:var(--red);opacity:0;transition:.3s}
+  .tab.on::before{opacity:1}
+  .ocard-foot{flex-direction:column;align-items:stretch}
+  .ocard-acts{margin-left:0}.oact{flex:1;justify-content:center}
+  .onode .nt{display:none}
+  .oeta{flex-wrap:wrap}.oeta .when{margin-left:0;margin-top:.3rem}
+}
+@media(prefers-reduced-motion:reduce){.ocard{opacity:1!important;transform:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="#">LI<b>·</b>NING</a>
+  <div class="nav-links">
+    <a href="#">Новинки</a><a href="#">Мужчины</a><a href="#">Женщины</a><a href="#">Дети</a><a href="#">Аксессуары</a>
+  </div>
+  <div class="nav-r">
+    <div class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div>
+    <div class="nav-ico acc">ЕА</div>
+    <div class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+    <div class="nav-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div class="page-head">
+  <div class="crumb"><a href="#">Главная</a><span>/</span><a href="#">Профиль</a><span>/</span><span>Мои заказы</span></div>
+  <h1>МОИ ЗАКАЗЫ</h1>
+  <div class="sub">Отслеживайте статус и историю покупок</div>
+</div>
+
+<!-- PROFILE TABS -->
+<div class="ptabs">
+  <a class="ptab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Мои заказы <span class="cnt">4</span></a>
+  <a class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Избранное</a>
+  <a class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Мои карты</a>
+  <a class="ptab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Профиль</a>
+</div>
+
+<!-- CONTENT -->
+<div class="wrap">
+  <div class="toolbar">
+    <div class="lab"><b id="cnt">4</b> заказа</div>
+    <div class="filters" id="filters">
+      <button class="fchip on" data-f="all">Все</button>
+      <button class="fchip" data-f="new">Новые</button>
+      <button class="fchip" data-f="processing">В работе</button>
+      <button class="fchip" data-f="delivered">Доставлены</button>
+      <button class="fchip" data-f="cancelled">Отменённые</button>
+    </div>
+  </div>
+  <div id="orders"></div>
+</div>
+
+<!-- TAB BAR -->
+<nav class="tabbar">
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>Главная</button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Каталог</button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Магазины</button>
+  <button class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>Корзина</button>
+  <button class="tab on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Профиль</button>
+</nav>
+
+<script>
+const fp=n=>n.toLocaleString('ru-RU').replace(/,/g,' ')+' сум';
+// статус → индекс этапа в трекере (0..3). cancelled — особый.
+const STAGES=['Оформлен','Собран','В пути','Доставлен'];
+const STAGE_ICONS=[
+  '<path d="M20 6 9 17l-5-5"/>',
+  '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/>',
+  '<path d="M5 18H3V6h13v12h-2M16 8h4l3 4v6h-3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+  '<path d="M3 11l9-8 9 8M5 10v10h14V10"/>'
+];
+const STATUS_STAGE={new:0,processing:1,delivered:3};
+const STATUS_LABEL={new:'Новый',processing:'В работе',delivered:'Доставлен',cancelled:'Отменён'};
+
+const ORDERS=[
+  {id:'58C02A97',date:'18 июня 2026 г. в 04:37',status:'processing',total:1078800,eta:'19 июня',
+   items:[{name:'Мужские кроссовки повседневные Li-Ning AGCT001',size:'9',qty:1,price:1078800,img:'shoe'}]},
+  {id:'C767BAD0',date:'18 июня 2026 г. в 08:57',status:'new',total:418000,eta:'20 июня',
+   items:[{name:'Спортивные шорты мужские Li-Ning AKSW117 AT DRY outdoor running',size:'M',qty:1,price:398000,img:'short'}]},
+  {id:'A12F9C30',date:'12 июня 2026 г. в 16:22',status:'delivered',total:1760000,eta:'14 июня',
+   items:[{name:'Кроссовки Li-Ning SOFT GO 3 V2 AGLW027 COMFOAM',size:'42',qty:1,price:890000,img:'shoe'},
+          {name:'Куртка Li-Ning Fitness AWDV935',size:'L',qty:1,price:560000,img:'jacket'},
+          {name:'Носки спортивные Li-Ning (3 пары)',size:'39-42',qty:1,price:90000,img:'sock'}]},
+  {id:'7B3E1A88',date:'2 июня 2026 г. в 11:08',status:'cancelled',total:560000,eta:'',
+   items:[{name:'Худи Li-Ning Sportswear AWDT291',size:'XL',qty:1,price:560000,img:'jacket'}]},
+];
+
+let filter='all';
+
+function imgPh(){return '<span class="ph">LN</span>';}
+
+function trackerHTML(o){
+  if(o.status==='cancelled'){
+    return `<div class="otrack cancelled"><div class="otrack-cancel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
+      Заказ отменён. Если это ошибка — свяжитесь с поддержкой.</div></div>`;
+  }
+  const cur=STATUS_STAGE[o.status];
+  const isDelivered=o.status==='delivered';
+  const pct=isDelivered?100:cur===0?6:cur===1?(100/3):cur===2?(200/3):100;
+  const nodes=STAGES.map((s,i)=>{
+    const cls=isDelivered?'done':i<cur?'done':i===cur?'current':'';
+    const nt=(!isDelivered&&i===cur)?'сейчас':'';
+    return `<div class="onode ${cls}"><div class="ball"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">${STAGE_ICONS[i]}</svg></div><div class="nl">${s}</div><div class="nt">${nt}</div></div>`;
+  }).join('');
+  const eta=o.status==='delivered'
+    ? `<div class="oeta"><span class="ic">✅</span><div><b>Доставлен</b> · спасибо за покупку!</div><span class="when" style="color:var(--green)">${o.eta}</span></div>`
+    : `<div class="oeta"><span class="ic">🚚</span><div>Ожидаемая доставка по адресу <b>Ташкент</b></div><span class="when">${o.eta}</span></div>`;
+  return `<div class="otrack"><div class="otrack-wrap">
+    <div class="otline"><i data-w="${pct}"></i></div>
+    <div class="otrack-row">${nodes}</div>
+  </div>${eta}</div>`;
+}
+
+function cardHTML(o,idx){
+  const st=STATUS_LABEL[o.status];
+  const items=o.items.map(it=>`
+    <div class="oitem">
+      <div class="oitem-img">${imgPh()}</div>
+      <div class="oitem-b"><div class="oitem-nm">${it.name}</div><div class="oitem-m">Размер: ${it.size} · ${it.qty} шт.</div></div>
+      <div class="oitem-p">${fp(it.price*it.qty)}</div>
+    </div>`).join('');
+  const acts = o.status==='delivered'
+    ? `<button class="oact oact-gh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9M3 12V7M3 12h5"/></svg>Повторить заказ</button>
+       <button class="oact oact-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>Оставить отзыв</button>`
+    : o.status==='cancelled'
+    ? `<button class="oact oact-gh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9M3 12V7M3 12h5"/></svg>Повторить заказ</button>`
+    : `<button class="oact oact-gh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Поддержка</button>
+       <button class="oact oact-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 18H3V6h13v12h-2M16 8h4l3 4v6h-3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>Отследить</button>`;
+  return `<div class="ocard" style="animation-delay:${idx*.08}s" data-st="${o.status}">
+    <div class="ocard-head">
+      <div><div class="ocard-id">Заказ #${o.id}</div><div class="ocard-date">${o.date}</div></div>
+      <span class="ocard-status st-${o.status}"><span class="dot"></span>${st}</span>
+    </div>
+    <div class="collapsible">
+      ${trackerHTML(o)}
+      <div class="oitems-toggle" onclick="toggleItems(this)">
+        <span class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Посмотреть товары в заказе (${o.items.length})</span>
+        <span class="chev2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="oitems-collapse"><div class="oitems">${items}</div></div>
+      <div class="ocard-foot">
+        <span class="ocard-tot">Итого <b>${fp(o.total)}</b></span>
+        <div class="ocard-acts">${acts}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleItems(el){
+  el.classList.toggle('open');
+  const c=el.nextElementSibling;
+  c.style.maxHeight=el.classList.contains('open')?c.scrollHeight+'px':'0';
+}
+
+function render(){
+  const list=filter==='all'?ORDERS:ORDERS.filter(o=>o.status===filter);
+  const el=document.getElementById('orders');
+  if(!list.length){
+    el.innerHTML=`<div class="empty"><div class="ic">📦</div><h3>ЗАКАЗОВ НЕТ</h3><p>В этой категории пока пусто</p></div>`;
+    return;
+  }
+  el.innerHTML=list.map((o,i)=>cardHTML(o,i)).join('');
+  document.getElementById('cnt').textContent=list.length;
+  // animate tracker fills
+  requestAnimationFrame(()=>setTimeout(()=>{
+    document.querySelectorAll('.otline i').forEach(i=>i.style.transform='scaleX('+(i.dataset.w/100)+')');
+  },300));
+}
+
+document.getElementById('filters').onclick=e=>{
+  const b=e.target.closest('.fchip');if(!b)return;
+  filter=b.dataset.f;
+  document.querySelectorAll('.fchip').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  render();
+};
+render();
+</script>
+</body>
+</html>

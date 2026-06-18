@@ -18,59 +18,208 @@
   </script> 
   
   <style>
-    .orders-page { padding: 3rem 2rem 5rem; max-width: 900px; margin: 0 auto; }
-    .order-card {
-      background: var(--white);
-      border: 1px solid var(--gray-100);
-      border-radius: var(--radius-md);
-      margin-bottom: 1.5rem;
-      overflow: hidden;
-      transition: box-shadow var(--transition);
+    /* PAGE HEADER */
+    .page-head{
+      background:linear-gradient(135deg,#141414 0%,#1e1614 60%,#0d0d0d 100%);
+      color:#fff;
+      padding:calc(64px + 2.4rem) clamp(16px,4vw,48px) 2.2rem;
+      position:relative;
+      overflow:hidden;
     }
-    .order-card:hover { box-shadow: var(--shadow-md); }
-    .order-card-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1.2rem 1.5rem;
-      background: var(--cream);
-      border-bottom: 1px solid var(--gray-100);
+    .page-head::before{
+      content:'ORDERS';
+      position:absolute;
+      right:-1%; top:-15%;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(8rem,15vw,15rem);
+      letter-spacing:4px;
+      color:transparent;
+      -webkit-text-stroke:1px rgba(255,255,255,.04);
+      pointer-events:none;
+      line-height:.8
     }
-    .order-card-id { font-family: var(--font-display); font-size: 1.1rem; letter-spacing: 1px; color: var(--gray-900); }
-    .order-card-date { font-size: 0.75rem; color: var(--gray-500); margin-top: 0.2rem; }
-    .order-card-status {
-      padding: 0.3rem 0.8rem;
-      border-radius: 20px;
-      font-size: 0.72rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    .page-head .crumb{
+      font-family:'Oswald',sans-serif;
+      font-size:.64rem;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.35);
+      display:flex;
+      gap:.4rem;
+      margin-bottom:.9rem
     }
-    .status-new { background: rgba(184,134,11,0.1); color: var(--gold); }
-    .status-processing { background: rgba(59,130,246,0.1); color: #3b82f6; }
-    .status-delivered { background: rgba(34,197,94,0.1); color: #22c55e; }
-    .status-cancelled { background: rgba(196,30,58,0.1); color: var(--red); }
-    .order-card-items { padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
-    .order-card-item { display: flex; align-items: center; gap: 1rem; }
-    .order-card-item-img {
-      width: 56px; height: 56px; flex-shrink: 0;
-      background: var(--gray-100); border-radius: var(--radius-sm);
-      overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    .page-head .crumb a{
+      color:rgba(255,255,255,.35);
+      text-decoration:none
     }
-    .order-card-item-img img { width: 100%; height: 100%; object-fit: cover; }
-    .order-card-item-name { font-size: 0.88rem; font-weight: 600; color: var(--gray-900); }
-    .order-card-item-meta { font-size: 0.75rem; color: var(--gray-500); margin-top: 0.15rem; }
-    .order-card-item-price { margin-left: auto; font-family: var(--font-display); font-size: 1rem; color: var(--gray-900); white-space: nowrap; }
-    .order-card-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 1.5rem;
-      border-top: 1px solid var(--gray-100);
-      background: var(--cream);
+    .page-head .crumb a:hover{
+      color:rgba(255,255,255,.7)
     }
-    .order-card-total-label { font-size: 0.75rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; }
-    .order-card-total { font-family: var(--font-display); font-size: 1.4rem; color: var(--red); }
-    .orders-empty {
-      text-align: center; padding: 5rem 2rem;
-      display: flex; flex-direction: column; align-items: center; gap: 1rem;
+    .page-head h1{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(2.4rem,6vw,4.4rem);
+      letter-spacing:2px;
+      line-height:.88
     }
-    .orders-empty-icon { font-size: 4rem; }
-    .orders-empty-title { font-family: var(--font-display); font-size: 2rem; letter-spacing: 2px; }
-    .orders-empty-sub { font-size: 0.9rem; color: var(--gray-500); }
+    .page-head .sub{
+      font-size:.84rem;
+      color:rgba(255,255,255,.42);
+      margin-top:.5rem;
+      font-weight:300
+    }
+
+    /* PROFILE TABS */
+    .ptabs{
+      background:#141414;
+      padding:0 clamp(16px,4vw,48px);
+      display:flex;
+      gap:.3rem;
+      overflow-x:auto;
+      border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .ptabs::-webkit-scrollbar{display:none}
+    .ptab{
+      font-family:'Oswald',sans-serif;
+      font-size:.74rem;
+      font-weight:600;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.4);
+      padding:1rem 1.1rem;
+      white-space:nowrap;
+      position:relative;
+      transition:.2s;
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      text-decoration:none;
+      cursor:pointer
+    }
+    .ptab svg{width:15px; height:15px}
+    .ptab:hover{color:rgba(255,255,255,.8)}
+    .ptab.on{color:#fff}
+    .ptab.on::after{
+      content:'';
+      position:absolute;
+      left:1.1rem;
+      right:1.1rem;
+      bottom:0;
+      height:2px;
+      background:var(--red)
+    }
+    .ptab .cnt{
+      background:var(--red);
+      color:#fff;
+      font-size:.6rem;
+      font-weight:700;
+      padding:.05rem .4rem;
+      border-radius:8px
+    }
+
+    /* CONTENT */
+    .mo-wrap{max-width:920px;margin:0 auto;padding:2.4rem clamp(16px,4vw,40px) 6rem}
+    .mo-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem;gap:1rem;flex-wrap:wrap}
+    .mo-lab{font-family:'Oswald',sans-serif;font-size:.84rem;letter-spacing:.04em;color:#888}
+    .mo-lab b{color:#1A1A1A}
+    .mo-filters{display:flex;gap:.5rem;overflow-x:auto}
+    .mo-filters::-webkit-scrollbar{display:none}
+    .mo-fchip{font-family:'Oswald',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.5rem .9rem;border:1.5px solid #EDE9E3;border-radius:100px;color:#555;background:#fff;white-space:nowrap;transition:.2s;cursor:pointer}
+    .mo-fchip:hover{border-color:#C0B8B0}
+    .mo-fchip.on{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+
+    /* ORDER CARD */
+    .ocard{
+      background:#fff;border:1px solid #EDE9E3;border-radius:20px;
+      margin-bottom:1.3rem;overflow:hidden;
+      transition:box-shadow .4s cubic-bezier(.22,1,.36,1),border-color .3s;
+      opacity:0;transform:translateY(24px);animation:moRise .7s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes moRise{to{opacity:1;transform:none}}
+    .ocard:hover{box-shadow:0 14px 44px rgba(0,0,0,.09)}
+
+    .ocard-head{display:flex;align-items:center;gap:1rem;padding:1.3rem 1.5rem;border-bottom:1px solid #EDE9E3;flex-wrap:wrap}
+    .ocard-id{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.5px;color:#1A1A1A}
+    .ocard-date{font-size:.74rem;color:#888;margin-top:.15rem}
+    .ocard-status{margin-left:auto;font-family:'Oswald',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .85rem;border-radius:100px;display:flex;align-items:center;gap:.4rem}
+    .ocard-status .dot{width:7px;height:7px;border-radius:50%}
+    .ost-new{background:rgba(184,134,11,.14);color:#B8860B}.ost-new .dot{background:#B8860B}
+    .ost-processing{background:rgba(59,130,246,.12);color:#3b82f6}.ost-processing .dot{background:#3b82f6;animation:moBlink 1.4s infinite}
+    .ost-delivered{background:rgba(30,158,90,.12);color:#1e9e5a}.ost-delivered .dot{background:#1e9e5a}
+    .ost-cancelled{background:rgba(196,30,58,.1);color:var(--red)}.ost-cancelled .dot{background:var(--red)}
+    @keyframes moBlink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* TRACKER */
+    .otrack{padding:1.6rem 1.5rem;background:linear-gradient(180deg,#FAF8F5,transparent)}
+    .otrack.cancelled{background:rgba(196,30,58,.03)}
+    .otrack-wrap{position:relative}
+    .otline{position:absolute;top:18px;left:6%;right:6%;height:3px;background:#EDE9E3;border-radius:2px;overflow:hidden;z-index:0}
+    .otline i{display:block;height:100%;width:100%;background:linear-gradient(90deg,#1e9e5a,#27c96e);transform:scaleX(0);transform-origin:left;transition:transform 1.3s cubic-bezier(.22,1,.36,1)}
+    .otrack-row{display:flex;justify-content:space-between;position:relative;z-index:1}
+    .onode{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1}
+    .onode .ball{width:38px;height:38px;border-radius:50%;background:#fff;border:2px solid #EDE9E3;color:#C0B8B0;display:flex;align-items:center;justify-content:center;transition:.4s cubic-bezier(.22,1,.36,1)}
+    .onode .ball svg{width:16px;height:16px}
+    .onode.done .ball{background:#1e9e5a;border-color:#1e9e5a;color:#fff}
+    .onode.current .ball{background:#1e9e5a;border-color:#1e9e5a;color:#fff;box-shadow:0 0 0 5px rgba(30,158,90,.18);animation:moPulse 2s ease-in-out infinite}
+    @keyframes moPulse{0%,100%{box-shadow:0 0 0 5px rgba(30,158,90,.18)}50%{box-shadow:0 0 0 9px rgba(30,158,90,.06)}}
+    .onode .nl{font-family:'Oswald',sans-serif;font-size:.64rem;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:#888;margin-top:.55rem;line-height:1.25}
+    .onode.done .nl,.onode.current .nl{color:#1A1A1A}
+    .onode .nt{font-size:.62rem;color:#A7A099;margin-top:.15rem}
+    .otrack-cancel{display:flex;align-items:center;gap:.7rem;color:var(--red);font-weight:600;font-size:.86rem;padding:.4rem 0}
+    .otrack-cancel svg{width:20px;height:20px;flex:none}
+
+    /* ETA */
+    .oeta{display:flex;align-items:center;gap:.7rem;margin-top:1.3rem;padding:.85rem 1.1rem;background:#fff;border:1px solid #EDE9E3;border-radius:14px;font-size:.82rem;color:#555}
+    .oeta .ic{font-size:1.2rem}
+    .oeta b{color:#1A1A1A}
+    .oeta .when{margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.5px;color:var(--red);white-space:nowrap}
+
+    /* ITEMS TOGGLE */
+    .oitems-toggle{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.5rem;cursor:pointer;border-top:1px solid #EDE9E3;transition:background .2s}
+    .oitems-toggle:hover{background:#FAF8F5}
+    .oitems-toggle .lbl{font-family:'Oswald',sans-serif;font-size:.76rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#555;display:flex;align-items:center;gap:.55rem}
+    .oitems-toggle:hover .lbl{color:#1A1A1A}
+    .oitems-toggle .lbl svg{width:16px;height:16px;color:#888}
+    .oitems-toggle .chev2{width:28px;height:28px;border-radius:50%;background:#F2EEE8;display:flex;align-items:center;justify-content:center;color:#888;transition:transform .35s cubic-bezier(.22,1,.36,1),background .2s}
+    .oitems-toggle.open .chev2{transform:rotate(180deg);background:var(--red);color:#fff}
+    .oitems-collapse{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.22,1,.36,1)}
+
+    /* ITEMS */
+    .oitems{padding:.5rem 1.5rem 1rem;display:flex;flex-direction:column}
+    .oitem{display:flex;align-items:center;gap:1rem;padding:.9rem 0;border-bottom:1px solid #EDE9E3}
+    .oitem:last-child{border-bottom:none}
+    .oitem-img{width:56px;height:56px;border-radius:10px;background:#FAF8F5;flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center}
+    .oitem-img img{width:100%;height:100%;object-fit:contain;padding:8%}
+    .oitem-img .ph{font-family:'Bebas Neue',sans-serif;font-size:1rem;color:#A7A099}
+    .oitem-b{flex:1;min-width:0}
+    .oitem-nm{font-weight:600;font-size:.86rem;color:#1A1A1A;line-height:1.3}
+    .oitem-m{font-size:.72rem;color:#888;margin-top:.15rem}
+    .oitem-p{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.5px;color:#1A1A1A;flex:none;white-space:nowrap}
+
+    /* CARD FOOTER */
+    .ocard-foot{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.5rem;border-top:1px solid #EDE9E3;background:#FAF8F5;flex-wrap:wrap}
+    .ocard-tot{font-family:'Oswald',sans-serif;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:#888}
+    .ocard-tot b{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.5px;color:var(--red);margin-left:.5rem}
+    .ocard-acts{margin-left:auto;display:flex;gap:.6rem;flex-wrap:wrap}
+    .oact{font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.65rem 1.1rem;border-radius:9px;transition:.25s cubic-bezier(.22,1,.36,1);display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;border:none}
+    .oact svg{width:14px;height:14px}
+    .oact-pri{background:var(--red);color:#fff}
+    .oact-pri:hover{background:#A01830;transform:translateY(-2px);box-shadow:0 8px 22px rgba(196,30,58,.3)}
+    .oact-gh{background:#fff;color:#555;box-shadow:inset 0 0 0 1.5px #EDE9E3}
+    .oact-gh:hover{box-shadow:inset 0 0 0 1.5px #1A1A1A;color:#1A1A1A}
+
+    /* EMPTY */
+    .mo-empty{text-align:center;padding:5rem 2rem;display:flex;flex-direction:column;align-items:center;gap:1rem}
+    .mo-empty .ic{width:88px;height:88px;border-radius:50%;background:#F2EEE8;display:flex;align-items:center;justify-content:center;font-size:2.4rem}
+    .mo-empty h3{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:1.5px;color:#1A1A1A}
+    .mo-empty p{color:#888;font-size:.9rem}
+
+    @media(max-width:768px){
+      .ocard-foot{flex-direction:column;align-items:stretch}
+      .ocard-acts{margin-left:0}.oact{flex:1;justify-content:center}
+      .onode .nt{display:none}
+      .oeta{flex-wrap:wrap}.oeta .when{margin-left:0;margin-top:.3rem}
+    }
+    @media(prefers-reduced-motion:reduce){.ocard{opacity:1!important;transform:none!important;animation:none!important}}
   </style>
 </head>
 
@@ -139,20 +288,42 @@
   <!-- NAVBAR -->
   <div id="navbar-placeholder"></div>
 
-  <!-- Page Header -->
-  <div class="page-header">
-    <div class="page-header-inner">
-      <div class="breadcrumb">
-        <a href="index.html">Главная</a><span>/</span><span>Мои заказы</span>
-      </div>
-      <h1>МОИ ЗАКАЗЫ</h1>
+  <!-- PAGE HEADER -->
+  <div class="page-head">
+    <div class="crumb">
+      <a href="index.html">Главная</a><span>/</span>
+      <a href="my-profile.html">Профиль</a><span>/</span>
+      <span>Мои заказы</span>
     </div>
+    <h1>МОИ ЗАКАЗЫ</h1>
+    <div class="sub">Отслеживайте статус и историю покупок</div>
   </div>
 
-  <div class="orders-page">
-    <div id="orders-container">
-      <div style="text-align:center;padding:4rem;color:var(--gray-500)">Загрузка...</div>
+  <!-- PROFILE TABS -->
+  <div class="ptabs">
+    <a class="ptab on" href="my-orders.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+      Мои заказы <span class="cnt" id="mo-tab-cnt">0</span>
+    </a>
+    <a class="ptab" href="my-profile.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      Профиль
+    </a>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="mo-wrap">
+    <div class="mo-toolbar">
+      <div class="mo-lab"><b id="mo-cnt">0</b> заказов</div>
+      <div class="mo-filters" id="mo-filters">
+        <button class="mo-fchip on" data-f="all">Все</button>
+        <button class="mo-fchip" data-f="new">Новые</button>
+        <button class="mo-fchip" data-f="processing">В работе</button>
+        <button class="mo-fchip" data-f="delivered">Доставлены</button>
+        <button class="mo-fchip" data-f="cancelled">Отменённые</button>
+      </div>
     </div>
+    <div id="orders-container"></div>
   </div>
 
   <!-- Footer -->
@@ -166,85 +337,130 @@
     }, 1500);
   });
 
-  const statusMap = {
-    'new':        { label: 'Новый',     cls: 'status-new' },
-    'processing': { label: 'В работе',  cls: 'status-processing' },
-    'delivered':  { label: 'Доставлен', cls: 'status-delivered' },
-    'cancelled':  { label: 'Отменён',   cls: 'status-cancelled' },
-  };
+  const fp = n => n.toLocaleString('ru-RU') + ' сум';
+  const STATUS_LABEL = { new:'Новый', processing:'В работе', delivered:'Доставлен', cancelled:'Отменён' };
+  const STATUS_STAGE = { new:0, processing:1, delivered:3 };
+  const STAGES = ['Оформлен','Собран','В пути','Доставлен'];
+  const STAGE_ICONS = [
+    '<path d="M20 6 9 17l-5-5"/>',
+    '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/>',
+    '<path d="M5 18H3V6h13v12h-2M16 8h4l3 4v6h-3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>',
+    '<path d="M3 11l9-8 9 8M5 10v10h14V10"/>'
+  ];
+
+  let moAllOrders = [];
+  let moFilter = 'all';
+
+  function trackerHTML(o) {
+    if (o.status === 'cancelled') {
+      return `<div class="otrack cancelled"><div class="otrack-cancel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>
+        Заказ отменён. Если это ошибка — свяжитесь с поддержкой.</div></div>`;
+    }
+    const cur = STATUS_STAGE[o.status] ?? 0;
+    const isDelivered = o.status === 'delivered';
+    const pct = isDelivered ? 100 : cur === 0 ? 6 : cur === 1 ? 33 : cur === 2 ? 66 : 100;
+    const nodes = STAGES.map((s, i) => {
+      const cls = isDelivered ? 'done' : i < cur ? 'done' : i === cur ? 'current' : '';
+      const nt = (!isDelivered && i === cur) ? 'сейчас' : '';
+      return `<div class="onode ${cls}"><div class="ball"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">${STAGE_ICONS[i]}</svg></div><div class="nl">${s}</div><div class="nt">${nt}</div></div>`;
+    }).join('');
+    const eta = o.status === 'delivered'
+      ? `<div class="oeta"><span class="ic">✅</span><div><b>Доставлен</b> · спасибо за покупку!</div></div>`
+      : `<div class="oeta"><span class="ic">🚚</span><div>Менеджер уточнит дату доставки по <b>Ташкенту</b></div><span class="when">—</span></div>`;
+    return `<div class="otrack"><div class="otrack-wrap">
+      <div class="otline"><i data-w="${pct}"></i></div>
+      <div class="otrack-row">${nodes}</div>
+    </div>${eta}</div>`;
+  }
+
+  function cardHTML(o, idx) {
+    const st = STATUS_LABEL[o.status] || o.status;
+    const shortId = o.id?.slice(0, 8).toUpperCase();
+    const date = new Date(o.created_at).toLocaleDateString('ru-RU', {
+      day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+    });
+    const items = Array.isArray(o.items) ? o.items : [];
+    const itemsHtml = items.map(it => `
+      <div class="oitem">
+        <div class="oitem-img">${it.image ? `<img src="${it.image}" alt="">` : '<span class="ph">LN</span>'}</div>
+        <div class="oitem-b"><div class="oitem-nm">${it.name}</div><div class="oitem-m">Размер: ${it.size} · ${it.quantity} шт.</div></div>
+        <div class="oitem-p">${fp(it.price * it.quantity)}</div>
+      </div>`).join('');
+
+    const acts = o.status === 'delivered'
+      ? `<button class="oact oact-gh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9M3 12V7M3 12h5"/></svg>Повторить заказ</button>
+         <button class="oact oact-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>Оставить отзыв</button>`
+      : o.status === 'cancelled'
+      ? `<button class="oact oact-gh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9M3 12V7M3 12h5"/></svg>Повторить заказ</button>`
+      : `<button class="oact oact-gh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Поддержка</button>
+         <button class="oact oact-pri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 18H3V6h13v12h-2M16 8h4l3 4v6h-3"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>Отследить</button>`;
+
+    return `<div class="ocard" style="animation-delay:${idx * .08}s" data-st="${o.status}">
+      <div class="ocard-head">
+        <div><div class="ocard-id">Заказ #${shortId}</div><div class="ocard-date">${date}</div></div>
+        <span class="ocard-status ost-${o.status}"><span class="dot"></span>${st}</span>
+      </div>
+      ${trackerHTML(o)}
+      <div class="oitems-toggle" onclick="this.classList.toggle('open');const c=this.nextElementSibling;c.style.maxHeight=this.classList.contains('open')?c.scrollHeight+'px':'0'">
+        <span class="lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18M16 10a4 4 0 0 1-8 0"/></svg>Товары в заказе (${items.length})</span>
+        <span class="chev2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg></span>
+      </div>
+      <div class="oitems-collapse"><div class="oitems">${itemsHtml}</div></div>
+      <div class="ocard-foot">
+        <span class="ocard-tot">Итого <b>${fp(o.total || 0)}</b></span>
+        <div class="ocard-acts">${acts}</div>
+      </div>
+    </div>`;
+  }
+
+  function renderOrders() {
+    const list = moFilter === 'all' ? moAllOrders : moAllOrders.filter(o => o.status === moFilter);
+    const el = document.getElementById('orders-container');
+    const cntEl = document.getElementById('mo-cnt');
+    if (!list.length) {
+      el.innerHTML = `<div class="mo-empty"><div class="ic">📦</div><h3>ЗАКАЗОВ НЕТ</h3><p>В этой категории пока пусто</p></div>`;
+      if (cntEl) cntEl.textContent = '0';
+      return;
+    }
+    el.innerHTML = list.map((o, i) => cardHTML(o, i)).join('');
+    if (cntEl) cntEl.textContent = list.length;
+    requestAnimationFrame(() => setTimeout(() => {
+      document.querySelectorAll('.otline i').forEach(i => i.style.transform = 'scaleX(' + (i.dataset.w / 100) + ')');
+    }, 300));
+  }
 
   async function loadMyOrders() {
     const container = document.getElementById('orders-container');
     const user = window.Auth?.getUser();
     if (!user) return;
 
-    container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500)">Загрузка заказов...</div>';
+    container.innerHTML = '<div style="text-align:center;padding:3rem;color:#888;font-size:.9rem">Загрузка заказов...</div>';
 
     try {
-      // Ищем заказы по email пользователя
-      const email = user.email;
       const res = await fetch(
-        `${SB_URL}/rest/v1/orders?email=eq.${encodeURIComponent(email)}&order=created_at.desc`,
+        `${SB_URL}/rest/v1/orders?email=eq.${encodeURIComponent(user.email)}&order=created_at.desc`,
         { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
       );
-      const orders = await res.json();
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      moAllOrders = await res.json();
 
-      if (!orders.length) {
-        container.innerHTML = `
-          <div class="orders-empty">
-            <div class="orders-empty-icon">📦</div>
-            <div class="orders-empty-title">ЗАКАЗОВ НЕТ</div>
-            <div class="orders-empty-sub">Вы ещё не делали заказов</div>
-            <a href="catalog.html" class="btn btn-primary" style="margin-top:1rem">Перейти в каталог →</a>
-          </div>`;
-        return;
-      }
+      const tabCnt = document.getElementById('mo-tab-cnt');
+      if (tabCnt) tabCnt.textContent = moAllOrders.length;
 
-      container.innerHTML = `
-        <div style="margin-bottom:2rem">
-          <div class="section-label">История покупок</div>
-          <div class="section-title">МОИ ЗАКАЗЫ</div>
-          <div style="font-size:0.82rem;color:var(--gray-500);margin-top:0.3rem">${orders.length} ${orders.length === 1 ? 'заказ' : orders.length < 5 ? 'заказа' : 'заказов'}</div>
-        </div>
-        ${orders.map(order => {
-          const items = Array.isArray(order.items) ? order.items : [];
-          const date = new Date(order.created_at).toLocaleDateString('ru-RU', {
-            day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-          });
-          const status = statusMap[order.status] || { label: order.status, cls: 'status-new' };
-          const shortId = order.id?.slice(0, 8).toUpperCase();
-          return `
-            <div class="order-card">
-              <div class="order-card-header">
-                <div>
-                  <div class="order-card-id">Заказ #${shortId}</div>
-                  <div class="order-card-date">${date}</div>
-                </div>
-                <span class="order-card-status ${status.cls}">${status.label}</span>
-              </div>
-              <div class="order-card-items">
-                ${items.slice(0, 3).map(item => `
-                  <div class="order-card-item">
-                    <div class="order-card-item-img">
-                      ${item.image ? `<img src="${item.image}">` : '👟'}
-                    </div>
-                    <div style="flex:1">
-                      <div class="order-card-item-name">${item.name}</div>
-                      <div class="order-card-item-meta">Размер: ${item.size} · ${item.quantity} шт.</div>
-                    </div>
-                    <div class="order-card-item-price">${(item.price * item.quantity).toLocaleString('ru-RU')} сум</div>
-                  </div>`).join('')}
-                ${items.length > 3 ? `<div style="font-size:0.75rem;color:var(--gray-500);text-align:center;padding:0.5rem 0">+ ещё ${items.length - 3} товара</div>` : ''}
-              </div>
-              <div class="order-card-footer">
-                <span class="order-card-total-label">Итого</span>
-                <span class="order-card-total">${(order.total||0).toLocaleString('ru-RU')} сум</span>
-              </div>
-            </div>`;
-        }).join('')}`;
+      document.getElementById('mo-filters')?.addEventListener('click', e => {
+        const b = e.target.closest('.mo-fchip');
+        if (!b) return;
+        moFilter = b.dataset.f;
+        document.querySelectorAll('.mo-fchip').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        renderOrders();
+      });
+
+      renderOrders();
     } catch(e) {
       console.error(e);
-      container.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500)">Ошибка загрузки заказов</div>';
+      container.innerHTML = '<div style="text-align:center;padding:3rem;color:#888">Ошибка загрузки заказов</div>';
     }
   }
 
