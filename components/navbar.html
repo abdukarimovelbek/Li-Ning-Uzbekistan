@@ -368,23 +368,4 @@
 @media(min-width:769px){.mob-prof-ov,.mob-prof-sheet{display:none!important}}
 </style>
 
-<script>
-function openMobProfile(){
-  const user=window.Auth?.getUser();
-  if(user){
-    const name=user.user_metadata?.full_name||user.email||'';
-    const initials=name.split(' ').map(w=>w[0]).filter(Boolean).join('').toUpperCase().slice(0,2)||'?';
-    document.getElementById('mob-prof-av').textContent=initials;
-    document.getElementById('mob-prof-nm').textContent=name||'Пользователь';
-    document.getElementById('mob-prof-em').textContent=user.email||'';
-  }
-  document.getElementById('mob-prof-ov').classList.add('open');
-  document.getElementById('mob-prof-sheet').classList.add('open');
-}
-function closeMobProfile(){
-  document.getElementById('mob-prof-ov').classList.remove('open');
-  document.getElementById('mob-prof-sheet').classList.remove('open');
-}
-</script>
-
 
