@@ -19,10 +19,54 @@
       const sidebar = document.querySelector('.filter-sidebar');
       const btn = document.getElementById('filter-toggle-btn');
       const overlay = document.getElementById('filter-overlay');
+      const isOpen = sidebar?.classList.contains('open');
       sidebar?.classList.toggle('open');
       btn?.classList.toggle('active');
       overlay?.classList.toggle('open');
+      document.body.style.overflow = isOpen ? '' : 'hidden';
     }
+    document.addEventListener('DOMContentLoaded', () => {
+      const handle = document.querySelector('.filter-handle');
+      const sidebar = document.querySelector('.filter-sidebar');
+      if (!handle || !sidebar) return;
+
+      let startY = 0, lastY = 0, dragging = false;
+
+      handle.addEventListener('touchstart', e => {
+        startY = lastY = e.touches[0].clientY;
+        dragging = true;
+        sidebar.style.transition = 'none';
+        e.preventDefault();
+      }, { passive: false });
+
+      window.addEventListener('touchmove', e => {
+        if (!dragging) return;
+        lastY = e.touches[0].clientY;
+        const delta = Math.max(0, lastY - startY);
+        sidebar.style.transform = `translateY(${delta}px)`;
+      }, { passive: false });
+
+      window.addEventListener('touchend', () => {
+        if (!dragging) return;
+        dragging = false;
+        const delta = lastY - startY;
+        sidebar.style.transition = 'transform .35s cubic-bezier(.22,1,.36,1)';
+        if (delta > 90) {
+          sidebar.style.transform = 'translateY(110%)';
+          setTimeout(() => {
+            sidebar.classList.remove('open');
+            sidebar.style.transform = '';
+            sidebar.style.transition = '';
+            document.getElementById('filter-overlay')?.classList.remove('open');
+            document.getElementById('filter-toggle-btn')?.classList.remove('active');
+            document.body.style.overflow = '';
+          }, 350);
+        } else {
+          sidebar.style.transform = 'translateY(0)';
+          setTimeout(() => { sidebar.style.transform = ''; sidebar.style.transition = ''; }, 350);
+        }
+      });
+    });
   </script>
 </head>
 <body>
