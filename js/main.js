@@ -98,13 +98,43 @@ const Auth = (() => {
   let _user = null;
   let _pendingAction = null; // действие которое выполним после логина
 
+  // ── Тихое обновление токена через refresh_token ──
+  const _silentRefresh = async (refreshToken) => {
+    try {
+      const res = await fetch(`${SB_AUTH}/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      });
+      if (!res.ok) {
+        localStorage.removeItem('lining_session');
+        return;
+      }
+      const data = await res.json();
+      data.expires_at = Math.floor(Date.now() / 1000) + (data.expires_in || 3600);
+      localStorage.setItem('lining_session', JSON.stringify(data));
+      _user = data.user;
+      updateNavUI();
+      document.dispatchEvent(new CustomEvent('auth:login', { detail: { user: _user } }));
+    } catch(e) {
+      localStorage.removeItem('lining_session');
+    }
+  };
+
   // ── Получаем текущего пользователя из localStorage ──
   const loadUser = () => {
     try {
       const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
-      if (session?.access_token && session?.expires_at > Date.now() / 1000) {
+      if (!session?.access_token) { _user = null; return null; }
+
+      if (session.expires_at > Date.now() / 1000) {
         _user = session.user;
         return _user;
+      }
+
+      // Токен истёк — пробуем тихо обновить через refresh_token
+      if (session.refresh_token) {
+        _silentRefresh(session.refresh_token);
       }
     } catch(e) {}
     _user = null;
@@ -169,6 +199,7 @@ const Auth = (() => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error_description || data.msg || 'Неверный email или пароль');
     
+    data.expires_at = Math.floor(Date.now() / 1000) + (data.expires_in || 3600);
     localStorage.setItem('lining_session', JSON.stringify(data));
     _user = data.user;
     onLogin();

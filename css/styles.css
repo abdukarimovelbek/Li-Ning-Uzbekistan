@@ -2122,7 +2122,7 @@ body.menu-open { overflow: hidden; }
 /* мегаменю управляется через JS в main.js */
 
 .mega-col h4 {
-  font-size: 0.82rem;
+  font-size: 0.93rem;
   font-weight: 700;
   color: var(--black);
   margin-bottom: 1rem;
@@ -2137,14 +2137,15 @@ body.menu-open { overflow: hidden; }
   display: block;
   margin: 0 !important;
   padding-left: 0 !important;
-  transition: color 0.2s var(--ease);
+  transition: color 0.2s var(--ease), padding-left 0.2s var(--ease);
 }
-.mega-col h4 a:hover{
-  color: var(--red) !important;  
+.mega-col h4 a:hover {
+  color: var(--red) !important;
+  padding-left: 4px !important;
 }
-.mega-col ul { display: flex; flex-direction: column; gap: 0.5rem; }
+.mega-col ul { display: flex; flex-direction: column; gap: 0.28rem; }
 .mega-col ul li a {
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   color: var(--gray-700) !important;
   transition: color var(--transition), padding-left var(--transition);
   display: block;
