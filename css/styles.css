@@ -171,22 +171,9 @@ button {
   color: rgba(255,255,255,.82);       /* чуть приглушённый белый */
   transition: color .25s var(--ease);
 }
-.nav-links a::after {                 /* анимированная красная линия */
-  content: '';
-  position: absolute;
-  left: .9rem; right: .9rem; bottom: .28rem;
-  height: 2px;
-  background: var(--red);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .35s var(--ease);
-}
-.nav-links a:hover { 
-  color: #fff; 
-}  /* при hover — чистый белый */
-.nav-links a:hover::after,
-.nav-links a.active::after { 
-  transform: scaleX(1);   /* линия выезжает */
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--red);
 }
 
 .nav-actions {
@@ -2150,6 +2137,10 @@ body.menu-open { overflow: hidden; }
   display: block;
   margin: 0 !important;
   padding-left: 0 !important;
+  transition: color 0.2s var(--ease);
+}
+.mega-col h4 a:hover{
+  color: var(--red) !important;  
 }
 .mega-col ul { display: flex; flex-direction: column; gap: 0.5rem; }
 .mega-col ul li a {
