@@ -918,73 +918,86 @@
       line-height:1.45
     }
 
-    .co-success{
-      display:none; flex-direction:column; align-items:center;
-      text-align:center; padding:4rem 1.5rem 5rem; gap:1.4rem; max-width:520px; margin:0 auto
-    }
-    .co-success.show{ display:flex; animation:coSucc .7s var(--ec) both }
-    @keyframes coSucc{
-      from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none}
-    }
+    /* ══ SUCCESS SCREEN ══ */
+    .co-success{display:none}
+    .co-success.show{display:block;animation:coSuccFadeIn .6s var(--ec) both}
+    @keyframes coSuccFadeIn{from{opacity:0}to{opacity:1}}
 
-    /* Анимированная галочка */
-    .co-succ-svg{ width:96px; height:96px; filter:drop-shadow(0 10px 28px rgba(30,158,90,.35)) }
-    .co-succ-ring{
-      stroke:#1e9e5a; stroke-width:2.2; stroke-linecap:round;
-      stroke-dasharray:148; stroke-dashoffset:148;
-      animation:coSuccRing .65s var(--ec) .25s forwards
+    .co-succ-hero{
+      position:relative;overflow:hidden;
+      background:linear-gradient(160deg,#141414 0%,#1d1513 55%,#0d0d0d 100%);
+      padding:clamp(2rem,5vw,4rem) clamp(16px,5vw,48px) clamp(2.5rem,6vw,5rem);
+      text-align:center;color:#fff
     }
-    .co-succ-chk{
-      stroke:#1e9e5a; stroke-width:3; stroke-linecap:round; stroke-linejoin:round;
-      stroke-dasharray:44; stroke-dashoffset:44;
-      animation:coSuccChk .38s ease .9s forwards
-    }
-    @keyframes coSuccRing{ to{stroke-dashoffset:0} }
-    @keyframes coSuccChk{ to{stroke-dashoffset:0} }
+    .co-succ-rays{position:absolute;left:50%;top:38%;width:1px;height:1px;z-index:0;pointer-events:none}
+    .co-succ-rays span{position:absolute;left:0;top:0;width:2px;height:40vh;transform-origin:top center;background:linear-gradient(180deg,rgba(196,30,58,.5),transparent);opacity:0;animation:coRayIn .9s var(--ec) forwards}
+    .co-succ-grid{position:absolute;inset:0;z-index:0;opacity:.05;background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);background-size:54px 54px;mask:radial-gradient(circle at 50% 35%,#000 0%,transparent 65%)}
+    .co-succ-glow{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);width:min(600px,90vw);height:min(600px,90vw);z-index:0;border-radius:50%;background:radial-gradient(circle,rgba(196,30,58,.25) 0%,transparent 60%);animation:coGlowPulse 4s ease-in-out infinite alternate}
+    @keyframes coGlowPulse{from{opacity:.6;transform:translate(-50%,-50%) scale(.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1.08)}}
+    @keyframes coRayIn{from{opacity:0;transform:rotate(var(--rot)) scaleY(0)}to{opacity:.6;transform:rotate(var(--rot)) scaleY(1)}}
+    @keyframes coFadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
 
-    .co-succ-title{
-      font-family:'Bebas Neue',sans-serif; font-size:2.8rem;
-      letter-spacing:2px; color:#1A1A1A; margin-top:-.3rem
-    }
-    .co-succ-sub{ font-size:.88rem; color:#888; max-width:360px; line-height:1.8; font-weight:300 }
+    .co-succ-inner{position:relative;z-index:2;max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
 
-    /* Карточка номера заказа */
-    .co-succ-num-box{
-      background:#F2EEE8; border-radius:14px; padding:1rem 1.5rem; width:100%; max-width:320px;
-      border:1px solid rgba(0,0,0,.07)
+    .co-succ-check{
+      width:clamp(80px,14vw,110px);height:clamp(80px,14vw,110px);border-radius:50%;
+      background:linear-gradient(135deg,#1e9e5a,#27c96e);
+      display:flex;align-items:center;justify-content:center;margin-bottom:1.6rem;
+      box-shadow:0 20px 50px rgba(30,158,90,.4);position:relative;
+      animation:coChkPop .7s var(--ec) backwards
     }
-    .co-succ-num-lbl{ font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; color:#A09890; margin-bottom:.4rem }
-    .co-succ-num-row{ display:flex; align-items:center; justify-content:center; gap:.8rem }
-    .co-succ-num-val{
-      font-family:'Bebas Neue',sans-serif; font-size:1.7rem; letter-spacing:2px; color:var(--red)
-    }
-    .co-succ-copy-btn{
-      background:none; border:none; cursor:pointer; font-size:1.1rem; padding:.2rem;
-      opacity:.6; transition:opacity .2s; line-height:1
-    }
-    .co-succ-copy-btn:hover{ opacity:1 }
+    @keyframes coChkPop{0%{opacity:0;transform:scale(.3)}60%{transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+    .co-succ-check::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid rgba(39,201,110,.4);animation:coChkRing 1.1s var(--ec) .3s backwards}
+    @keyframes coChkRing{from{opacity:1;transform:scale(.85)}to{opacity:0;transform:scale(1.5)}}
+    .co-succ-check svg{width:46%;height:46%;stroke:#fff;stroke-width:2.6;fill:none;stroke-dasharray:30;stroke-dashoffset:30;animation:coChkDraw .5s var(--ec) .45s forwards}
+    @keyframes coChkDraw{to{stroke-dashoffset:0}}
 
-    /* Что дальше */
-    .co-succ-what{ width:100%; max-width:380px }
-    .co-succ-what-title{
-      font-size:.7rem; text-transform:uppercase; letter-spacing:.12em;
-      color:#B0A8A0; margin-bottom:.9rem
-    }
-    .co-succ-what-steps{ display:flex; align-items:flex-start; justify-content:center; gap:.5rem }
-    .co-succ-ws{ display:flex; flex-direction:column; align-items:center; gap:.25rem; flex:1 }
-    .co-succ-wsi{ font-size:1.5rem; line-height:1 }
-    .co-succ-wst{ font-size:.74rem; font-weight:700; color:#1A1A1A; margin-top:.1rem }
-    .co-succ-wss{ font-size:.62rem; color:#A09890; line-height:1.3 }
-    .co-succ-warr{ color:#D5CFC7; font-size:1rem; margin-top:.9rem; flex:none }
+    .co-succ-eyebrow{font-family:'Oswald',sans-serif;font-size:.74rem;letter-spacing:.32em;text-transform:uppercase;color:#1e9e5a;font-weight:600;margin-bottom:.8rem;opacity:0;animation:coFadeUp .7s .55s forwards}
+    .co-succ-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.4rem,7vw,4.5rem);letter-spacing:2px;line-height:.9;color:#fff;opacity:0;animation:coFadeUp .8s .65s forwards}
+    .co-succ-title em{font-style:normal;color:var(--red)}
+    .co-succ-sub{font-size:clamp(.88rem,2vw,1rem);color:rgba(255,255,255,.6);font-weight:300;max-width:420px;line-height:1.7;margin-top:1rem;opacity:0;animation:coFadeUp .8s .78s forwards}
+    .co-succ-sub strong{color:#fff;font-weight:600}
 
-    /* Кнопки */
-    .co-succ-btns{ display:flex; flex-direction:column; align-items:center; gap:.75rem; width:100%; max-width:320px }
-    .co-succ-btns .co-btn-next{ width:100%; justify-content:center; display:flex; align-items:center; gap:.5rem }
-    .co-succ-cont{
-      font-size:.78rem; font-weight:600; color:#A09890;
-      letter-spacing:.04em; transition:color .2s; text-decoration:none
+    .co-succ-chip{display:inline-flex;align-items:center;gap:.8rem;margin-top:1.6rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:100px;padding:.65rem 1.4rem;opacity:0;animation:coFadeUp .8s .9s forwards}
+    .co-succ-chip-lbl{font-family:'Oswald',sans-serif;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+    .co-succ-chip-num{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:1.5px;color:#fff}
+    .co-succ-chip-copy{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6);transition:.2s}
+    .co-succ-chip-copy:hover{background:var(--red);color:#fff}
+    .co-succ-chip-copy svg{width:13px;height:13px}
+
+    .co-succ-body{max-width:860px;margin:-1.5rem auto 0;padding:clamp(1.5rem,4vw,3rem) clamp(16px,4vw,40px) 5rem;display:flex;flex-direction:column;gap:1.2rem;position:relative;z-index:5}
+
+    .co-succ-cta{display:flex;gap:.9rem;flex-wrap:wrap}
+    .co-succ-btn-pri,.co-succ-btn-gh{flex:1;min-width:200px;display:inline-flex;align-items:center;justify-content:center;gap:.6rem;border-radius:10px;font-family:'Oswald',sans-serif;font-size:.9rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:1.1rem 1.6rem;transition:.3s var(--ec);text-decoration:none;position:relative;overflow:hidden}
+    .co-succ-btn-pri{background:var(--red);color:#fff}
+    .co-succ-btn-pri:hover{background:#A01830;transform:translateY(-2px);box-shadow:0 14px 36px rgba(196,30,58,.36)}
+    .co-succ-btn-pri::after{content:'';position:absolute;top:0;left:-120%;width:60%;height:100%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);transition:.6s}
+    .co-succ-btn-pri:hover::after{left:130%}
+    .co-succ-btn-gh{background:#fff;color:#1A1A1A;box-shadow:inset 0 0 0 1.5px #EDE9E3}
+    .co-succ-btn-gh:hover{box-shadow:inset 0 0 0 1.5px #1A1A1A;background:#FAF8F5}
+    .co-succ-btn-pri svg,.co-succ-btn-gh svg{width:16px;height:16px;transition:transform .3s}
+    .co-succ-btn-pri:hover svg{transform:translateX(3px)}
+
+    .co-succ-perks{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+    .co-succ-perk{text-align:center;padding:1.4rem 1rem;background:#fff;border:1px solid #EDE9E3;border-radius:14px;transition:.3s var(--ec)}
+    .co-succ-perk:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,.08);border-color:rgba(196,30,58,.25)}
+    .co-succ-perk-ic{width:46px;height:46px;margin:0 auto .8rem;border-radius:12px;background:rgba(196,30,58,.08);color:var(--red);display:flex;align-items:center;justify-content:center}
+    .co-succ-perk-ic svg{width:22px;height:22px}
+    .co-succ-perk-t{font-weight:700;font-size:.86rem;color:#1A1A1A;margin-bottom:.3rem}
+    .co-succ-perk-d{font-size:.74rem;color:#888;line-height:1.5}
+
+    .co-succ-footnote{text-align:center;padding:1rem;color:#A7A099;font-size:.8rem;line-height:1.7}
+    .co-succ-footnote a{color:var(--red);font-weight:600}
+
+    .co-succ-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A1A;color:#fff;padding:.65rem 1.3rem;border-radius:100px;font-size:.82rem;opacity:0;pointer-events:none;transition:.35s var(--ec);z-index:400}
+    .co-succ-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    @media(max-width:680px){
+      .co-succ-perks{grid-template-columns:1fr;gap:.7rem}
+      .co-succ-perk{display:flex;align-items:center;gap:1rem;text-align:left;padding:1rem}
+      .co-succ-perk-ic{margin:0;flex:none}
+      .co-succ-btn-pri,.co-succ-btn-gh{min-width:100%}
     }
-    .co-succ-cont:hover{ color:#1A1A1A }
 
     .co-cw{
       position:fixed;
@@ -1376,64 +1389,6 @@
         </div>
       </div>
 
-      <!-- ЭКРАН УСПЕХА -->
-      <div class="co-success" id="co-success">
-
-      <!-- Анимированная галочка -->
-      <div class="co-succ-anim">
-        <svg class="co-succ-svg" viewBox="0 0 52 52">
-          <circle class="co-succ-ring" cx="26" cy="26" r="23" fill="none"/>
-          <path class="co-succ-chk" fill="none" d="M14 26l9 9 15-16"/>
-        </svg>
-      </div>
-
-      <div class="co-succ-title">ЗАКАЗ ОФОРМЛЕН!</div>
-      <div class="co-succ-sub">Спасибо, <strong id="co-succ-nm"></strong><br>Менеджер свяжется с вами в течение&nbsp;10&nbsp;минут для подтверждения.</div>
-
-      <!-- Номер заказа -->
-      <div class="co-succ-num-box">
-        <div class="co-succ-num-lbl">Номер заказа</div>
-        <div class="co-succ-num-row">
-          <span id="co-succ-num" class="co-succ-num-val">#LN-00000</span>
-          <button class="co-succ-copy-btn" onclick="navigator.clipboard?.writeText(document.getElementById('co-succ-num').textContent);this.textContent='✓';setTimeout(()=>this.textContent='📋',2000)" title="Скопировать">📋</button>
-        </div>
-      </div>
-
-      <!-- Что дальше -->
-      <div class="co-succ-what">
-        <div class="co-succ-what-title">Что дальше?</div>
-        <div class="co-succ-what-steps">
-          <div class="co-succ-ws">
-            <div class="co-succ-wsi">📞</div>
-            <div class="co-succ-wst">Звонок</div>
-            <div class="co-succ-wss">Подтвердим заказ</div>
-          </div>
-          <div class="co-succ-warr">→</div>
-          <div class="co-succ-ws">
-            <div class="co-succ-wsi">📦</div>
-            <div class="co-succ-wst">Сборка</div>
-            <div class="co-succ-wss">Подготовим товар</div>
-          </div>
-          <div class="co-succ-warr">→</div>
-          <div class="co-succ-ws">
-            <div class="co-succ-wsi">🚚</div>
-            <div class="co-succ-wst">Доставка</div>
-            <div class="co-succ-wss">Привезём к вам</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Кнопки -->
-      <div class="co-succ-btns">
-        <button class="co-btn-next" onclick="window.location.href='my-orders.html'">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-          Мои заказы
-        </button>
-        <a href="catalog.html" class="co-succ-cont">← Продолжить покупки</a>
-      </div>
-
-    </div>
-
     </div><!-- /co-steps -->
 
     <!-- ПРАВАЯ КОЛОНКА: САЙДБАР (десктоп) -->
@@ -1451,6 +1406,63 @@
     </aside>
 
   </div><!-- /co-body -->
+
+  <!-- ЭКРАН УСПЕХА -->
+  <div class="co-success" id="co-success">
+
+    <div class="co-succ-hero">
+      <div class="co-succ-glow"></div>
+      <div class="co-succ-grid"></div>
+      <div class="co-succ-rays" id="co-succ-rays"></div>
+      <div class="co-succ-inner">
+        <div class="co-succ-check">
+          <svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+        <div class="co-succ-eyebrow">Заказ успешно оформлен</div>
+        <h1 class="co-succ-title">СПАСИБО, <em id="co-succ-nm"></em></h1>
+        <p class="co-succ-sub">Мы уже собираем ваш заказ. <strong>Менеджер свяжется</strong> с вами в течение 10 минут для подтверждения.</p>
+        <div class="co-succ-chip">
+          <span class="co-succ-chip-lbl">Номер заказа</span>
+          <span class="co-succ-chip-num" id="co-succ-num">#LN-00000</span>
+          <button class="co-succ-chip-copy" id="co-succ-copy" title="Скопировать">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="co-succ-body">
+      <div class="co-succ-cta">
+        <a class="co-succ-btn-pri" href="my-orders.html">
+          Отслеживать в «Мои заказы»
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <a class="co-succ-btn-gh" href="catalog.html">Продолжить покупки</a>
+      </div>
+      <div class="co-succ-perks">
+        <div class="co-succ-perk">
+          <div class="co-succ-perk-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div class="co-succ-perk-t">Поддержка 24/7</div>
+          <div class="co-succ-perk-d">Вопросы по заказу — напишите нам в Telegram</div>
+        </div>
+        <div class="co-succ-perk">
+          <div class="co-succ-perk-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9M3 12V7M3 12h5"/></svg></div>
+          <div class="co-succ-perk-t">Обмен 14 дней</div>
+          <div class="co-succ-perk-d">Не подошёл размер? Легко обменяем</div>
+        </div>
+        <div class="co-succ-perk">
+          <div class="co-succ-perk-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <div class="co-succ-perk-t">100% оригинал</div>
+          <div class="co-succ-perk-d">Официальная гарантия Li-Ning</div>
+        </div>
+      </div>
+      <div class="co-succ-footnote">
+        Возникли вопросы? Свяжитесь с нами: <a href="tel:+998712000000">+998 71 200 00 00</a>
+      </div>
+    </div>
+
+  </div>
+  <div class="co-succ-toast" id="co-succ-toast">✓ Скопировано</div>
 
   <!-- МОБИЛЬНАЯ ПОЛОСКА ВНИЗУ -->
   <div class="co-sum-strip" id="co-sum-strip" onclick="coToggleDrawer()">
@@ -1706,21 +1718,40 @@
       const data = await res.json();
       const orderId = data[0]?.id?.slice(0, 8).toUpperCase() || String(Math.floor(Math.random() * 90000) + 10000);
 
-      document.getElementById('co-steps').style.display = 'none';
+      // Скрыть всё checkout UI
+      document.querySelector('.co-head')?.style.setProperty('display','none');
+      document.querySelector('.co-prog-wrap')?.style.setProperty('display','none');
+      document.querySelector('.co-body')?.style.setProperty('display','none');
       const strip = document.getElementById('co-sum-strip');
       if (strip) strip.style.display = 'none';
 
-      // Все 3 шага — зелёные
-      document.querySelectorAll('.co-ps').forEach(p => { p.classList.remove('active'); p.classList.add('done'); });
-      document.querySelectorAll('.co-pline i').forEach(l => l.style.width = '100%');
-
+      // Показать экран успеха
       document.getElementById('co-succ-nm').textContent = orderData.first_name + '!';
       document.getElementById('co-succ-num').textContent = '#LN-' + orderId;
       document.getElementById('co-success').classList.add('show');
 
+      // Лучи
+      const raysEl = document.getElementById('co-succ-rays');
+      if (raysEl) {
+        for (let i = 0; i < 12; i++) {
+          const s = document.createElement('span');
+          s.style.setProperty('--rot', (i * 30) + 'deg');
+          s.style.animationDelay = (.2 + i * .04) + 's';
+          raysEl.appendChild(s);
+        }
+      }
+
+      // Копирование номера заказа
+      document.getElementById('co-succ-copy')?.addEventListener('click', () => {
+        const num = document.getElementById('co-succ-num')?.textContent;
+        navigator.clipboard?.writeText(num).then(() => {
+          const t = document.getElementById('co-succ-toast');
+          if (t) { t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 1800); }
+        });
+      });
+
       window.Cart?.clear(); window.Cart?.updateUI();
-      coRenderAll(); // сайдбар теперь покажет пустую корзину
-      document.querySelector('.co-osi')?.style.setProperty('display', 'none'); // скрыть сайдбар целиком
+      coRenderAll();
 
       coConfetti(); window.scrollTo({ top: 0, behavior: 'smooth' });
 
