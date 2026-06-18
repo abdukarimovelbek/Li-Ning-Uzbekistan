@@ -362,7 +362,26 @@ const Auth = (() => {
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
   });
 
-  window.Auth = { getUser, isLoggedIn, requireAuth, signOut, openModal, closeModal, initAuthBtn, updateNavUI};
+  window.Auth = { getUser, isLoggedIn, requireAuth, signOut, openModal, closeModal, initAuthBtn, updateNavUI };
+
+  window.openMobProfile = function() {
+    const user = window.Auth?.getUser();
+    if (user) {
+      const name = user.user_metadata?.full_name || user.email || '';
+      const initials = name.split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2) || '?';
+      document.getElementById('mob-prof-av').textContent = initials;
+      document.getElementById('mob-prof-nm').textContent = name || 'Пользователь';
+      document.getElementById('mob-prof-em').textContent = user.email || '';
+    }
+    document.getElementById('mob-prof-ov')?.classList.add('open');
+    document.getElementById('mob-prof-sheet')?.classList.add('open');
+  };
+
+  window.closeMobProfile = function() {
+    document.getElementById('mob-prof-ov')?.classList.remove('open');
+    document.getElementById('mob-prof-sheet')?.classList.remove('open');
+  };
+  
   return { getUser, isLoggedIn, requireAuth };
 })();
 
