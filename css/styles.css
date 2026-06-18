@@ -1752,10 +1752,12 @@ footer .footer-inner {
     bottom: 0;
     height: 72vh;
     border-radius: 22px 22px 0 0;
+    overflow: hidden;
     transform: translateY(110%);
     transition: transform .45s cubic-bezier(.22,1,.36,1);
     z-index: 1002;
   }
+  .cart-header { border-radius: 22px 22px 0 0; }
   .cart-drawer.open { transform: translateY(0); }
   .cart-footer { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + .75rem); }
   .cart-body { max-height: calc(72vh - 210px); overflow-y: auto; }
