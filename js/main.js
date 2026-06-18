@@ -1163,22 +1163,28 @@ async function fetchProducts(filter = '') {
     }
   } catch(e) {}
 
-  const res = await fetch(
-    `${SB_URL}/rest/v1/products?is_active=eq.true${filter}&order=created_at.desc`,
-    {
-      headers: {
-        'apikey': SB_KEY,
-        'Authorization': `Bearer ${SB_KEY}`
-      }
-    }
-  );
-  const data = await res.json();
-
   try {
-    sessionStorage.setItem(cacheKey, JSON.stringify({ data, time: Date.now() }));
-  } catch(e) {}
+    const res = await fetch(
+      `${SB_URL}/rest/v1/products?is_active=eq.true${filter}&order=created_at.desc`,
+      {
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': `Bearer ${SB_KEY}`
+        }
+      }
+    );
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
 
-  return data;
+    try {
+      sessionStorage.setItem(cacheKey, JSON.stringify({ data, time: Date.now() }));
+    } catch(e) {}
+
+    return data;
+  } catch(e) {
+    console.error('fetchProducts error:', e);
+    return [];
+  }
 }
 
 function updatePromoFilterVisibility() {
@@ -1489,26 +1495,32 @@ async function highlightWishlist() {
   const user = window.Auth?.getUser();
   if (!user) return;
 
-  const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
-  const token = session?.access_token || SB_KEY;
+  try {
+    const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+    const token = session?.access_token || SB_KEY;
 
-  const res = await fetch(
-    `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&select=product_id`,
-    { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
-  );
-  const data = await res.json();
-  const wishedIds = new Set(data.map(w => w.product_id));
-  const _wb = document.getElementById('wishBadge');
-  if (_wb) _wb.textContent = wishedIds.size;
+    const res = await fetch(
+      `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&select=product_id`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
+    );
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const wishedIds = new Set(data.map(w => w.product_id));
+    const _wb = document.getElementById('wishBadge');
+    if (_wb) _wb.textContent = wishedIds.size;
 
-  document.querySelectorAll('.product-card').forEach(card => {
-    const btn = card.querySelector('.btn-wishlist');
-    if (btn && wishedIds.has(card.dataset.productId)) {
-      btn.dataset.wished = 'true';
-      btn.textContent = '♥';
-    }
-  });
+    document.querySelectorAll('.product-card').forEach(card => {
+      const btn = card.querySelector('.btn-wishlist');
+      if (btn && wishedIds.has(card.dataset.productId)) {
+        btn.dataset.wished = 'true';
+        btn.textContent = '♥';
+      }
+    });
+  } catch(e) {
+    console.error('highlightWishlist error:', e);
+  }
 }
+
 window.highlightWishlist = highlightWishlist;
 
 document.addEventListener('DOMContentLoaded', initScrollFadeIn);
