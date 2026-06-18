@@ -917,63 +917,75 @@
       color:rgba(255,255,255,.38);
       line-height:1.45
     }
+
     .co-success{
-      display:none;
-      flex-direction:column;
-      align-items:center;
-      text-align:center;
-      padding:5rem 2rem;
-      gap:1.2rem
+      display:none; flex-direction:column; align-items:center;
+      text-align:center; padding:4rem 1.5rem 5rem; gap:1.4rem; max-width:520px; margin:0 auto
     }
-    .co-success.show{
-      display:flex;
-      animation:coSucc .7s var(--ec) both
-    }
+    .co-success.show{ display:flex; animation:coSucc .7s var(--ec) both }
     @keyframes coSucc{
-      from{opacity:0; transform:translateY(20px)}
-      to  {opacity:1; transform:none}
+      from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none}
     }
-    .co-succ-circle{
-      width:86px; height:86px;
-      border-radius:50%;
-      background:linear-gradient(135deg,#1e9e5a,#27c96e);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      box-shadow:0 16px 40px rgba(30,158,90,.4)
+
+    /* Анимированная галочка */
+    .co-succ-svg{ width:96px; height:96px; filter:drop-shadow(0 10px 28px rgba(30,158,90,.35)) }
+    .co-succ-ring{
+      stroke:#1e9e5a; stroke-width:2.2; stroke-linecap:round;
+      stroke-dasharray:148; stroke-dashoffset:148;
+      animation:coSuccRing .65s var(--ec) .25s forwards
     }
-    .co-succ-circle svg{
-      width:40px; height:40px;
-      stroke:#fff; stroke-width:2.5
+    .co-succ-chk{
+      stroke:#1e9e5a; stroke-width:3; stroke-linecap:round; stroke-linejoin:round;
+      stroke-dasharray:44; stroke-dashoffset:44;
+      animation:coSuccChk .38s ease .9s forwards
     }
+    @keyframes coSuccRing{ to{stroke-dashoffset:0} }
+    @keyframes coSuccChk{ to{stroke-dashoffset:0} }
+
     .co-succ-title{
-      font-family:'Bebas Neue',sans-serif;
-      font-size:2.6rem;
-      letter-spacing:2px;
-      color:#1A1A1A
+      font-family:'Bebas Neue',sans-serif; font-size:2.8rem;
+      letter-spacing:2px; color:#1A1A1A; margin-top:-.3rem
     }
-    .co-succ-sub{
-      font-size:.9rem;
-      color:#888;
-      max-width:380px;
-      line-height:1.75;
-      font-weight:300
+    .co-succ-sub{ font-size:.88rem; color:#888; max-width:360px; line-height:1.8; font-weight:300 }
+
+    /* Карточка номера заказа */
+    .co-succ-num-box{
+      background:#F2EEE8; border-radius:14px; padding:1rem 1.5rem; width:100%; max-width:320px;
+      border:1px solid rgba(0,0,0,.07)
     }
-    .co-succ-order{
-      background:#F2EEE8;
-      border-radius:12px;
-      padding:1rem 1.7rem;
-      font-family:'Oswald',sans-serif;
-      font-size:.88rem;
-      font-weight:600;
-      letter-spacing:.04em;
-      color:#555
+    .co-succ-num-lbl{ font-size:.68rem; text-transform:uppercase; letter-spacing:.1em; color:#A09890; margin-bottom:.4rem }
+    .co-succ-num-row{ display:flex; align-items:center; justify-content:center; gap:.8rem }
+    .co-succ-num-val{
+      font-family:'Bebas Neue',sans-serif; font-size:1.7rem; letter-spacing:2px; color:var(--red)
     }
-    .co-succ-order span{
-      color:var(--red);
-      font-family:'Bebas Neue',sans-serif;
-      font-size:1.25rem; letter-spacing:1px
+    .co-succ-copy-btn{
+      background:none; border:none; cursor:pointer; font-size:1.1rem; padding:.2rem;
+      opacity:.6; transition:opacity .2s; line-height:1
     }
+    .co-succ-copy-btn:hover{ opacity:1 }
+
+    /* Что дальше */
+    .co-succ-what{ width:100%; max-width:380px }
+    .co-succ-what-title{
+      font-size:.7rem; text-transform:uppercase; letter-spacing:.12em;
+      color:#B0A8A0; margin-bottom:.9rem
+    }
+    .co-succ-what-steps{ display:flex; align-items:flex-start; justify-content:center; gap:.5rem }
+    .co-succ-ws{ display:flex; flex-direction:column; align-items:center; gap:.25rem; flex:1 }
+    .co-succ-wsi{ font-size:1.5rem; line-height:1 }
+    .co-succ-wst{ font-size:.74rem; font-weight:700; color:#1A1A1A; margin-top:.1rem }
+    .co-succ-wss{ font-size:.62rem; color:#A09890; line-height:1.3 }
+    .co-succ-warr{ color:#D5CFC7; font-size:1rem; margin-top:.9rem; flex:none }
+
+    /* Кнопки */
+    .co-succ-btns{ display:flex; flex-direction:column; align-items:center; gap:.75rem; width:100%; max-width:320px }
+    .co-succ-btns .co-btn-next{ width:100%; justify-content:center; display:flex; align-items:center; gap:.5rem }
+    .co-succ-cont{
+      font-size:.78rem; font-weight:600; color:#A09890;
+      letter-spacing:.04em; transition:color .2s; text-decoration:none
+    }
+    .co-succ-cont:hover{ color:#1A1A1A }
+
     .co-cw{
       position:fixed;
       inset:0;
@@ -1366,12 +1378,61 @@
 
       <!-- ЭКРАН УСПЕХА -->
       <div class="co-success" id="co-success">
-        <div class="co-succ-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg></div>
-        <div class="co-succ-title">ЗАКАЗ ОФОРМЛЕН!</div>
-        <div class="co-succ-sub">Спасибо, <strong id="co-succ-nm"></strong> Ваш заказ принят. Менеджер свяжется с вами в течение 10 минут.</div>
-        <div class="co-succ-order">Номер заказа: <span id="co-succ-num">#LN-00000</span></div>
-        <button class="co-btn-next" onclick="window.location.href='my-orders.html'">Мои заказы <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+
+      <!-- Анимированная галочка -->
+      <div class="co-succ-anim">
+        <svg class="co-succ-svg" viewBox="0 0 52 52">
+          <circle class="co-succ-ring" cx="26" cy="26" r="23" fill="none"/>
+          <path class="co-succ-chk" fill="none" d="M14 26l9 9 15-16"/>
+        </svg>
       </div>
+
+      <div class="co-succ-title">ЗАКАЗ ОФОРМЛЕН!</div>
+      <div class="co-succ-sub">Спасибо, <strong id="co-succ-nm"></strong><br>Менеджер свяжется с вами в течение&nbsp;10&nbsp;минут для подтверждения.</div>
+
+      <!-- Номер заказа -->
+      <div class="co-succ-num-box">
+        <div class="co-succ-num-lbl">Номер заказа</div>
+        <div class="co-succ-num-row">
+          <span id="co-succ-num" class="co-succ-num-val">#LN-00000</span>
+          <button class="co-succ-copy-btn" onclick="navigator.clipboard?.writeText(document.getElementById('co-succ-num').textContent);this.textContent='✓';setTimeout(()=>this.textContent='📋',2000)" title="Скопировать">📋</button>
+        </div>
+      </div>
+
+      <!-- Что дальше -->
+      <div class="co-succ-what">
+        <div class="co-succ-what-title">Что дальше?</div>
+        <div class="co-succ-what-steps">
+          <div class="co-succ-ws">
+            <div class="co-succ-wsi">📞</div>
+            <div class="co-succ-wst">Звонок</div>
+            <div class="co-succ-wss">Подтвердим заказ</div>
+          </div>
+          <div class="co-succ-warr">→</div>
+          <div class="co-succ-ws">
+            <div class="co-succ-wsi">📦</div>
+            <div class="co-succ-wst">Сборка</div>
+            <div class="co-succ-wss">Подготовим товар</div>
+          </div>
+          <div class="co-succ-warr">→</div>
+          <div class="co-succ-ws">
+            <div class="co-succ-wsi">🚚</div>
+            <div class="co-succ-wst">Доставка</div>
+            <div class="co-succ-wss">Привезём к вам</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Кнопки -->
+      <div class="co-succ-btns">
+        <button class="co-btn-next" onclick="window.location.href='my-orders.html'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+          Мои заказы
+        </button>
+        <a href="catalog.html" class="co-succ-cont">← Продолжить покупки</a>
+      </div>
+
+    </div>
 
     </div><!-- /co-steps -->
 
@@ -1478,6 +1539,7 @@
 
   function coChQty(idx, d) {
     let items = coGetCart();
+    if (!items[idx]) return;
     items[idx].qty = Math.max(1, items[idx].qty + d);
     localStorage.setItem('lining_cart', JSON.stringify(items));
     window.Cart?.updateUI();
@@ -1647,10 +1709,19 @@
       document.getElementById('co-steps').style.display = 'none';
       const strip = document.getElementById('co-sum-strip');
       if (strip) strip.style.display = 'none';
+
+      // Все 3 шага — зелёные
+      document.querySelectorAll('.co-ps').forEach(p => { p.classList.remove('active'); p.classList.add('done'); });
+      document.querySelectorAll('.co-pline i').forEach(l => l.style.width = '100%');
+
       document.getElementById('co-succ-nm').textContent = orderData.first_name + '!';
       document.getElementById('co-succ-num').textContent = '#LN-' + orderId;
       document.getElementById('co-success').classList.add('show');
+
       window.Cart?.clear(); window.Cart?.updateUI();
+      coRenderAll(); // сайдбар теперь покажет пустую корзину
+      document.querySelector('.co-osi')?.style.setProperty('display', 'none'); // скрыть сайдбар целиком
+
       coConfetti(); window.scrollTo({ top: 0, behavior: 'smooth' });
 
       typeof trackEvent === 'function' && trackEvent('purchase', {
