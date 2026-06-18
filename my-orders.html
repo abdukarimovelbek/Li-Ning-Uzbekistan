@@ -118,7 +118,22 @@
 
     /* CONTENT */
     .mo-wrap{max-width:920px;margin:0 auto;padding:2.4rem clamp(16px,4vw,40px) 6rem}
-    .mo-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.6rem;gap:1rem;flex-wrap:wrap}
+    .mo-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.6rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+      position: sticky;
+      top: 64px;
+      z-index: 50;
+      padding: 0.75rem clamp(16px, 4vw, 40px);
+      margin-left: calc(-1 * clamp(16px, 4vw, 40px));
+      margin-right: calc(-1 * clamp(16px, 4vw, 40px));
+      background: transparent;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
     .mo-lab{font-family:'Oswald',sans-serif;font-size:.84rem;letter-spacing:.04em;color:#888}
     .mo-lab b{color:#1A1A1A}
     .mo-filters{display:flex;gap:.5rem;overflow-x:auto}
@@ -126,6 +141,59 @@
     .mo-fchip{font-family:'Oswald',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.5rem .9rem;border:1.5px solid #EDE9E3;border-radius:100px;color:#555;background:#fff;white-space:nowrap;transition:.2s;cursor:pointer}
     .mo-fchip:hover{border-color:#C0B8B0}
     .mo-fchip.on{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+    /* Frosted glass when toolbar is stuck */
+    .mo-toolbar.stuck {
+      background: rgba(250, 248, 245, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    /* Desktop: chips spread to full width when stuck */
+    @media (min-width: 769px) {
+      .mo-lab {
+          transition: opacity 0.25s ease, max-width 0.3s cubic-bezier(.22, 1, .36, 1);
+          overflow: hidden;
+          white-space: nowrap;
+      }
+      .mo-toolbar.stuck .mo-lab {
+          opacity: 0;
+          max-width: 0;
+          margin: 0;
+          padding: 0;
+      }
+      .mo-toolbar.stuck .mo-filters {
+          flex: 1;
+          gap: 0.6rem;
+      }
+      .mo-toolbar.stuck .mo-fchip {
+          flex: 1;
+          text-align: center;
+          justify-content: center;
+      }
+    }
+
+    /* Navbar page title (injected via JS) */
+    #mo-nav-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      color: #fff;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, calc(-50% + 5px));
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #mo-nav-title.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%);
+    }
 
     /* ORDER CARD */
     .ocard{
@@ -313,6 +381,7 @@
 
   <!-- CONTENT -->
   <div class="mo-wrap">
+    <div id="mo-sentinel" style="height:0;overflow:hidden"></div>
     <div class="mo-toolbar">
       <div class="mo-lab"><b id="mo-cnt">0</b> заказов</div>
       <div class="mo-filters" id="mo-filters">
@@ -476,6 +545,46 @@
     tryLoad();
     document.addEventListener('auth:login', loadMyOrders);
   });
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initStickyToolbar();
+    initNavbarTitle();
+  });
+
+  function initStickyToolbar() {
+    const sentinel = document.getElementById('mo-sentinel');
+    const toolbar = document.querySelector('.mo-toolbar');
+    if (!sentinel || !toolbar) return;
+
+    const obs = new IntersectionObserver(([entry]) => {
+      toolbar.classList.toggle('stuck', !entry.isIntersecting);
+    }, { rootMargin: '-64px 0px 0px 0px', threshold: 0 });
+
+    obs.observe(sentinel);
+  }
+
+  function initNavbarTitle() {
+    const ptabs = document.querySelector('.ptabs');
+    if (!ptabs) return;
+
+    const wait = () => {
+      const navbar = document.querySelector('nav.navbar');
+      if (!navbar) { setTimeout(wait, 100); return; }
+
+      const title = document.createElement('div');
+      title.id = 'mo-nav-title';
+      title.textContent = 'МОИ ЗАКАЗЫ';
+      navbar.appendChild(title);
+
+      const obs = new IntersectionObserver(([entry]) => {
+        title.classList.toggle('visible', !entry.isIntersecting);
+      }, { rootMargin: '-64px 0px 0px 0px', threshold: 0 });
+
+      obs.observe(ptabs);
+    };
+
+    wait();
+  }
   </script>
 
   <!-- MODALS -->
