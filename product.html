@@ -355,13 +355,29 @@ function fillProduct(p) {
   saveRecentlyViewed(p);
 
   // Заполняем sticky bar
-  const sName = document.getElementById('sticky-cart-name');
-  const sPrice = document.getElementById('sticky-cart-price');
-  const sImg = document.getElementById('sticky-cart-img');
+  const sName     = document.getElementById('sticky-cart-name');
+  const sPrice    = document.getElementById('sticky-cart-price');
+  const sOldPrice = document.getElementById('sticky-cart-old-price');
+  const sImg      = document.getElementById('sticky-cart-img');
   if (sName) sName.textContent = p.name;
-  if (sPrice) sPrice.textContent = (p.price || 0).toLocaleString('ru-RU') + ' сум';
+  if (sPrice) sPrice.textContent = p.price ? p.price.toLocaleString('ru-RU') + ' сум' : 'Цена по запросу';
+  if (sOldPrice) {
+    if (p.old_price && p.old_price > p.price) {
+      sOldPrice.textContent = p.old_price.toLocaleString('ru-RU') + ' сум';
+      sOldPrice.style.display = '';
+    } else {
+      sOldPrice.style.display = 'none';
+    }
+  }
   const sImgs = Array.isArray(p.images) ? p.images : [];
-  if (sImg && sImgs[0]) { sImg.src = sImgs[0]; sImg.style.display = ''; }
+  if (sImg) {
+    if (sImgs[0]) {
+      sImg.src = sImgs[0];
+      sImg.onerror = () => { sImg.style.display = 'none'; };
+    } else {
+      sImg.style.display = 'none';
+    }
+  }
 
   // GA4 событие просмотра товара
   trackEvent('view_item', {
@@ -668,6 +684,7 @@ function showSizeAlert() {
       <div class="sticky-cart-name" id="sticky-cart-name"></div>
       <div class="sticky-cart-meta">
         <span class="sticky-cart-price" id="sticky-cart-price"></span>
+        <span class="sticky-cart-old-price" id="sticky-cart-old-price" style="display:none"></span>
         <span class="sticky-cart-size" id="sticky-cart-size"></span>
       </div>
     </div>
