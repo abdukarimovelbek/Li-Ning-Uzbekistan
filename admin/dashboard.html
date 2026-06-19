@@ -1213,25 +1213,12 @@
       // ТОП ИЗБРАННЫХ ТОВАРОВ
       const favEl = document.getElementById('ga-top-favorites');
       try {
-        const favorites = []; // временно отключено
-        const counts = {};
-        favorites.forEach(f => {
-          const key = f.product_id;
-          if (!key) return;
-          if (!counts[key]) {
-            const product = f.products;
-            counts[key] = {
-              article: product ? (product.article || '—') : '—',
-              name: product ? (product.name || `Товар #${key}`) : `Товар #${key}`,
-              count: 0
-            };
-          }
-          counts[key].count++;
-        });
-
-        const topFav = Object.values(counts)
-          .sort((a, b) => b.count - a.count)
-          .slice(0, 5);
+        const favorites = await sbFetch('rpc/get_top_wishlisted', 'POST', { lim: 5 }, '');
+        const topFav = favorites.map(f => ({
+            article: f.article || '—',
+            name: f.name || `Товар #${f.product_id}`,
+            count: Number(f.cnt)
+        }));
 
         if (topFav.length) {
           renderFavoriteProducts(favEl, topFav);
