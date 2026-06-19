@@ -36,6 +36,7 @@ async function loadComponents() {
   // Bind auth modal close — модал загружен только сейчас
   document.getElementById('auth-modal-close')?.addEventListener('click', () => window.Auth?.closeModal());
   document.getElementById('auth-overlay')?.addEventListener('click', () => window.Auth?.closeModal());
+  document.getElementById('auth-signout-btn')?.addEventListener('click', () => window.Auth?.signOut());
 }
 loadComponents();
 
