@@ -1352,3 +1352,239 @@ kbd {
   .traffic-edit { grid-template-columns: repeat(3, 1fr); }
   .cat-display-row { grid-template-columns: 1fr; }
 }
+
+/* =========================================================
+   Passport — store slide 1 redesign
+   ========================================================= */
+
+.ps-body {
+  display: grid;
+  grid-template-columns: 270px 1fr;
+  gap: 20px;
+  min-height: 0;
+}
+
+/* LEFT column */
+.ps-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+.ps-photo {
+  flex: 1;
+  min-height: 0;
+  background: #e5e2da;
+  border-radius: 12px;
+  border: 1.5px dashed var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+  overflow: hidden;
+}
+.ps-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ps-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.ps-metric {
+  background: var(--ink);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.ps-metric-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 4px;
+}
+.ps-metric-val {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: -.01em;
+  line-height: 1.1;
+}
+.ps-metric-unit {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,.4);
+  margin-left: 2px;
+}
+
+/* RIGHT column */
+.ps-right {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+.ps-top-row {
+  display: grid;
+  grid-template-columns: 1fr 170px;
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+/* Sales red card */
+.ps-sales-card {
+  background: var(--red);
+  border-radius: 14px;
+  padding: 18px 24px;
+  color: #fff;
+}
+.ps-sales-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.65);
+  margin-bottom: 6px;
+}
+.ps-sales-num {
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+.ps-sales-num .ps-unit {
+  font-size: 20px;
+  font-weight: 500;
+  color: rgba(255,255,255,.6);
+  margin-left: 5px;
+}
+.ps-sales-deltas {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+}
+.ps-sales-card .delta { color: rgba(255,255,255,.7); }
+.ps-sales-card .delta.up { color: #a0ffcc; }
+.ps-sales-card .delta.down { color: #ffaaaa; }
+
+/* Plan black card */
+.ps-plan-card {
+  background: var(--ink);
+  border-radius: 14px;
+  padding: 18px 22px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.ps-plan-lbl {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+  margin-bottom: 6px;
+}
+.ps-plan-num {
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: -.02em;
+  line-height: 1;
+  color: var(--green);
+}
+.ps-plan-num.yellow { color: var(--yellow); }
+.ps-plan-num.red { color: #ff7b74; }
+
+/* Comparison table */
+.ps-table {
+  flex: 1;
+  min-height: 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.ps-thead {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  background: var(--ink);
+  padding: 9px 20px;
+  flex-shrink: 0;
+}
+.ps-th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+}
+.ps-th-red { color: var(--red) !important; }
+.ps-trow {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr 1fr;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+  flex: 1;
+}
+.ps-trow:last-child { border-bottom: none; }
+.ps-td-lbl { font-size: 13px; color: var(--ink); }
+.ps-td { font-size: 13px; color: var(--muted); }
+.ps-td-bold { font-size: 13px; font-weight: 700; color: var(--ink); }
+
+/* Sub-slide tabs */
+.ps-tabs {
+  position: absolute;
+  bottom: 62px;
+  left: 48px;
+  right: 48px;
+  display: flex;
+  border-top: 1.5px solid var(--line);
+  padding-top: 12px;
+}
+.ps-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-right: 1.5px solid var(--line);
+  background: none;
+  cursor: pointer;
+  transition: color .2s;
+}
+.ps-tab:first-child { padding-left: 0; }
+.ps-tab:last-child { border-right: none; }
+.ps-tab.active { color: var(--ink); font-weight: 700; }
+.ps-tab:hover:not(.active) { color: var(--ink-2); }
+.ps-tab-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--line);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.ps-tab.active .ps-tab-n {
+  background: var(--ink);
+  color: #fff;
+}

@@ -272,123 +272,148 @@ function renderStoreHeader(d, s, slideNum) {
   `;
 }
 
-/* ---------- Store slide 1 — KPIs + Charts + Categories ---- */
-function renderStore1(d, s) {
-  // YTD calculations
-  const ytdCurr  = (s.trend   || []).reduce((acc, v) => acc + (+v || 0), 0);
-  const ytdPrev  = (s.trendPy || []).reduce((acc, v) => acc + (+v || 0), 0);
-  const ytdDelta = ytdPrev ? +(((ytdCurr - ytdPrev) / ytdPrev) * 100).toFixed(1) : null;
-  const ytdColor = ytdDelta === null ? 'var(--muted)' : ytdDelta > 0 ? 'var(--green)' : 'var(--red)';
-  const ytdSign  = ytdDelta > 0 ? '+' : '';
+/* ---------- Store sub-tab navigation --------------------- */
+function goStoreTab(n) {
+  const meta = pageMeta(pageIndex);
+  if (meta.type !== 'store') return;
+  pageIndex += (n + 1) - meta.slide;
+  render();
+}
 
-  // Category pie (compact vertical layout)
-  const cats = s.cats || {};
-  const cl = +cats.clothing||0, fo = +cats.footwear||0, ac = +cats.accessories||0;
-  const catTot = cl + fo + ac;
-  let piePaths = '';
-  if (catTot) {
-    const catVals = [cl, fo, ac];
-    const catColors = ['#e1241c','#0a0a0a','#9b958a'];
-    let start = -Math.PI/2;
-    catVals.forEach((v, i) => {
-      if (!v) return;
-      const ang = (v/catTot)*2*Math.PI, end = start+ang;
-      const x1 = 50+45*Math.cos(start), y1 = 50+45*Math.sin(start);
-      const x2 = 50+45*Math.cos(end),   y2 = 50+45*Math.sin(end);
-      piePaths += `<path d="M50,50 L${x1},${y1} A45,45 0 ${ang>Math.PI?1:0} 1 ${x2},${y2} Z" fill="${catColors[i]}"/>`;
-      start = end;
-    });
-  }
-  const catCard = catTot ? `
-    <div class="chart-card">
-      <div class="chart-head"><div class="chart-title">Категории продаж</div></div>
-      <div class="chart-body" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px 14px">
-        <svg viewBox="0 0 100 100" style="width:80px;height:80px;flex-shrink:0">${piePaths}</svg>
-        <div style="width:100%">
-          ${[[cl,'#e1241c','Одежда'],[fo,'#0a0a0a','Обувь'],[ac,'#9b958a','Аксессуары']].filter(([v])=>v).map(([v,col,lbl])=>
-            `<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
-              <div style="width:8px;height:8px;border-radius:2px;background:${col};flex-shrink:0"></div>
-              <span style="font-size:12px;flex:1">${lbl}</span>
-              <b style="font-size:13px">${Math.round(v/catTot*100)}%</b>
-            </div>`).join('')}
-        </div>
-      </div>
-    </div>` : '';
+function storeTabsHtml(active) {
+  const tabs = ['Паспорт', 'Персонал', 'Аналитика'];
+  return `
+    <div class="ps-tabs">
+      ${tabs.map((t, i) => `
+        <button class="ps-tab${i === active ? ' active' : ''}" onclick="goStoreTab(${i})">
+          <span class="ps-tab-n">${i + 1}</span> ${t}
+        </button>
+      `).join('')}
+    </div>
+  `;
+}
+
+/* ---------- Store slide 1 — Passport redesign ------------- */
+function renderStore1(d, s) {
+  const pillClass = s.status || (s.planPercent >= 100 ? 'green' : s.planPercent >= 95 ? 'yellow' : 'red');
+  const statusLabel = s.planPercent >= 110 ? 'План перевыполнен'
+                    : s.planPercent >= 100 ? 'План выполнен'
+                    : s.planPercent >= 90  ? 'Близко к плану'
+                    : 'Ниже плана';
+
+  // Revenue per m²
+  const revNum  = parseFloat(('' + (s.revenue?.value || '')).replace(/[^\d.]/g, '')) || 0;
+  const areaNum = +s.area || 0;
+  const revPerSqm = (areaNum > 0 && revNum > 0) ? (revNum / areaNum).toFixed(1) : '—';
+
+  // Use actual staff count if s.sellers not set
+  const staffCount  = (s.staff || []).filter(e => e.name || +e.sales).length;
+  const sellersVal  = +s.sellers  || staffCount || '—';
+  const cashiersVal = +s.cashiers || '—';
+
+  // Month name for table header
+  const mon = escapeHtml(monthShort(data.period));
 
   return `
     <div class="detail">
-      ${renderStoreHeader(d, s, 1)}
-      <div class="detail-body" style="grid-template-rows: auto 1fr">
+      <div class="detail-top-band"></div>
 
-        <div class="kpi-row">
-          <div class="kpi primary">
-            <div class="kpi-label">Выручка, факт</div>
-            <div class="kpi-value">${escapeHtml(s.revenue?.value)}<span class="unit">${escapeHtml(s.revenue?.unit)}</span></div>
-            <div class="kpi-deltas">
-              ${deltaHtml(s.revenue?.mom, 'MoM')}
-              ${deltaHtml(s.revenue?.yoy, 'YoY')}
+      <header class="detail-head" style="padding-bottom:14px;border-bottom:1.5px solid var(--line)">
+        <div>
+          <h2 class="detail-title">${escapeHtml(s.name)}</h2>
+          <div class="detail-sub">
+            ${s.storeType ? `<b style="color:var(--ink)">${escapeHtml(s.storeType)}</b> · ` : ''}${escapeHtml(d.region)} · <span style="color:var(--red)">${escapeHtml(data.period)}</span>
+          </div>
+        </div>
+        <div class="plan-badge">
+          <div class="plan-pill ${pillClass}"><span class="d"></span> ${statusLabel}</div>
+          <div class="plan-label" style="margin-top:14px">ПЛАН ВЫПОЛНЕН</div>
+          <div class="plan-val ${pillClass}">${s.planPercent || 0}%</div>
+        </div>
+      </header>
+
+      <div class="ps-body">
+
+        <!-- LEFT: photo + metric tiles -->
+        <div class="ps-left">
+          <div class="ps-photo">
+            ${s.photo
+              ? `<img src="${escapeAttr(s.photo)}" alt="${escapeHtml(s.name)}">`
+              : `<svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.35"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m3 9 4-4 4 4 4-4 4 4"/><circle cx="12" cy="15" r="2"/></svg>
+                 <span style="opacity:.45;font-size:12px">Фото магазина<br>${escapeHtml(s.name)}</span>`
+            }
+          </div>
+          <div class="ps-metrics">
+            <div class="ps-metric">
+              <div class="ps-metric-lbl">Площадь</div>
+              <div class="ps-metric-val">${areaNum || '—'}<span class="ps-metric-unit">м²</span></div>
+            </div>
+            <div class="ps-metric">
+              <div class="ps-metric-lbl">Выручка / М²</div>
+              <div class="ps-metric-val">${revPerSqm}<span class="ps-metric-unit">${escapeHtml(s.revenue?.unit || '$')}</span></div>
+            </div>
+            <div class="ps-metric">
+              <div class="ps-metric-lbl">Продавцы</div>
+              <div class="ps-metric-val">${sellersVal}</div>
+            </div>
+            <div class="ps-metric">
+              <div class="ps-metric-lbl">Кассиры</div>
+              <div class="ps-metric-val">${cashiersVal}</div>
             </div>
           </div>
-          <div class="kpi">
-            <div class="kpi-label">Продано пар / шт</div>
-            <div class="kpi-value">${fmtNum(s.pairs?.value)}</div>
-            <div class="kpi-deltas">${deltaHtml(s.pairs?.mom, 'MoM')}</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Чеки (транзакции)</div>
-            <div class="kpi-value">${fmtNum(s.tx?.value)}</div>
-            <div class="kpi-deltas">${deltaHtml(s.tx?.mom, 'MoM')}</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Средний чек</div>
-            <div class="kpi-value">${escapeHtml(s.avg?.value)}<span class="unit">${escapeHtml(s.avg?.unit)}</span></div>
-            <div class="kpi-deltas">${deltaHtml(s.avg?.mom, 'MoM')}</div>
-          </div>
-          ${ytdCurr > 0 ? `
-          <div style="grid-column:1/-1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);white-space:nowrap">Продажи с начала года</div>
-            <div style="width:1px;height:18px;background:var(--line)"></div>
-            <div style="display:flex;align-items:baseline;gap:6px">
-              <span style="font-size:20px;font-weight:900">${fmtNum(ytdCurr)} $</span>
-              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">${yearOf(data.period)}</span>
-            </div>
-            <div style="display:flex;align-items:baseline;gap:6px;opacity:.6">
-              <span style="font-size:16px;font-weight:700">${fmtNum(ytdPrev)} $</span>
-              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">${+yearOf(data.period) - 1}</span>
-            </div>
-            ${ytdDelta !== null ? `
-            <div style="margin-left:auto;display:flex;align-items:baseline;gap:6px">
-              <span style="font-size:22px;font-weight:900;color:${ytdColor}">${ytdSign}${ytdDelta}%</span>
-              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">YoY</span>
-            </div>` : ''}
-          </div>` : ''}
         </div>
 
-        <div style="display:grid;grid-template-columns:${catTot ? '200px ' : ''}1fr 1fr;gap:14px;min-height:0">
-          ${catCard}
-          <div class="chart-card">
-            <div class="chart-head">
-              <div class="chart-title">Продажи · с начала года</div>
-              <div class="chart-legend">
-                <span><i></i> ${escapeHtml(yearOf(data.period))}</span>
-                <span><i class="dashed"></i> YoY</span>
+        <!-- RIGHT: sales + plan + comparison table -->
+        <div class="ps-right">
+          <div class="ps-top-row">
+            <div class="ps-sales-card">
+              <div class="ps-sales-lbl">ПРОДАЖИ · ${mon}</div>
+              <div class="ps-sales-num">
+                ${escapeHtml(s.revenue?.value || '—')}<span class="ps-unit">${escapeHtml(s.revenue?.unit || '')}</span>
+              </div>
+              <div class="ps-sales-deltas">
+                ${deltaHtml(s.revenue?.mom, 'MoM')}
+                ${deltaHtml(s.revenue?.yoy, 'YoY')}
               </div>
             </div>
-            <div class="chart-body">${trendChart(s.trend||[], s.trendPy||[])}</div>
+            <div class="ps-plan-card">
+              <div class="ps-plan-lbl">К ПЛАНУ</div>
+              <div class="ps-plan-num ${pillClass}">${s.planPercent || 0}%</div>
+            </div>
           </div>
-          <div class="chart-card">
-            <div class="chart-head">
-              <div class="chart-title">План / Факт · по неделям</div>
-              <div class="chart-legend">
-                <span><i class="boxg"></i> План</span>
-                <span><i class="box"></i> Факт</span>
-              </div>
+
+          <div class="ps-table">
+            <div class="ps-thead">
+              <div class="ps-th">Показатель</div>
+              <div class="ps-th">Пред. мес.</div>
+              <div class="ps-th ps-th-red">${mon}</div>
             </div>
-            <div class="chart-body">${weeksChart(s.weeks||[])}</div>
+            <div class="ps-trow">
+              <div class="ps-td-lbl">Продажи</div>
+              <div class="ps-td">${s.revenuePrev ? escapeHtml(s.revenuePrev + ' ' + (s.revenue?.unit || '')) : '—'}</div>
+              <div class="ps-td-bold">${escapeHtml(s.revenue?.value || '—')} ${escapeHtml(s.revenue?.unit || '')}</div>
+            </div>
+            <div class="ps-trow">
+              <div class="ps-td-lbl">Средний чек</div>
+              <div class="ps-td">${s.avgPrev ? escapeHtml('' + s.avgPrev) : '—'}</div>
+              <div class="ps-td-bold">${escapeHtml(s.avg?.value || '—')} ${escapeHtml(s.avg?.unit || '')}</div>
+            </div>
+            <div class="ps-trow">
+              <div class="ps-td-lbl">Средняя скидка</div>
+              <div class="ps-td">${+s.discountPrev || 0}%</div>
+              <div class="ps-td-bold">${+s.discountCurr || 0}%</div>
+            </div>
+            <div class="ps-trow">
+              <div class="ps-td-lbl">Вес в регионе</div>
+              <div class="ps-td">${+s.regionSharePrev ? (+s.regionSharePrev) + '%' : '—'}</div>
+              <div class="ps-td-bold">${+s.regionShare ? (+s.regionShare) + '%' : '—'}</div>
+            </div>
           </div>
         </div>
 
       </div>
+
+      ${storeTabsHtml(0)}
     </div>
   `;
 }
@@ -455,9 +480,11 @@ function renderStore2(d, s) {
         </div>
         ${summaryRow}
       </div>
+      ${storeTabsHtml(1)}
     </div>
   `;
 }
+
 
 /* ---------- Store slide 3 — Operational metrics + Notes --- */
 function renderStore3(d, s) {
@@ -479,6 +506,7 @@ function renderStore3(d, s) {
             <div class="txt">${escapeHtml(s.notes)}</div>
           </div>` : ''}
       </div>
+      ${storeTabsHtml(2)}      
     </div>
   `;
 }
