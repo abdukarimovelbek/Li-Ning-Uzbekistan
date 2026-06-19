@@ -151,6 +151,22 @@
     </div>
   </div>
 
+  <script>
+  (function () {
+    var grid = document.querySelector('.collections-grid');
+    var section = document.querySelector('.collections-section');
+    if (!grid || !section) return;
+    function updateFades() {
+      var atStart = grid.scrollLeft < 5;
+      var atEnd = grid.scrollLeft + grid.clientWidth >= grid.scrollWidth - 5;
+      section.classList.toggle('coll-scrolled', !atStart);
+      section.classList.toggle('coll-at-end', atEnd);
+    }
+    grid.addEventListener('scroll', updateFades, { passive: true });
+    updateFades();
+  })();
+  </script>
+
   <!-- Popular Products -->
   <section class="section" style="background: var(--white)">
     <div class="section-inner">

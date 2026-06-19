@@ -3028,6 +3028,7 @@ body.menu-open { overflow: hidden; }
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     scroll-padding-left: 0.68rem;
+    scroll-padding-right: 0.68rem;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-left: 0.68rem;
@@ -3041,13 +3042,34 @@ body.menu-open { overflow: hidden; }
     height: 100%;
     border: none;
     border-radius: 14px;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
     overflow: hidden;
   }
-  .collection-card:last-child { margin-right: 1.2rem; }
-  
-  /* Правый fade — намёк что есть ещё карточки */
+  /* Первая карточка (nth-child(2) т.к. side-label идёт первым) */
+  .collections-grid .collection-card:nth-child(2) {
+    scroll-snap-align: start;
+  }
+  /* Последняя карточка — snap к правому краю, тот же отступ что слева */
+  .collection-card:last-child {
+    scroll-snap-align: end;
+    margin-right: 0.68rem;
+  }
+
+  /* Правый и левый фейды */
   .collections-section { position: relative; }
+  .collections-section::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 56px;
+    height: 280px;
+    background: linear-gradient(to left, transparent, var(--cream) 90%);
+    pointer-events: none;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
   .collections-section::after {
     content: '';
     position: absolute;
@@ -3058,7 +3080,10 @@ body.menu-open { overflow: hidden; }
     background: linear-gradient(to right, transparent, var(--cream) 90%);
     pointer-events: none;
     z-index: 3;
+    transition: opacity 0.3s ease;
   }
+  .collections-section.coll-scrolled::before { opacity: 1; }
+  .collections-section.coll-at-end::after { opacity: 0; }
 
   .collection-card::before {
     content: '';
