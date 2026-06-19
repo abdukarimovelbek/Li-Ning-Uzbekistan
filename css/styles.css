@@ -2136,6 +2136,8 @@ body.menu-open { overflow: hidden; }
   display: block;
   margin: 0 !important;
   padding-left: 0 !important;
+  font-size: inherit;
+  letter-spacing: inherit;
   transition: color 0.2s var(--ease), padding-left 0.2s var(--ease);
 }
 .mega-col h4 a:hover {
