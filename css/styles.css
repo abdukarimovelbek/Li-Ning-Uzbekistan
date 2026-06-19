@@ -2122,8 +2122,8 @@ body.menu-open { overflow: hidden; }
 /* мегаменю управляется через JS в main.js */
 
 .mega-col h4 {
-  font-size: 0.93rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 720;
   color: var(--black);
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
@@ -2143,9 +2143,9 @@ body.menu-open { overflow: hidden; }
   color: var(--red) !important;
   padding-left: 4px !important;
 }
-.mega-col ul { display: flex; flex-direction: column; gap: 0.28rem; }
+.mega-col ul { display: flex; flex-direction: column; gap: 0.24rem; }
 .mega-col ul li a {
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   color: var(--gray-700) !important;
   transition: color var(--transition), padding-left var(--transition);
   display: block;
