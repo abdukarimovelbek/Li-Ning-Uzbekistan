@@ -117,7 +117,11 @@
     }
 
     /* CONTENT */
-    .mo-wrap{max-width:920px;margin:0 auto;padding:2.4rem clamp(16px,4vw,40px) 6rem}
+    .mo-wrap{
+      max-width:920px;
+      margin:0 auto;
+      padding:2.4rem clamp(16px,4vw,40px) 6rem
+    }
     .mo-toolbar {
       display: flex;
       align-items: center;
@@ -153,24 +157,24 @@
     /* Desktop: chips spread to full width when stuck */
     @media (min-width: 769px) {
       .mo-lab {
-          transition: opacity 0.25s ease, max-width 0.3s cubic-bezier(.22, 1, .36, 1);
-          overflow: hidden;
-          white-space: nowrap;
+        transition: opacity 0.25s ease, max-width 0.3s cubic-bezier(.22, 1, .36, 1);
+        overflow: hidden;
+        white-space: nowrap;
       }
       .mo-toolbar.stuck .mo-lab {
-          opacity: 0;
-          max-width: 0;
-          margin: 0;
-          padding: 0;
+        opacity: 0;
+        max-width: 0;
+        margin: 0;
+        padding: 0;
       }
       .mo-toolbar.stuck .mo-filters {
-          flex: 1;
-          gap: 0.6rem;
+        flex: 1;
+        gap: 0.6rem;
       }
       .mo-toolbar.stuck .mo-fchip {
-          flex: 1;
-          text-align: center;
-          justify-content: center;
+        flex: 1;
+        text-align: center;
+        justify-content: center;
       }
     }
 
@@ -205,10 +209,29 @@
     @keyframes moRise{to{opacity:1;transform:none}}
     .ocard:hover{box-shadow:0 14px 44px rgba(0,0,0,.09)}
 
-    .ocard-head{display:flex;align-items:center;gap:1rem;padding:1.3rem 1.5rem;border-bottom:1px solid #EDE9E3;flex-wrap:wrap}
+    .ocard-head{
+      display:flex;
+      align-items:center;
+      gap:1rem;
+      padding:1.3rem 1.5rem;
+      border-bottom:1px solid #EDE9E3;
+      flex-wrap:wrap
+    }
     .ocard-id{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.5px;color:#1A1A1A}
     .ocard-date{font-size:.74rem;color:#888;margin-top:.15rem}
-    .ocard-status{margin-left:auto;font-family:'Oswald',sans-serif;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.4rem .85rem;border-radius:100px;display:flex;align-items:center;gap:.4rem}
+    .ocard-status{
+      margin-left:auto;
+      font-family:'Oswald',sans-serif;
+      font-size:.66rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      padding:.4rem .85rem;
+      border-radius:100px;
+      display:flex;
+      align-items:center;
+      gap:.4rem
+    }
     .ocard-status .dot{width:7px;height:7px;border-radius:50%}
     .ost-new{background:rgba(184,134,11,.14);color:#B8860B}.ost-new .dot{background:#B8860B}
     .ost-processing{background:rgba(59,130,246,.12);color:#3b82f6}.ost-processing .dot{background:#3b82f6;animation:moBlink 1.4s infinite}
@@ -217,7 +240,10 @@
     @keyframes moBlink{0%,100%{opacity:1}50%{opacity:.3}}
 
     /* TRACKER */
-    .otrack{padding:1.6rem 1.5rem;background:linear-gradient(180deg,#FAF8F5,transparent)}
+    .otrack{
+      padding:1.6rem 1.5rem;
+      background:linear-gradient(180deg,#FAF8F5,transparent)
+    }
     .otrack.cancelled{background:rgba(196,30,58,.03)}
     .otrack-wrap{position:relative}
     .otline{position:absolute;top:18px;left:6%;right:6%;height:3px;background:#EDE9E3;border-radius:2px;overflow:hidden;z-index:0}
@@ -242,7 +268,16 @@
     .oeta .when{margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.5px;color:var(--red);white-space:nowrap}
 
     /* ITEMS TOGGLE */
-    .oitems-toggle{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.5rem;cursor:pointer;border-top:1px solid #EDE9E3;transition:background .2s}
+    .oitems-toggle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:1rem;
+      padding:1rem 1.5rem;
+      cursor:pointer;
+      border-top:1px solid #EDE9E3;
+      transition:background .2s
+    }
     .oitems-toggle:hover{background:#FAF8F5}
     .oitems-toggle .lbl{font-family:'Oswald',sans-serif;font-size:.76rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:#555;display:flex;align-items:center;gap:.55rem}
     .oitems-toggle:hover .lbl{color:#1A1A1A}
@@ -265,7 +300,13 @@
 
     /* CARD FOOTER */
     .ocard-foot{display:flex;align-items:center;gap:1rem;padding:1.1rem 1.5rem;border-top:1px solid #EDE9E3;background:#FAF8F5;flex-wrap:wrap}
-    .ocard-tot{font-family:'Oswald',sans-serif;font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:#888}
+    .ocard-tot{
+      font-family:'Oswald',sans-serif;
+      font-size:.74rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:#888
+    }
     .ocard-tot b{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.5px;color:var(--red);margin-left:.5rem}
     .ocard-acts{margin-left:auto;display:flex;gap:.6rem;flex-wrap:wrap}
     .oact{font-family:'Oswald',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.65rem 1.1rem;border-radius:9px;transition:.25s cubic-bezier(.22,1,.36,1);display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;border:none}
@@ -282,12 +323,51 @@
     .mo-empty p{color:#888;font-size:.9rem}
 
     @media(max-width:768px){
-      .ocard-foot{flex-direction:column;align-items:stretch}
-      .ocard-acts{margin-left:0}.oact{flex:1;justify-content:center}
+      .page-head{
+        padding:calc(32px + 0rem) clamp(16px,4vw,48px) 1.1rem;
+      }
+      .ocard-foot{
+        flex-direction:column;
+        align-items:stretch;
+        padding: 1rem 1rem;
+      }
+      .ocard-acts{margin-left:0}
+      .oact{flex:1;justify-content:center}
       .onode .nt{display:none}
-      .oeta{flex-wrap:wrap}.oeta .when{margin-left:0;margin-top:.3rem}
+      .oeta{flex-wrap:wrap}
+      .oeta .when{margin-left:0;margin-top:.3rem}
+      .mo-wrap{
+        padding:0.4rem clamp(1px,4vw,40px) 6rem
+      }
+      .mo-toolbar {
+        gap: 0.5rem;
+      }
+      .ocard-head{
+        gap: 0;
+        padding:1rem 1rem;
+      }
+      .otrack{
+        padding:1rem 1rem;
+      }
+      .oitems-toggle{
+        padding:1rem 1rem;
+      } 
+      .oitems{
+        padding:.5rem 1rem 0.5rem;
+      }
+      .ocard-status{
+        padding:.4rem .7rem;
+      }
+      .ocard-tot{
+        display: flex;
+      }
     }
-    @media(prefers-reduced-motion:reduce){.ocard{opacity:1!important;transform:none!important;animation:none!important}}
+    @media(prefers-reduced-motion:reduce){
+      .ocard{
+        opacity:1!important;
+        transform:none!important;
+        animation:none!important}
+      }      
   </style>
 </head>
 
@@ -477,7 +557,10 @@
       </div>
       <div class="oitems-collapse"><div class="oitems">${itemsHtml}</div></div>
       <div class="ocard-foot">
-        <span class="ocard-tot">Итого <b>${fp(o.total || 0)}</b></span>
+        <div class="ocard-tot">
+          <div>Итого</div>
+          <span class="ocard-tot"><b>${fp(o.total || 0)}</b></span>
+        </div>  
         <div class="ocard-acts">${acts}</div>
       </div>
     </div>`;
