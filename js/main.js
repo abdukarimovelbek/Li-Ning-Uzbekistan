@@ -2425,3 +2425,27 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
   // обновлять бейдж при изменениях корзины
   document.addEventListener('click', () => setTimeout(syncCartBadge, 300));
 })();
+
+/* ─── COOKIE BANNER ─────────────────────────── */
+(function () {
+    if (localStorage.getItem('cookie_accepted')) return;
+
+    const banner = document.createElement('div');
+    banner.id = 'cookie-banner';
+    banner.innerHTML = `
+        <div id="cookie-banner-inner">
+            <p>Мы используем файлы cookie для корректной работы сайта и улучшения вашего опыта.
+            Подробнее — в нашей <a href="privacy.html">политике конфиденциальности</a>.</p>
+            <button id="cookie-accept-btn">Принять</button>
+        </div>
+    `;
+    document.body.appendChild(banner);
+
+    requestAnimationFrame(() => requestAnimationFrame(() => banner.classList.add('visible')));
+
+    document.getElementById('cookie-accept-btn').addEventListener('click', () => {
+        banner.classList.remove('visible');
+        localStorage.setItem('cookie_accepted', '1');
+        setTimeout(() => banner.remove(), 450);
+    });
+})();
