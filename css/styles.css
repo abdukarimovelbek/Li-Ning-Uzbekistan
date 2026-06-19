@@ -2090,13 +2090,12 @@ body.menu-open { overflow: hidden; }
 
 .mega-menu {
   position: fixed;
-  top: calc(var(--nav-h) + 36px);
+  top: calc(var(--nav-h) + 6px);
   left: 0; right: 0;
   background: #fff;
   border-top: 3px solid var(--red);
   box-shadow: 0 8px 40px rgba(0,0,0,0.15);
-  padding: 2.5rem 4rem;
-  padding-top: calc(2.5rem + 8px);
+  padding: 2rem 4rem;
   display: none;
   grid-template-columns: repeat(5, 1fr);
   gap: 2rem;
