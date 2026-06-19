@@ -1050,7 +1050,6 @@
   <script>
     const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
     const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRneWlyZ2lucmVmdmpzYmhob29pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDUzNjgsImV4cCI6MjA5MzI4MTM2OH0.A-ueG5j_wcxZ7joJM645hrImLwFYjz_SM4ATLTc0cfU';
-    const SB_SERVICE_KEY= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRneWlyZ2lucmVmdmpzYmhob29pIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NzcwNTM2OCwiZXhwIjoyMDkzMjgxMzY4fQ.35GtA_J26NhdVcBjzsVMJRnDl6llUfGc0gMeESzgFc0'
 
     // Форматирование цены с пробелами
     function formatPrice(input) {
@@ -1096,22 +1095,6 @@
       const text = await res.text();
       return text ? JSON.parse(text) : [];
     }
-
-    async function sbAdminFetch(table, method, body, query = '') {
-    const opts = {
-        method,
-        headers: {
-            'apikey': SB_SERVICE_KEY,
-            'Authorization': `Bearer ${SB_SERVICE_KEY}`,
-            'Content-Type': 'application/json'
-        }
-    };
-    if (body) opts.body = JSON.stringify(body);
-    const res = await fetch(`${SB_URL}/rest/v1/${table}${query}`, opts);
-    if (!res.ok) throw new Error(await res.text());
-    const text = await res.text();
-    return text ? JSON.parse(text) : [];
-  }
 
     // SECTION NAVIGATION
     function showSection(name) {
@@ -1230,7 +1213,7 @@
       // ТОП ИЗБРАННЫХ ТОВАРОВ
       const favEl = document.getElementById('ga-top-favorites');
       try {
-        const favorites = await sbAdminFetch('wishlists', 'GET', null, '?select=product_id,products(article,name)');
+        const favorites = []; // временно отключено
         const counts = {};
         favorites.forEach(f => {
           const key = f.product_id;
