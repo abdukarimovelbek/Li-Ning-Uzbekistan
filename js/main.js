@@ -433,7 +433,7 @@ const Cart = (() => {
   };
 
   const add = (product) => {
-    const existing = items.find(i => i.id === product.id && i.size === product.size);
+    const existing = items.find(i => i.id === product.id && i.size === product.size && i.color === product.color);
     if (existing) {
       existing.qty++;
     } else {

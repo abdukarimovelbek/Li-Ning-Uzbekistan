@@ -268,7 +268,7 @@ async function saveToSupabase(products) {
   }
   return { saved, skipped: 0, errors };
 
-// Функцию getExistingArticles() можно удалить — она больше не нужна
+  // Функцию getExistingArticles() можно удалить — она больше не нужна
 
     if (res.ok) {
       saved += chunk.length;

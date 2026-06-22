@@ -560,10 +560,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const colorImages = (() => {
-        try { return JSON.parse(selectedColor?.dataset.images || '[]'); } catch(e) { return []; }
+        try { return JSON.parse(selectedColor?.dataset.images || '[]'); } 
+        catch(e) { return []; }
       })();
       const fallbackImg = Array.isArray(p.images) ? (p.images[0] || null) : null;
-      Cart.addItem({
+      Cart.add({
         id:      p.id,
         article: p.article || p.id,
         name:    p.name,
