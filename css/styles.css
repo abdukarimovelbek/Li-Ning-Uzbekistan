@@ -814,13 +814,12 @@ button {
 .qv-size-err{ animation:qvShake .45s }
 @keyframes qvShake{ 0%,100%{transform:translateX(0)} 20%{transform:translateX(-7px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
 
-.qv-colors{ display:flex; gap:.6rem }
-.qv-color{ display:flex; flex-direction:column; align-items:center; gap:.35rem; cursor:pointer }
-.qv-color .sw{ width:34px; height:34px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1.5px var(--gray-300); transition:.22s var(--ease) }
-.qv-color.active .sw{ box-shadow:0 0 0 2px var(--red); transform:scale(1.06) }
-.qv-color:hover .sw{ box-shadow:0 0 0 2px var(--black) }
-.qv-color .nm{ font-size:.68rem; color:var(--gray-500) }
-.qv-color.active .nm{ color:var(--black); font-weight:600 }
+.qv-colors{ display:flex; gap:.5rem; flex-wrap:wrap }
+.qv-color{ display:flex; align-items:center; padding:5px 10px; border:1.5px solid #D9D3CA; border-radius:8px; background:#fff; cursor:pointer; transition:.2s var(--ease) }
+.qv-color:hover{ border-color:var(--black) }
+.qv-color.active{ background:var(--black); border-color:var(--black) }
+.qv-color .nm{ font-size:.82rem; color:var(--gray-700) }
+.qv-color.active .nm{ color:#fff; font-weight:600 }
 
 .qv-cta{ margin-top:auto; padding-top:1.6rem; display:flex; flex-direction:column; gap:.8rem }
 .qv-row{ display:flex; gap:.7rem }

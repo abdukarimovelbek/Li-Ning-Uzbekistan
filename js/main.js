@@ -1455,18 +1455,20 @@ const openQuickView = async (productId) => {
       oldEl.style.display = 'none'; saveEl.style.display = 'none'; badgeEl.style.display = 'none';
     }
 
-    // ── цвета (показываются, только если есть массив p.colors: [{name, hex}]) ──
+    // ── цвета — текстовые чипы ──
     const colorsWrap = document.getElementById('qv-colors-wrap');
     const colorsBox  = document.getElementById('qv-colors');
     const colorName  = document.getElementById('qv-color-name');
-    const colors = Array.isArray(p.colors) ? p.colors : [];
+    const colors = Array.isArray(p.colors) ? p.colors.filter(c => typeof c === 'string' && c) : [];
     if (colors.length) {
-      colorName.textContent = colors[0].name || '';
-      colorsBox.innerHTML = colors.map((c,i) =>
-        `<div class="qv-color ${i===0?'active':''}" data-name="${c.name||''}"><span class="sw" style="background:${c.hex||'#ccc'}"></span><span class="nm">${c.name||''}</span></div>`).join('');
-      colorsBox.querySelectorAll('.qv-color').forEach(c => c.onclick = () => {
+      colorName.textContent = colors[0];
+      colorsBox.innerHTML = colors.map((c, i) =>
+        `<div class="qv-color ${i===0?'active':''}" data-name="${c}"><span class="nm">${c}</span></div>`
+      ).join('');
+      colorsBox.querySelectorAll('.qv-color').forEach(el => el.onclick = () => {
         colorsBox.querySelectorAll('.qv-color').forEach(x => x.classList.remove('active'));
-        c.classList.add('active'); colorName.textContent = c.dataset.name;
+        el.classList.add('active');
+        colorName.textContent = el.dataset.name;
       });
       colorsWrap.style.display = '';
     } else { colorsWrap.style.display = 'none'; }
