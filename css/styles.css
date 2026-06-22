@@ -2546,7 +2546,7 @@ body.menu-open { overflow: hidden; }
   }
   .hero-slide-bg { 
     background-size: cover; 
-    background-position: center bottom; 
+    background-position: center 68%; 
   }
 
   /* на мобиле скрим вертикальный: тёмный снизу, прозрачный сверху */
