@@ -533,7 +533,10 @@
     const itemsHtml = items.map(it => `
       <div class="oitem">
         <div class="oitem-img">${it.image ? `<img src="${it.image}" alt="">` : '<span class="ph">LN</span>'}</div>
-        <div class="oitem-b"><div class="oitem-nm">${it.name}</div><div class="oitem-m">Размер: ${it.size} · ${it.quantity} шт.</div></div>
+        <div class="oitem-b">
+          <div class="oitem-nm">${it.name}</div>
+          <div class="oitem-m">Размер: ${it.size}${it.color ? ' · Цвет: ' + it.color : ''} · ${it.quantity} шт.</div>
+        </div>
         <div class="oitem-p">${fp(it.price * it.quantity)}</div>
       </div>`).join('');
 

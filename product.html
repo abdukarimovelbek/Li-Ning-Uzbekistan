@@ -136,6 +136,12 @@
         </div>
         <div class="detail-size-grid"></div>
       </div>
+      <div class="detail-size-block" id="detail-color-block" style="display:none">
+        <div class="size-label">
+          <span>Цвет <span class="size-picked" id="color-picked"></span></span>
+        </div>
+        <div class="detail-color-grid" id="detail-color-grid"></div>
+      </div>
 
       <div class="detail-actions">
         <div class="detail-cta-row">
@@ -312,6 +318,48 @@ function fillProduct(p) {
         btn.classList.add('active');
         const lbl = document.getElementById('size-picked');
         if (lbl) lbl.textContent = '· ' + btn.dataset.size;
+      });
+    });
+  }
+
+  // Выбор цвета — если есть варианты
+  const colorBlock = document.getElementById('detail-color-block');
+  const colorGrid  = document.getElementById('detail-color-grid');
+  if (colorBlock && colorGrid && Array.isArray(p.variants) && p.variants.length > 0) {
+    colorBlock.style.display = '';
+    colorGrid.innerHTML = p.variants.map(v =>
+      `<button class="detail-size-btn" data-color="${v.color || v.code}"
+        data-images='${JSON.stringify(v.images || [])}'>${v.color || v.code}</button>`
+    ).join('');
+    // Выбираем первый цвет по умолчанию
+    const first = colorGrid.querySelector('.detail-size-btn');
+    if (first) {
+      first.classList.add('active');
+      document.getElementById('color-picked').textContent = '· ' + first.dataset.color;
+    }
+    colorGrid.querySelectorAll('.detail-size-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        colorGrid.querySelectorAll('.detail-size-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('color-picked').textContent = '· ' + btn.dataset.color;
+        // Меняем главное фото на фото этого цвета
+        try {
+          const imgs = JSON.parse(btn.dataset.images || '[]');
+          if (imgs[0]) {
+            const mainImg = document.getElementById('gallery-img');
+            if (mainImg) {
+              mainImg.style.opacity = '0';
+              setTimeout(() => { mainImg.src = imgs[0]; mainImg.style.opacity = '1'; }, 150);
+            }
+            const thumbs = document.querySelector('.gallery-thumbs');
+            if (thumbs) {
+              thumbs.innerHTML = imgs.map((url, i) => `
+                <div class="gallery-thumb ${i===0?'active':''}" onclick="switchImg('${url}',this)">
+                  <img src="${url}">
+                </div>`).join('');
+            }
+          }
+        } catch(e) {}
       });
     });
   }
@@ -499,7 +547,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const p = window._currentProduct;
       if (!p) return;
 
-      const selectedSize = document.querySelector('.detail-size-btn.active');
+      const selectedSize  = document.querySelector('.detail-size-grid .detail-size-btn.active');
+      const selectedColor = document.querySelector('#detail-color-grid .detail-size-btn.active');
       if (!selectedSize) {
         const grid = document.querySelector('.detail-size-grid');
         if (grid) {
@@ -510,42 +559,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      const images = Array.isArray(p.images) ? p.images : [];
-      if (window.Cart && window.Cart.add) {
-      window.Cart.add({
+      const colorImages = (() => {
+        try { return JSON.parse(selectedColor?.dataset.images || '[]'); } catch(e) { return []; }
+      })();
+      const fallbackImg = Array.isArray(p.images) ? (p.images[0] || null) : null;
+      Cart.addItem({
         id:      p.id,
         article: p.article || p.id,
         name:    p.name,
         brand:   p.brand || 'Li Ning',
         price:   p.price,
         size:    selectedSize.dataset.size,
-        image:   images[0] || null,
+        color:   selectedColor?.dataset.color || null,
+        image:   colorImages[0] || fallbackImg,
         qty:     1
       });
-      } else {
-        // Запасной вариант — добавляем напрямую в localStorage
-        const items = JSON.parse(localStorage.getItem('lining_cart') || '[]');
-        const existing = items.find(i => i.id === p.id && i.size === selectedSize.dataset.size);
-        if (existing) {
-          existing.qty++;
-        } else {
-          items.push({
-          id:      p.id,
-          article: p.article || p.id,
-          name:    p.name,
-          brand:   p.brand || 'Li Ning',
-          price:   p.price,
-          size:    selectedSize.dataset.size,
-          image:   images[0] || null,
-          qty:     1
-        });
-        }
-        localStorage.setItem('lining_cart', JSON.stringify(items));
-        // Открываем корзину
-        document.querySelector('.cart-overlay')?.classList.add('open');
-        document.querySelector('.cart-drawer')?.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      }
     });
 });
 

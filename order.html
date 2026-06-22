@@ -1625,7 +1625,7 @@
         <div class="co-oi-img">${it.image ? `<img src="${it.image}" alt="">` : '<svg viewBox="0 0 40 40" width="40" fill="none"><rect width="40" height="40" fill="rgba(255,255,255,.06)" rx="8"/><text x="20" y="26" text-anchor="middle" font-family="Bebas Neue" font-size="11" fill="rgba(255,255,255,.3)">LN</text></svg>'}</div>
         <div class="co-oi-body">
           <div class="co-oi-nm">${it.name}</div>
-          <div class="co-oi-meta">Размер: ${it.size}</div>
+          <div class="co-oi-meta">Размер: ${it.size}${it.color ? ' · Цвет: ' + it.color : ''}</div>
           <div class="co-oi-qty">
             <button onclick="coChQty(${i},-1)">−</button>
             <span>${it.qty}</span>
@@ -1648,7 +1648,7 @@
         <div class="co-soi-img">${it.image ? `<img src="${it.image}" alt="">` : '<svg viewBox="0 0 40 40" width="36" fill="none"><rect width="40" height="40" fill="rgba(255,255,255,.06)" rx="8"/><text x="20" y="26" text-anchor="middle" font-family="Bebas Neue" font-size="11" fill="rgba(255,255,255,.3)">LN</text></svg>'}</div>
         <div class="co-soi-body">
           <div class="co-soi-nm">${it.name}</div>
-          <div class="co-soi-meta">Размер: ${it.size}</div>
+          <div class="co-soi-meta">Размер: ${it.size}${it.color ? ' · Цвет: ' + it.color : ''}</div>
           <div class="co-soi-qty">
             <button onclick="coChQty(${i},-1)">−</button>
             <span>${it.qty}</span>

@@ -107,19 +107,34 @@ async function getProductDetails(productId) {
 }
 
 // ── 3. Преобразуем формат Узум → формат нашей БД ────────────
-function mapUzumToSupabase(uzumProduct) {
+function mapUzumToSupabase(uzumProduct, details) {
   const p = uzumProduct;
 
+  // Галерея из детальной страницы Узума — первые 3 фото
   const images = [];
-  if (p.skuList?.length) {
-    p.skuList.forEach(sku => {
-      if (sku.previewImage && !images.includes(sku.previewImage)) {
-        const imgUrl = sku.previewImage?.startsWith('http') 
-          ? `${sku.previewImage}/original.jpg`
-          : `https://images.uzum.uz/${sku.previewImage}/original.jpg`;
-        if (!images.includes(imgUrl)) images.push(imgUrl);
-      }
-    });
+  const photoSrc = details?.photos || details?.images || details?.media ||
+                   details?.photoList || details?.skuImageUrlList || [];
+  if (Array.isArray(photoSrc)) {
+    for (const photo of photoSrc.slice(0, 3)) {
+      const raw = typeof photo === 'string' ? photo
+                : (photo?.url || photo?.src || photo?.previewImage || '');
+      if (!raw) continue;
+      const full = raw.startsWith('http')
+        ? `${raw}/original.jpg`
+        : `https://images.uzum.uz/${raw}/original.jpg`;
+      images.push(full);
+    }
+  }
+  // Fallback — если детали не дали фото, берём из skuList
+  if (images.length === 0 && p.skuList?.length) {
+    for (const sku of p.skuList) {
+      if (images.length >= 3) break;
+      if (!sku.previewImage) continue;
+      const full = sku.previewImage.startsWith('http')
+        ? `${sku.previewImage}/original.jpg`
+        : `https://images.uzum.uz/${sku.previewImage}/original.jpg`;
+      if (!images.includes(full)) images.push(full);
+    }
   }
 
   const sizes = [];
@@ -136,10 +151,17 @@ function mapUzumToSupabase(uzumProduct) {
   const price = 0;
   const oldPrice = null;
 
-
   const skuFull = p.skuList?.[0]?.skuFullTitle || '';
   const parts = skuFull.split('-');
-  const article = parts.length >= 2 ? parts[1] : String(p.productId);
+  const article   = parts.length >= 2 ? parts[1] : String(p.productId);
+  const colorCode = parts.length >= 3 ? `${parts[1]}-${parts[2]}` : article;
+  const colorName = (() => {
+    for (const sku of (p.skuList || [])) {
+      const c = (sku.characteristics || '').split(',').map(s => s.trim())[1];
+      if (c) return c;
+    }
+    return null;
+  })();
 
   const name = p.skuList?.[0]?.productTitle || p.title || 'Товар Li-Ning';
 
@@ -166,6 +188,8 @@ function mapUzumToSupabase(uzumProduct) {
 
   return {
     article,
+    _colorCode: colorCode,   // временные поля с _ — не пишутся в базу напрямую
+    _colorName: colorName,
     name,
     description: p.description || p.fullDescription || p.skuList?.[0]?.description || null,
     category,
@@ -216,46 +240,35 @@ async function getExistingArticles() {
 }
 
 // ── 5. Сохраняем в Supabase — только НОВЫЕ товары ───────────
-async function saveNewToSupabase(products) {
-  // Получаем список уже существующих article
-  const existingArticles = await getExistingArticles();
-
-  // Фильтруем — оставляем только те которых ещё нет в базе
-  const newProducts = products.filter(p => !existingArticles.has(p.article));
-  const skipped     = products.filter(p =>  existingArticles.has(p.article));
-
-  console.log(`\n📊 Итого из Узум: ${products.length} товаров`);
-  console.log(`  ⏭️  Пропускаем (уже в базе): ${skipped.length}`);
-  console.log(`  🆕 Добавляем новых:          ${newProducts.length}`);
-
-  if (skipped.length > 0) {
-    console.log('  Пропущенные article:', skipped.map(p => p.article).join(', '));
-  }
-
-  if (newProducts.length === 0) {
-    console.log('\n✨ Нет новых товаров для добавления.');
-    return { saved: 0, skipped: skipped.length, errors: 0 };
-  }
-
-  // Вставляем только новые, батчами по 50
-  console.log(`\n💾 Сохраняем ${newProducts.length} новых товаров в Supabase...`);
+async function saveToSupabase(products) {
+  console.log(`\n💾 Upsert ${products.length} товаров в Supabase...`);
   const chunkSize = 50;
-  let saved = 0;
-  let errors = 0;
+  let saved = 0, errors = 0;
 
-  for (let i = 0; i < newProducts.length; i += chunkSize) {
-    const chunk = newProducts.slice(i, i + chunkSize);
-
+  for (let i = 0; i < products.length; i += chunkSize) {
+    const chunk = products.slice(i, i + chunkSize);
     const res = await fetch(`${SB_URL}/rest/v1/products`, {
       method: 'POST',
       headers: {
         'apikey': SB_KEY,
         'Authorization': `Bearer ${SB_KEY}`,
         'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
+        'Prefer': 'resolution=merge-duplicates,return=minimal'
       },
       body: JSON.stringify(chunk)
     });
+
+    if (res.ok) {
+      saved += chunk.length;
+      console.log(`  ✅ Upsert: ${saved}/${products.length}`);
+    } else {
+      console.error(`  ❌ Ошибка чанка ${i}:`, await res.text());
+      errors += chunk.length;
+    }
+  }
+  return { saved, skipped: 0, errors };
+
+// Функцию getExistingArticles() можно удалить — она больше не нужна
 
     if (res.ok) {
       saved += chunk.length;
@@ -265,7 +278,7 @@ async function saveNewToSupabase(products) {
       console.error(`  ❌ Ошибка сохранения чанка ${i}:`, err);
       errors += chunk.length;
     }
-  }
+  
 
   return { saved, skipped: skipped.length, errors };
 }
@@ -291,19 +304,40 @@ async function main() {
     for (let i = 0; i < uzumList.length; i++) {
       const item = uzumList[i];
       const productId = item.id || item.productId;
-
       process.stdout.write(`  ${i + 1}/${uzumList.length} - ${item.title || item.name}... `);
-
       const details = await getProductDetails(productId);
-      const mapped = mapUzumToSupabase(item);
+      const mapped = mapUzumToSupabase(item, details);   // ← передаём details
       detailedProducts.push(mapped);
-
-      console.log(`✓ (${mapped.images?.length || 0} фото, ${mapped.sizes?.length || 0} размеров)`);
-
+      console.log(`✓ (${mapped.images?.length || 0} фото, цвет: ${mapped._colorName || mapped._colorCode || '?'})`);
       await new Promise(r => setTimeout(r, 300));
     }
 
-    const result = await saveNewToSupabase(detailedProducts);
+    // Группируем: ARMT015-20 + ARMT015-25 + ARMT015-4 → один товар ARMT015
+    console.log('\n🎨 Группируем варианты по артикулу...');
+    const groupMap = {};
+    for (const mapped of detailedProducts) {
+      const base = mapped.article;
+      if (!groupMap[base]) {
+        const { _colorCode, _colorName, ...rest } = mapped;
+        groupMap[base] = { ...rest, variants: [], colors: [] };
+      }
+      groupMap[base].variants.push({
+        color:  mapped._colorName || mapped._colorCode,
+        code:   mapped._colorCode,
+        images: mapped.images || []
+      });
+      if (mapped._colorName && !groupMap[base].colors.includes(mapped._colorName)) {
+        groupMap[base].colors.push(mapped._colorName);
+      }
+      // Мержим размеры всех цветов
+      groupMap[base].sizes = [...new Set([...(groupMap[base].sizes || []), ...(mapped.sizes || [])])];
+      // Главные фото = фото первого варианта
+      if (!groupMap[base].images?.length) groupMap[base].images = mapped.images;
+    }
+    const groupedProducts = Object.values(groupMap);
+    console.log(`✅ ${detailedProducts.length} записей → ${groupedProducts.length} товаров`);
+
+    const result = await saveToSupabase(groupedProducts);   // ← новое название
 
     console.log('\n' + '━'.repeat(50));
     console.log('📊 РЕЗУЛЬТАТ СИНХРОНИЗАЦИИ:');
