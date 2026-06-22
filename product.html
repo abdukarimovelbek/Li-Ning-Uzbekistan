@@ -230,34 +230,14 @@ async function loadProduct() {
   const id = params.get('id');
   if (!id) return;
 
-  let product = null;
-
-  // Ищем в кэше
   try {
-    const cacheKeys = Object.keys(sessionStorage).filter(k => k.startsWith('lining_products_cache'));
-    for (const key of cacheKeys) {
-      const cached = JSON.parse(sessionStorage.getItem(key));
-      if (cached?.data) {
-        const found = cached.data.find(p => p.id === id);
-        if (found) { product = found; break; }
-      }
-    }
-  } catch(e) {}
-
-  // Если нет в кэше — грузим из Supabase
-  if (!product) {
-    try {
-      const res = await fetch(
-        `${SB_URL}/rest/v1/products?id=eq.${id}&select=*`,
-        { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
-      );
-      const data = await res.json();
-      if (data?.length > 0) product = data[0];
-    } catch(e) { console.error(e); return; }
-  }
-
-  if (!product) return;
-  fillProduct(product);
+    const res = await fetch(
+      `${SB_URL}/rest/v1/products?id=eq.${id}&select=*`,
+      { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+    );
+    const data = await res.json();
+    if (data?.length > 0) fillProduct(data[0]);
+  } catch(e) { console.error(e); }
 }
 
 function fillProduct(p) {
@@ -322,27 +302,40 @@ function fillProduct(p) {
     });
   }
 
-  // Выбор цвета — если есть варианты
+  // Выбор цвета — квадраты с фото, показываем всегда если есть цвет
   const colorBlock = document.getElementById('detail-color-block');
   const colorGrid  = document.getElementById('detail-color-grid');
-  if (colorBlock && colorGrid && Array.isArray(p.variants) && p.variants.length > 0) {
+
+  // фильтруем числа и размеры (5, XL, 2XL) которые не являются цветами
+  const COLOR_FILTER = /^(\d+(\.\d+)?|XS|S|M|L|XL|XXL|XXXL|2XL|3XL|4XL|5XL)$/i;
+  let colorSrc = null;
+  if (Array.isArray(p.variants) && p.variants.length > 0) {
+    const f = p.variants.filter(v => v.color && !COLOR_FILTER.test(v.color));
+    if (f.length > 0) colorSrc = f;
+  }
+  if (!colorSrc && Array.isArray(p.colors) && p.colors.length > 0) {
+    const f = p.colors.filter(c => c && !COLOR_FILTER.test(c));
+    if (f.length > 0) colorSrc = f.map(c => ({ color: c, code: c, images: [] }));
+  }
+
+  if (colorBlock && colorGrid && colorSrc) {
     colorBlock.style.display = '';
-    colorGrid.innerHTML = p.variants.map(v =>
-      `<button class="detail-size-btn" data-color="${v.color || v.code}"
-        data-images='${JSON.stringify(v.images || [])}'>${v.color || v.code}</button>`
+    colorGrid.innerHTML = colorSrc.map((v, i) =>
+      `<button class="detail-color-btn ${i === 0 ? 'active' : ''}"
+        data-color="${v.color || v.code}"
+        data-images='${JSON.stringify(v.images || [])}'
+        style="${v.images?.[0] ? `background-image:url('${v.images[0]}')` : ''}"
+        title="${v.color || v.code}"></button>`
     ).join('');
-    // Выбираем первый цвет по умолчанию
-    const first = colorGrid.querySelector('.detail-size-btn');
-    if (first) {
-      first.classList.add('active');
-      document.getElementById('color-picked').textContent = '· ' + first.dataset.color;
-    }
-    colorGrid.querySelectorAll('.detail-size-btn').forEach(btn => {
+    const colorPicked = document.getElementById('color-picked');
+    if (colorPicked && colorSrc[0]) colorPicked.textContent = '· ' + colorSrc[0].color;
+
+    colorGrid.querySelectorAll('.detail-color-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        colorGrid.querySelectorAll('.detail-size-btn').forEach(b => b.classList.remove('active'));
+        colorGrid.querySelectorAll('.detail-color-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        document.getElementById('color-picked').textContent = '· ' + btn.dataset.color;
-        // Меняем главное фото на фото этого цвета
+        const colorPicked = document.getElementById('color-picked');
+        if (colorPicked) colorPicked.textContent = '· ' + btn.dataset.color;
         try {
           const imgs = JSON.parse(btn.dataset.images || '[]');
           if (imgs[0]) {

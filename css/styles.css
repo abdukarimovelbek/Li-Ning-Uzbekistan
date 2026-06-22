@@ -1246,6 +1246,35 @@ button {
 .detail-size-btn.sold-out{ opacity:.4; text-decoration:line-through; cursor:not-allowed; pointer-events:none; }
 .detail-size-grid.err{ animation:qvShake .45s; }
 
+/* Цвет — квадрат с фото товара */
+.detail-color-grid {
+    display: flex;
+    gap: .6rem;
+    flex-wrap: wrap;
+}
+.detail-color-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    border: 2px solid #D9D3CA;
+    background-size: cover;
+    background-position: center;
+    background-color: #f0ede8;
+    cursor: pointer;
+    transition: .2s var(--ease);
+    flex-shrink: 0;
+}
+.detail-color-btn:hover {
+    border-color: var(--black);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,.1);
+}
+.detail-color-btn.active {
+    border: 2.5px solid var(--black);
+    box-shadow: 0 4px 14px rgba(0,0,0,.18);
+}
+
+
 /* ── Actions ── */
 .detail-actions{ margin-top:1.4rem; margin-bottom:0; }
 .detail-cta-row{ display:flex; gap:.7rem; }

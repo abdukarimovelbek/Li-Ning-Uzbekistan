@@ -133,35 +133,55 @@ function mapUzumToSupabase(uzumProduct) {
   const colorVariants = {};  // color → { images: [] }
   const colorsArr = [];      // порядок добавления цветов
 
+  // Паттерн размеров — чтобы не путать их с цветами
+  const SIZE_RE = /^(\d+(\.\d+)?|XS|S|M|L|XL|XXL|XXXL|2XL|3XL|4XL|5XL)$/i;
+
   if (p.skuList?.length) {
-    p.skuList.forEach(sku => {
-      const chars = (sku.characteristics || '').split(',').map(s => s.trim());
-      const size  = chars[0];
-      const color = chars[1];
-      if (size) sizesSet.add(size);
-      if (color) {
-        if (!colorVariants[color]) {
-          colorVariants[color] = { images: [] };
-          colorsArr.push(color);
-        }
-        if (sku.previewImage) {
-          const url = makeUrl(sku.previewImage);
-          if (!colorVariants[color].images.includes(url)) {
-            colorVariants[color].images.push(url);
+      p.skuList.forEach(sku => {
+          const chars = (sku.characteristics || '').split(',').map(s => s.trim());
+          const size  = chars[0];
+          const color = chars[1];
+          if (size) sizesSet.add(size);
+          // пропускаем если цвет — число, пустая строка или паттерн размера
+          if (color && !SIZE_RE.test(color)) {
+              if (!colorVariants[color]) {
+                  colorVariants[color] = { images: [] };
+                  colorsArr.push(color);
+              }
+              if (sku.previewImage) {
+                  const url = makeUrl(sku.previewImage);
+                  if (!colorVariants[color].images.includes(url)) {
+                      colorVariants[color].images.push(url);
+                  }
+              }
           }
-        }
-      }
-    });
+          // если цвета нет — изображение всё равно сохраняем в запасной массив
+          if ((!color || SIZE_RE.test(color)) && sku.previewImage) {
+              const url = makeUrl(sku.previewImage);
+              if (!colorVariants['__default__']) {
+                  colorVariants['__default__'] = { images: [] };
+              }
+              if (!colorVariants['__default__'].images.includes(url)) {
+                  colorVariants['__default__'].images.push(url);
+              }
+          }
+      });
   }
+
+  // если нет ни одного цвета — берём фото из запасного массива
+  const hasColors = colorsArr.length > 0;
+  const fallbackImages = colorVariants['__default__']?.images || [];
 
   const sizes    = [...sizesSet];
   const colors   = colorsArr;
   const variants = colors.map(c => ({
-    color: c,
-    code: c,
-    images: colorVariants[c].images
+      color: c,
+      code: c,
+      images: colorVariants[c].images
   }));
-  const images = variants[0]?.images?.length ? variants[0].images : null;
+  const images = variants[0]?.images?.length
+      ? variants[0].images
+      : (fallbackImages.length ? [fallbackImages[0]] : null);
 
   const article = String(p.productId);
   const name    = p.skuList?.[0]?.productTitle || p.title || 'Товар Li-Ning';
