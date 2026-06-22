@@ -97,7 +97,11 @@ async function getProductDetails(productId) {
     }
     const data = await res.json();
     if (productId === 5032478) {
-      console.log('ДЕТАЛИ:', JSON.stringify(data).substring(0, 800));
+      const d = data?.payload || data || {};
+      console.log('=== ДЕТАЛИ: ключи верхнего уровня ===', Object.keys(d));
+      const sku0 = d?.skuList?.[0];
+      if (sku0) console.log('=== ПЕРВЫЙ SKU: ключи ===', Object.keys(sku0));
+      console.log('=== ПОЛНЫЙ JSON (3000 chars) ===', JSON.stringify(d).substring(0, 3000));
     }
     return data?.payload || data;
   } catch(e) { 
@@ -110,19 +114,30 @@ async function getProductDetails(productId) {
 function mapUzumToSupabase(uzumProduct, details) {
   const p = uzumProduct;
 
-  // Галерея из детальной страницы Узума — первые 3 фото
+  // Галерея — сначала skuImages (наиболее вероятное поле Узум API)
   const images = [];
-  const photoSrc = details?.photos || details?.images || details?.media ||
-                   details?.photoList || details?.skuImageUrlList || [];
-  if (Array.isArray(photoSrc)) {
+  const makeUrl = raw => raw.startsWith('http')
+    ? `${raw}/original.jpg`
+    : `https://images.uzum.uz/${raw}/original.jpg`;
+
+  const skuImages = details?.skuList?.[0]?.skuImages
+                || details?.skuList?.[0]?.images
+                || details?.skuList?.[0]?.imageList
+                || [];
+  if (Array.isArray(skuImages) && skuImages.length > 0) {
+    for (const img of skuImages.slice(0, 3)) {
+      const raw = typeof img === 'string' ? img : (img?.url || img?.previewImage || '');
+      if (raw && !images.includes(makeUrl(raw))) images.push(makeUrl(raw));
+    }
+  }
+
+  // Fallback 1 — top-level поля
+  if (images.length === 0) {
+    const photoSrc = details?.photos || details?.images || details?.media ||
+                    details?.photoList || details?.skuImageUrlList || [];
     for (const photo of photoSrc.slice(0, 3)) {
-      const raw = typeof photo === 'string' ? photo
-                : (photo?.url || photo?.src || photo?.previewImage || '');
-      if (!raw) continue;
-      const full = raw.startsWith('http')
-        ? `${raw}/original.jpg`
-        : `https://images.uzum.uz/${raw}/original.jpg`;
-      images.push(full);
+      const raw = typeof photo === 'string' ? photo : (photo?.url || photo?.src || photo?.previewImage || '');
+      if (raw && !images.includes(makeUrl(raw))) images.push(makeUrl(raw));
     }
   }
   // Fallback — если детали не дали фото, берём из skuList
