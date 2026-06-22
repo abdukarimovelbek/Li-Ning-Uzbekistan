@@ -111,79 +111,57 @@ async function getProductDetails(productId) {
 }
 
 // ── 3. Преобразуем формат Узум → формат нашей БД ────────────
-function mapUzumToSupabase(uzumProduct, details) {
+// Details API возвращает 403 — берём всё из skuList листинга.
+// Каждый SKU имеет characteristics ("40, Белый") и previewImage.
+function mapUzumToSupabase(uzumProduct) {
   const p = uzumProduct;
-
-  // Галерея — сначала skuImages (наиболее вероятное поле Узум API)
-  const images = [];
   const makeUrl = raw => raw.startsWith('http')
     ? `${raw}/original.jpg`
     : `https://images.uzum.uz/${raw}/original.jpg`;
 
-  const skuImages = details?.skuList?.[0]?.skuImages
-                || details?.skuList?.[0]?.images
-                || details?.skuList?.[0]?.imageList
-                || [];
-  if (Array.isArray(skuImages) && skuImages.length > 0) {
-    for (const img of skuImages.slice(0, 3)) {
-      const raw = typeof img === 'string' ? img : (img?.url || img?.previewImage || '');
-      if (raw && !images.includes(makeUrl(raw))) images.push(makeUrl(raw));
-    }
-  }
+  // Собираем уникальные цвета → изображения + размеры из skuList
+  const sizesSet = new Set();
+  const colorVariants = {};  // color → { images: [] }
+  const colorsArr = [];      // порядок добавления цветов
 
-  // Fallback 1 — top-level поля
-  if (images.length === 0) {
-    const photoSrc = details?.photos || details?.images || details?.media ||
-                    details?.photoList || details?.skuImageUrlList || [];
-    for (const photo of photoSrc.slice(0, 3)) {
-      const raw = typeof photo === 'string' ? photo : (photo?.url || photo?.src || photo?.previewImage || '');
-      if (raw && !images.includes(makeUrl(raw))) images.push(makeUrl(raw));
-    }
-  }
-  // Fallback — если детали не дали фото, берём из skuList
-  if (images.length === 0 && p.skuList?.length) {
-    for (const sku of p.skuList) {
-      if (images.length >= 3) break;
-      if (!sku.previewImage) continue;
-      const full = sku.previewImage.startsWith('http')
-        ? `${sku.previewImage}/original.jpg`
-        : `https://images.uzum.uz/${sku.previewImage}/original.jpg`;
-      if (!images.includes(full)) images.push(full);
-    }
-  }
-
-  const sizes = [];
-  const colors = [];
   if (p.skuList?.length) {
     p.skuList.forEach(sku => {
-      const chars = sku.characteristics || '';
-      const parts = chars.split(',').map(s => s.trim());
-      if (parts[0] && !sizes.includes(parts[0])) sizes.push(parts[0]);
-      if (parts[1] && !colors.includes(parts[1])) colors.push(parts[1]);
+      const chars = (sku.characteristics || '').split(',').map(s => s.trim());
+      const size  = chars[0];
+      const color = chars[1];
+      if (size) sizesSet.add(size);
+      if (color) {
+        if (!colorVariants[color]) {
+          colorVariants[color] = { images: [] };
+          colorsArr.push(color);
+        }
+        if (sku.previewImage) {
+          const url = makeUrl(sku.previewImage);
+          if (!colorVariants[color].images.includes(url)) {
+            colorVariants[color].images.push(url);
+          }
+        }
+      }
     });
   }
 
-  const price = 0;
-  const oldPrice = null;
+  const sizes    = [...sizesSet];
+  const colors   = colorsArr;
+  const variants = colors.map(c => ({
+    color: c,
+    code: c,
+    images: colorVariants[c].images
+  }));
+  const images = variants[0]?.images?.length ? variants[0].images : null;
 
-  const skuFull = p.skuList?.[0]?.skuFullTitle || '';
-  const parts = skuFull.split('-');
-  const article   = parts.length >= 2 ? parts[1] : String(p.productId);
-  const colorCode = parts.length >= 3 ? `${parts[1]}-${parts[2]}` : article;
-  const colorName = (() => {
-    for (const sku of (p.skuList || [])) {
-      const c = (sku.characteristics || '').split(',').map(s => s.trim())[1];
-      if (c) return c;
-    }
-    return null;
-  })();
-
-  const name = p.skuList?.[0]?.productTitle || p.title || 'Товар Li-Ning';
+  const article = String(p.productId);
+  const name    = p.skuList?.[0]?.productTitle || p.title || 'Товар Li-Ning';
 
   const categoryMap = {
-    'Кроссовки': 'shoes', 'Обувь': 'shoes', 'Кеды': 'shoes', 'Шлепанцы': 'shoes',
+    'Кроссовки': 'shoes', 'Обувь': 'shoes', 'Кеды': 'shoes', 'Шлепанцы': 'shoes', 'Сабо': 'shoes',
     'Футболка': 'clothing', 'Штаны': 'clothing', 'Шорты': 'clothing',
     'Брюки': 'clothing', 'Лонгслив': 'clothing', 'Поло': 'clothing',
+    'Куртка': 'clothing', 'Пуховик': 'clothing', 'Форма': 'clothing', 'Трико': 'clothing',
     'Сумка': 'accessories', 'Рюкзак': 'accessories', 'Бейсболка': 'accessories',
   };
   let category = 'shoes';
@@ -203,19 +181,18 @@ function mapUzumToSupabase(uzumProduct, details) {
 
   return {
     article,
-    _colorCode: colorCode,   // временные поля с _ — не пишутся в базу напрямую
-    _colorName: colorName,
     name,
     description: p.description || p.fullDescription || p.skuList?.[0]?.description || null,
     category,
     gender,
     brand: 'Li Ning',
-    price,
-    old_price: oldPrice,
+    price: 0,
+    old_price: null,
     sizes: sizes.length > 0 ? sizes : null,
     colors: colors.length > 0 ? colors : null,
-    images: images.length > 0 ? images : null,
-    badge: oldPrice ? 'SALE' : null,
+    images,
+    variants: variants.length > 0 ? variants : null,
+    badge: null,
     is_active: true,
   };
 }
@@ -298,47 +275,20 @@ async function main() {
       console.log('⚠️  Товары не найдены в Узум');
       return;
     }
-
-    console.log('\n🔍 Получаем детали товаров...');
-    const detailedProducts = [];
+    
+    console.log('\n🔄 Обрабатываем товары...');
+    const products = [];
 
     for (let i = 0; i < uzumList.length; i++) {
       const item = uzumList[i];
-      const productId = item.id || item.productId;
       process.stdout.write(`  ${i + 1}/${uzumList.length} - ${item.title || item.name}... `);
-      const details = await getProductDetails(productId);
-      const mapped = mapUzumToSupabase(item, details);   // ← передаём details
-      detailedProducts.push(mapped);
-      console.log(`✓ (${mapped.images?.length || 0} фото, цвет: ${mapped._colorName || mapped._colorCode || '?'})`);
-      await new Promise(r => setTimeout(r, 300));
+      const mapped = mapUzumToSupabase(item);
+      products.push(mapped);
+      console.log(`✓ (${mapped.images?.length || 0} фото, цветов: ${mapped.colors?.length || 0}: ${(mapped.colors || []).join(', ')})`);
     }
 
-    // Группируем: ARMT015-20 + ARMT015-25 + ARMT015-4 → один товар ARMT015
-    console.log('\n🎨 Группируем варианты по артикулу...');
-    const groupMap = {};
-    for (const mapped of detailedProducts) {
-      const base = mapped.article;
-      if (!groupMap[base]) {
-        const { _colorCode, _colorName, ...rest } = mapped;
-        groupMap[base] = { ...rest, variants: [], colors: [] };
-      }
-      groupMap[base].variants.push({
-        color:  mapped._colorName || mapped._colorCode,
-        code:   mapped._colorCode,
-        images: mapped.images || []
-      });
-      if (mapped._colorName && !groupMap[base].colors.includes(mapped._colorName)) {
-        groupMap[base].colors.push(mapped._colorName);
-      }
-      // Мержим размеры всех цветов
-      groupMap[base].sizes = [...new Set([...(groupMap[base].sizes || []), ...(mapped.sizes || [])])];
-      // Главные фото = фото первого варианта
-      if (!groupMap[base].images?.length) groupMap[base].images = mapped.images;
-    }
-    const groupedProducts = Object.values(groupMap);
-    console.log(`✅ ${detailedProducts.length} записей → ${groupedProducts.length} товаров`);
-
-    const result = await saveToSupabase(groupedProducts);   // ← новое название
+    console.log(`\n✅ Итого: ${products.length} товаров`);
+    const result = await saveToSupabase(products);
 
     console.log('\n' + '━'.repeat(50));
     console.log('📊 РЕЗУЛЬТАТ СИНХРОНИЗАЦИИ:');
