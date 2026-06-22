@@ -34,20 +34,29 @@ async function getUzumProducts() {
     let filterCount = 0;
 
     while (true) {
-      const res = await fetch(
-        `${UZUM_API}/v1/product/shop/${UZUM_SHOP_ID}?page=${page}&size=${size}&filter=${filter}&order=ASC&sortBy=DEFAULT&productRank=A`,
-        {
-          headers: {
-            'Authorization': UZUM_TOKEN,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Accept-Language': 'ru-RU',
-          }
+      let res;
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          res = await fetch(
+            `${UZUM_API}/v1/product/shop/${UZUM_SHOP_ID}?page=${page}&size=${size}&filter=${filter}&order=ASC&sortBy=DEFAULT&productRank=A`,
+            {
+              headers: {
+                'Authorization': UZUM_TOKEN,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Accept-Language': 'ru-RU',
+              }
+            }
+          );
+          break; // успех — выходим из retry loop
+        } catch (err) {
+          console.log(`    ⚠️  Попытка ${attempt}/3 — сетевая ошибка: ${err.message}`);
+          if (attempt === 3) throw err;
+          await new Promise(r => setTimeout(r, 3000 * attempt)); // 3с, 6с, 9с
         }
-      );
+      }
 
       if (!res.ok) {
-        const errText = await res.text();
         console.log(`    ⚠️  Фильтр ${filter} стр.${page}: ${res.status} — пропускаем`);
         break;
       }
