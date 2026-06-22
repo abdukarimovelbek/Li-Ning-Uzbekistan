@@ -247,7 +247,7 @@ async function saveToSupabase(products) {
 
   for (let i = 0; i < products.length; i += chunkSize) {
     const chunk = products.slice(i, i + chunkSize);
-    const res = await fetch(`${SB_URL}/rest/v1/products`, {
+    const res = await fetch(`${SB_URL}/rest/v1/products?on_conflict=article`, {
       method: 'POST',
       headers: {
         'apikey': SB_KEY,
@@ -267,20 +267,6 @@ async function saveToSupabase(products) {
     }
   }
   return { saved, skipped: 0, errors };
-
-  // Функцию getExistingArticles() можно удалить — она больше не нужна
-
-    if (res.ok) {
-      saved += chunk.length;
-      console.log(`  ✅ Сохранено: ${saved}/${newProducts.length}`);
-    } else {
-      const err = await res.text();
-      console.error(`  ❌ Ошибка сохранения чанка ${i}:`, err);
-      errors += chunk.length;
-    }
-  
-
-  return { saved, skipped: skipped.length, errors };
 }
 
 // ── 6. MAIN ──────────────────────────────────────────────────
