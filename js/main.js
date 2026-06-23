@@ -1522,17 +1522,24 @@ const openQuickView = async (productId) => {
     document.getElementById('qv-add-btn').onclick = () => {
       const sel = sizeGrid.querySelector('.qv-size-btn.active');
       if (!sel && sizes.length) {
-        sizeGrid.classList.remove('qv-size-err'); void sizeGrid.offsetWidth; // перезапуск анимации
+        sizeGrid.classList.remove('qv-size-err'); void sizeGrid.offsetWidth;
         sizeGrid.classList.add('qv-size-err');
         setTimeout(() => sizeGrid.classList.remove('qv-size-err'), 600);
         return;
       }
-      window.Cart.add({ id: p.id, article: p.article || p.id, name: p.name,
-        brand: p.brand || 'Li Ning', price: p.price,
-        size: sel?.dataset.size || '', image: images[0] || null, qty: 1 });
-      closeQuickView();
-    };  
+      const activeColorName = colorsBox?.querySelector('.qv-color.active')?.dataset.name;
+      const colorVariant    = (Array.isArray(p.variants) ? p.variants : []).find(v => v.color === activeColorName);
+      const colorCode       = colorVariant?.code;
+      const fullArticle     = (p.article && colorCode && colorCode !== activeColorName)
+          ? `${p.article}-${colorCode}`
+          : p.article || p.id;
+      const activeImage     = colorVariant?.images?.[0] || images[0] || null;
 
+      window.Cart.add({ id: p.id, article: fullArticle, name: p.name,
+        brand: p.brand || 'Li Ning', price: p.price,
+        size: sel?.dataset.size || '', image: activeImage, qty: 1 });
+      closeQuickView();
+    };
   
     document.getElementById('qv-open-link').onclick = () => {
     window.location.href = `product.html?id=${p.id}`;
