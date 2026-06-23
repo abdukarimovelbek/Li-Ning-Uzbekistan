@@ -17,7 +17,7 @@ jobs:
 
           async function main() {
             const res = await fetch(
-              `${UZUM_API}/v1/product/shop/${process.env.UZUM_SHOP_ID}?page=0&size=3&filter=IN_STOCK&order=ASC&sortBy=DEFAULT`,
+              `${UZUM_API}/v1/product/shop/${process.env.UZUM_SHOP_ID}?page=0&size=3&filter=IN_STOCK&order=ASC&sortBy=DEFAULT&productRank=A`,
               {
                 headers: {
                   'Authorization': process.env.UZUM_TOKEN,
