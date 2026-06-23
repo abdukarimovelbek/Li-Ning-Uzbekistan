@@ -1055,6 +1055,9 @@
       window.location.href = 'login.html';
     }
 
+    const savedSection = localStorage.getItem('admin_section') || 'dashboard';
+    showSection(savedSection);
+
     // Init
     const adminLogin = sessionStorage.getItem('admin_login') || 'admin';
     document.getElementById('admin-name').textContent = adminLogin;
@@ -1087,13 +1090,17 @@
     // SECTION NAVIGATION
     function showSection(name) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => {
+        n.classList.remove('active');
+        if (n.getAttribute('onclick')?.includes(`'${name}'`)) n.classList.add('active');
+      });
       document.getElementById('section-' + name).classList.add('active');
-      event.currentTarget.classList.add('active');
 
       const titles = {dashboard:'Dashboard',analytics:'Аналитика',products:'Товары',orders:'Заказы',promotions:'Акции',slides:'Слайдер',prices:'Цены',settings:'Настройки'};
       document.getElementById('topbar-title').textContent = titles[name] || name;
       document.getElementById('topbar-add-btn').style.display = name === 'products' ? 'block' : 'none';
+
+      localStorage.setItem('admin_section', name);
 
       if (name === 'products') loadProducts();
       if (name === 'orders') loadOrders();
