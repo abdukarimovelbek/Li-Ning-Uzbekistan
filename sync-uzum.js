@@ -185,8 +185,7 @@ function mapUzumToSupabase(uzumProduct) {
 
   const uzum_article = String(p.productId);
   const name         = p.skuList?.[0]?.productTitle || p.title || 'Товар Li-Ning';
-  const articleMatch = name.match(/[A-Z]{2,}\d{3,}(?:-\d+)?/);
-  const article      = articleMatch ? articleMatch[0] : null;
+  const article      = p.skuTitle || null;
 
   const categoryMap = {
     'Кроссовки': 'shoes', 'Обувь': 'shoes', 'Кеды': 'shoes', 'Шлепанцы': 'shoes', 'Сабо': 'shoes',
