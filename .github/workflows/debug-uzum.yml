@@ -1,0 +1,50 @@
+name: Debug Uzum API Structure
+
+on:
+  workflow_dispatch:
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Uzum API fields
+        env:
+          UZUM_TOKEN:   ${{ secrets.UZUM_TOKEN }}
+          UZUM_SHOP_ID: ${{ secrets.UZUM_SHOP_ID }}
+        run: |
+          node << 'EOF'
+          const UZUM_API = 'https://api-seller.uzum.uz/api/seller-openapi';
+
+          async function main() {
+            const res = await fetch(
+              `${UZUM_API}/v1/product/shop/${process.env.UZUM_SHOP_ID}?page=0&size=3&filter=IN_STOCK&order=ASC&sortBy=DEFAULT`,
+              {
+                headers: {
+                  'Authorization': process.env.UZUM_TOKEN,
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json',
+                  'Accept-Language': 'ru-RU',
+                }
+              }
+            );
+            const data = await res.json();
+            const items = data?.productList || data?.payload?.products || data?.products || data?.content || [];
+            const item = items[0];
+
+            if (!item) { console.log('Товар не найден. Ответ:', JSON.stringify(data, null, 2)); return; }
+
+            console.log('\n=== КЛЮЧИ ВЕРХНЕГО УРОВНЯ ===');
+            console.log(Object.keys(item));
+
+            console.log('\n=== ТОВАР БЕЗ skuList ===');
+            console.log(JSON.stringify({ ...item, skuList: '[скрыто]' }, null, 2));
+
+            console.log('\n=== ПЕРВЫЙ SKU ===');
+            console.log(JSON.stringify(item.skuList?.[0], null, 2));
+
+            console.log('\n=== ВСЕ КЛЮЧИ ПЕРВОГО SKU ===');
+            console.log(Object.keys(item.skuList?.[0] || {}));
+          }
+
+          main().catch(console.error);
+          EOF

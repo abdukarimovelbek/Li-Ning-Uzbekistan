@@ -183,8 +183,10 @@ function mapUzumToSupabase(uzumProduct) {
       ? variants[0].images
       : (fallbackImages.length ? [fallbackImages[0]] : null);
 
-  const article = String(p.productId);
-  const name    = p.skuList?.[0]?.productTitle || p.title || 'Товар Li-Ning';
+  const uzum_article = String(p.productId);
+  const name         = p.skuList?.[0]?.productTitle || p.title || 'Товар Li-Ning';
+  const articleMatch = name.match(/[A-Z]{2,}\d{3,}(?:-\d+)?/);
+  const article      = articleMatch ? articleMatch[0] : null;
 
   const categoryMap = {
     'Кроссовки': 'shoes', 'Обувь': 'shoes', 'Кеды': 'shoes', 'Шлепанцы': 'shoes', 'Сабо': 'shoes',
@@ -209,6 +211,7 @@ function mapUzumToSupabase(uzumProduct) {
   }
 
   return {
+    uzum_article,
     article,
     name,
     description: p.description || p.fullDescription || p.skuList?.[0]?.description || null,
@@ -228,14 +231,14 @@ function mapUzumToSupabase(uzumProduct) {
 
 // ── 4. Получаем все article которые уже есть в Supabase ─────
 async function getExistingArticles() {
-  console.log('\n🔎 Проверяем какие article уже есть в базе...');
+  console.log('\n🔎 Проверяем какие uzum_article уже есть в базе...');
   const existing = new Set();
   let from = 0;
   const pageSize = 1000;
 
   while (true) {
     const res = await fetch(
-      `${SB_URL}/rest/v1/products?select=article&limit=${pageSize}&offset=${from}`,
+      `${SB_URL}/rest/v1/products?select=uzum_article&limit=${pageSize}&offset=${from}`,
       {
         headers: {
           'apikey': SB_KEY,
@@ -245,12 +248,12 @@ async function getExistingArticles() {
     );
 
     if (!res.ok) {
-      console.error('❌ Ошибка получения article из Supabase:', await res.text());
+      console.error('❌ Ошибка получения uzum_article из Supabase:', await res.text());
       break;
     }
 
     const rows = await res.json();
-    rows.forEach(r => existing.add(r.article));
+    rows.forEach(r => existing.add(r.uzum_article));
 
     if (rows.length < pageSize) break;
     from += pageSize;
@@ -268,7 +271,7 @@ async function saveToSupabase(products) {
 
   for (let i = 0; i < products.length; i += chunkSize) {
     const chunk = products.slice(i, i + chunkSize);
-    const res = await fetch(`${SB_URL}/rest/v1/products?on_conflict=article`, {
+    const res = await fetch(`${SB_URL}/rest/v1/products?on_conflict=uzum_article`, {
       method: 'POST',
       headers: {
         'apikey': SB_KEY,
@@ -309,11 +312,22 @@ async function main() {
     const products = [];
 
     for (let i = 0; i < uzumList.length; i++) {
-      const item = uzumList[i];
-      process.stdout.write(`  ${i + 1}/${uzumList.length} - ${item.title || item.name}... `);
-      const mapped = mapUzumToSupabase(item);
-      products.push(mapped);
-      console.log(`✓ (${mapped.images?.length || 0} фото, цветов: ${mapped.colors?.length || 0}: ${(mapped.colors || []).join(', ')})`);
+        const item = uzumList[i];
+
+        // Дебаг: показываем ВСЕ ключи первого товара
+        if (i === 0) {
+            console.log('\n=== ВСЕ КЛЮЧИ ПЕРВОГО ТОВАРА ===');
+            console.log('Ключи верхнего уровня:', Object.keys(item));
+            console.log('Ключи первого SKU:', Object.keys(item.skuList?.[0] || {}));
+            console.log('Первый SKU полностью:', JSON.stringify(item.skuList?.[0], null, 2));
+            console.log('Весь товар (без skuList):', JSON.stringify({ ...item, skuList: '[скрыто]' }, null, 2));
+            console.log('=================================\n');
+        }
+
+        process.stdout.write(`  ${i + 1}/${uzumList.length} - ${item.title || item.name}... `);
+        const mapped = mapUzumToSupabase(item);
+        products.push(mapped);
+        console.log(`✓ (${mapped.images?.length || 0} фото, цветов: ${mapped.colors?.length || 0}: ${(mapped.colors || []).join(', ')})`);
     }
 
     console.log(`\n✅ Итого: ${products.length} товаров`);
