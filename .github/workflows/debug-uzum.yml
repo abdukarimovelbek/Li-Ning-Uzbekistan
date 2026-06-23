@@ -10,17 +10,32 @@ jobs:
       - name: Test Public Uzum API
         run: |
           node -e "
+          const token     = process.env.UZUM_TOKEN;
           const productId = 1530792;
+          const UZUM_API  = 'https://api-seller.uzum.uz/api/seller-openapi';
+          const HEADERS   = {
+            'Authorization': token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Accept-Language': 'ru-RU',
+          };
 
-          async function main() {
-            const res = await fetch('https://api.uzum.uz/api/product/' + productId, {
-              headers: { 'Accept-Language': 'ru-RU', 'Accept': 'application/json' }
-            });
-            const text = await res.text();
-            console.log('=== СЫРОЙ ОТВЕТ (первые 3000 символов) ===');
-            console.log(text.substring(0, 3000));
+          async function tryEndpoint(label, url) {
+            try {
+              const res = await fetch(url, { headers: HEADERS });
+              const text = await res.text();
+              console.log(label, '→', res.status, ':', text.substring(0, 500));
+            } catch(e) { console.log(label, '→ ошибка:', e.message); }
           }
 
-          main().catch(console.error);
+          (async () => {
+            await tryEndpoint('photos',       UZUM_API + '/v1/product/' + productId + '/photo');
+            await tryEndpoint('photos-list',  UZUM_API + '/v1/product/' + productId + '/photos');
+            await tryEndpoint('media',        UZUM_API + '/v1/product/' + productId + '/media');
+            await tryEndpoint('v2-detail',    UZUM_API + '/v2/product/' + productId);
+            await tryEndpoint('sku-photo',    UZUM_API + '/v1/sku/5024069/photo');
+          })().catch(console.error);
           "
+        env:
+          UZUM_TOKEN: ${{ secrets.UZUM_TOKEN }}
 
