@@ -907,11 +907,37 @@
         <div class="form-group">
           <label class="form-label">Категория</label>
           <select class="form-select" id="f-category">
-            <option value="running">Бег</option>
-            <option value="training">Тренировка</option>
             <option value="shoes">Обувь</option>
             <option value="clothing">Одежда</option>
+            <option value="accessories">Аксессуары</option>
           </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Пол / аудитория</label>
+          <select class="form-select" id="f-gender">
+            <option value="uni">Унисекс</option>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
+            <option value="kids">Детский</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Подкатегория</label>
+          <input type="text" class="form-input" id="f-subcategory" placeholder="Беговые, Баскетбол...">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Коллекция</label>
+          <input type="text" class="form-input" id="f-collection" placeholder="BOOM, Flash, Arc...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Артикул Uzum <span style="font-size:.7rem;color:var(--muted)">(авто)</span></label>
+          <input type="text" class="form-input" id="f-uzum-article" placeholder="—" readonly style="background:var(--gray-100);color:var(--muted);cursor:default">
         </div>
       </div>
 
@@ -1490,6 +1516,10 @@
       document.getElementById('f-badge').value = '';
       document.getElementById('f-active').value = 'true';
       document.getElementById('f-category').value = 'shoes';
+      document.getElementById('f-gender').value = 'uni';
+      document.getElementById('f-subcategory').value = '';
+      document.getElementById('f-collection').value = '';
+      document.getElementById('f-uzum-article').value = '';
       document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
       document.getElementById('colors-container').innerHTML = '';
       currentImages = [];
@@ -1511,6 +1541,10 @@
       document.getElementById('f-badge').value = p.badge || '';
       document.getElementById('f-active').value = String(p.is_active);
       document.getElementById('f-category').value = p.category || 'shoes';
+      document.getElementById('f-gender').value = p.gender || 'uni';
+      document.getElementById('f-subcategory').value = p.subcategory || '';
+      document.getElementById('f-collection').value = p.collection || '';
+      document.getElementById('f-uzum-article').value = p.uzum_article || '—';
 
       // Sizes
       document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
@@ -1550,9 +1584,12 @@
         brand:       document.getElementById('f-brand').value.trim(),
         name:        document.getElementById('f-name').value.trim(),
         description: document.getElementById('f-description').value.trim(),
-        price:     getRawPrice('f-price'),
-        old_price: getRawPrice('f-old-price') || null,
+        price:       getRawPrice('f-price'),
+        old_price:   getRawPrice('f-old-price') || null,
         category:    document.getElementById('f-category').value,
+        gender:      document.getElementById('f-gender').value,
+        subcategory: document.getElementById('f-subcategory').value.trim() || null,
+        collection:  document.getElementById('f-collection').value.trim() || null,
         badge:       document.getElementById('f-badge').value,
         is_active:   document.getElementById('f-active').value === 'true',
         sizes, colors,
