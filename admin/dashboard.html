@@ -1485,9 +1485,8 @@
       document.getElementById('f-category').value = 'shoes';
       document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
       document.getElementById('colors-container').innerHTML = '';
-      document.getElementById('img-previews').innerHTML = '';
-      document.getElementById('image-urls').innerHTML = '';
       currentImages = [];
+      currentVariants = [];
       document.getElementById('product-modal').classList.add('open');
     }
 
@@ -1520,13 +1519,7 @@
       colors.forEach(c => addColorTag(c.name, c.hex));
 
       // Images
-      currentImages = Array.isArray(p.images) ? p.images : (p.images || []);
-      document.getElementById('image-urls').innerHTML = currentImages.map((url, i) =>
-        `<div style="display:flex;align-items:center;gap:.5rem;font-size:.78rem;background:#f5f5f5;padding:.3rem .6rem">
-          <img src="${url}" style="height:24px;width:24px;object-fit:cover">
-          <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${url}</span>
-          <button onclick="removeImage(${i})" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button>
-        </div>`).join('');
+      currentImages = Array.isArray(p.images) ? p.images : [];
 
       // Variants (фото по цветам)
       currentVariants = Array.isArray(p.variants) ? JSON.parse(JSON.stringify(p.variants)) : [];
