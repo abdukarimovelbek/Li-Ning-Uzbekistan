@@ -1,70 +1,46 @@
 name: Debug Uzum API Structure
 
-on:
+"on":
   workflow_dispatch:
 
 jobs:
   debug:
     runs-on: ubuntu-latest
     steps:
-      - name: Test Detail API
-        env:
-          UZUM_TOKEN:   ${{ secrets.UZUM_TOKEN }}
-          UZUM_SHOP_ID: ${{ secrets.UZUM_SHOP_ID }}
+      - name: Test Public Uzum API
         run: |
           node -e "
-          const token  = process.env.UZUM_TOKEN;
-          const shopId = process.env.UZUM_SHOP_ID;
-          const UZUM_API = 'https://api-seller.uzum.uz/api/seller-openapi';
-          const HEADERS = {
-            'Authorization': token,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Accept-Language': 'ru-RU',
-          };
+          const productId = 1530792;
 
-          async function main() {
-            // Шаг 1: берём первый товар из листинга
-            const listRes = await fetch(
-              UZUM_API + '/v1/product/shop/' + shopId + '?page=0&size=1&filter=ACTIVE&order=ASC&sortBy=DEFAULT&productRank=A',
-              { headers: HEADERS }
-            );
-            const listData = await listRes.json();
-            const items = listData?.productList || listData?.payload?.products || listData?.products || listData?.content || [];
-            const item = items[0];
-            if (!item) { console.log('Нет товара'); return; }
-            console.log('Товар:', item.title, '| productId:', item.productId);
-
-            // Шаг 2: Detail API
-            const detailRes = await fetch(
-              UZUM_API + '/v1/product/' + item.productId,
-              { headers: HEADERS }
-            );
-            console.log('Detail API статус:', detailRes.status);
-            const detail = await detailRes.json();
-            const d = detail?.payload || detail;
-
-            if (detailRes.status !== 200) {
-              console.log('Ошибка Detail API:', JSON.stringify(detail));
-              return;
-            }
-
-            console.log('=== КЛЮЧИ DETAIL RESPONSE ===');
-            console.log(Object.keys(d).join(', '));
-
-            // Ищем поля с фото
-            const photoFields = Object.entries(d).filter(([k,v]) =>
-              k.toLowerCase().includes('photo') ||
-              k.toLowerCase().includes('image') ||
-              k.toLowerCase().includes('media') ||
-              (Array.isArray(v) && JSON.stringify(v).includes('uzum.uz'))
-            );
-            console.log('\n=== ПОЛЯ С ФОТО ===');
-            photoFields.forEach(([k,v]) => console.log(k, ':', JSON.stringify(v)));
-
-            console.log('\n=== ПЕРВЫЙ SKU DETAIL ===');
-            console.log(JSON.stringify(d.skuList?.[0], null, 2));
+          async function tryUrl(label, url, opts) {
+            try {
+              const res = await fetch(url, opts || {});
+              console.log(label, '→ статус:', res.status);
+              if (res.status === 200) {
+                const data = await res.json();
+                const d = data?.payload || data?.data || data;
+                console.log('  Ключи:', Object.keys(d || {}).join(', '));
+                const photoFields = Object.entries(d || {}).filter(([k,v]) =>
+                  k.toLowerCase().includes('photo') ||
+                  k.toLowerCase().includes('image') ||
+                  k.toLowerCase().includes('media') ||
+                  (Array.isArray(v) && JSON.stringify(v).includes('uzum'))
+                );
+                if (photoFields.length) {
+                  console.log('  === ФОТО ===');
+                  photoFields.forEach(([k,v]) => console.log('  ' + k + ':', JSON.stringify(v).substring(0, 300)));
+                }
+              } else {
+                const text = await res.text();
+                console.log('  Ответ:', text.substring(0, 200));
+              }
+            } catch(e) { console.log(label, '→ ошибка:', e.message); }
           }
 
-          main().catch(console.error);
+          (async () => {
+            await tryUrl('Public API v1', 'https://api.uzum.uz/api/v1/product/' + productId);
+            await tryUrl('Public API main', 'https://api.uzum.uz/api/main/product/' + productId);
+            await tryUrl('Public API product', 'https://api.uzum.uz/api/product/' + productId);
+            await tryUrl('Public API item', 'https://api.uzum.uz/api/item/' + productId);
+          })().catch(console.error);
           "
