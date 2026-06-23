@@ -16,36 +16,11 @@ jobs:
             const res = await fetch('https://api.uzum.uz/api/product/' + productId, {
               headers: { 'Accept-Language': 'ru-RU', 'Accept': 'application/json' }
             });
-            const data = await res.json();
-            const p = data?.payload;
-
-            console.log('=== КЛЮЧИ payload ===');
-            console.log(Object.keys(p || {}).join(', '));
-
-            // Ищем всё что связано с фото
-            const photoFields = Object.entries(p || {}).filter(([k,v]) =>
-              k.toLowerCase().includes('photo') ||
-              k.toLowerCase().includes('image') ||
-              k.toLowerCase().includes('media') ||
-              k.toLowerCase().includes('gallery') ||
-              (Array.isArray(v) && JSON.stringify(v).includes('uzum'))
-            );
-            console.log('\n=== ПОЛЯ С ФОТО/МЕДИА ===');
-            photoFields.forEach(([k,v]) => console.log(k + ':', JSON.stringify(v)));
-
-            console.log('\n=== КЛЮЧИ ПЕРВОГО SKU ===');
-            const sku0 = p?.skuList?.[0];
-            if (sku0) {
-              console.log(Object.keys(sku0).join(', '));
-              const skuPhotos = Object.entries(sku0).filter(([k,v]) =>
-                k.toLowerCase().includes('photo') ||
-                k.toLowerCase().includes('image') ||
-                (Array.isArray(v) && JSON.stringify(v).includes('uzum'))
-              );
-              console.log('\n=== ФОТО В ПЕРВОМ SKU ===');
-              skuPhotos.forEach(([k,v]) => console.log(k + ':', JSON.stringify(v)));
-            }
+            const text = await res.text();
+            console.log('=== СЫРОЙ ОТВЕТ (первые 3000 символов) ===');
+            console.log(text.substring(0, 3000));
           }
 
           main().catch(console.error);
           "
+
