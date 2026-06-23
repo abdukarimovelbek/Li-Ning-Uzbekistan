@@ -1211,6 +1211,7 @@ button {
 .gallery-thumb{
   width: 84px; 
   height: 84px; 
+  flex-shrink: 0;
   border-radius: 10px; 
   overflow: hidden; 
   background: #fff;
