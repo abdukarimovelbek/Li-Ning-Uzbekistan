@@ -596,7 +596,7 @@ document.addEventListener('DOMContentLoaded', () => {
         catch(e) { return []; }
       })();
       const fallbackImg = Array.isArray(p.images) ? (p.images[0] || null) : null;
-      Cart.add({
+      window.Cart.add({
         id:      p.id,
         article: p.article || p.id,
         name:    p.name,
