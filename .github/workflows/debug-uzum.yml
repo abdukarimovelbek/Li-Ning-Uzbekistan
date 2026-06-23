@@ -10,32 +10,28 @@ jobs:
       - name: Test Public Uzum API
         run: |
           node -e "
-          const token     = process.env.UZUM_TOKEN;
-          const productId = 1530792;
-          const UZUM_API  = 'https://api-seller.uzum.uz/api/seller-openapi';
-          const HEADERS   = {
-            'Authorization': token,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Accept-Language': 'ru-RU',
-          };
-
-          async function tryEndpoint(label, url) {
+          async function tryUrl(label, url) {
             try {
-              const res = await fetch(url, { headers: HEADERS });
+              const res = await fetch(url, {
+                headers: { 'Accept': 'application/json', 'Accept-Language': 'ru-RU' }
+              });
               const text = await res.text();
-              console.log(label, '→', res.status, ':', text.substring(0, 500));
+              console.log(label, '→', res.status, ':', text.substring(0, 600));
+              console.log('---');
             } catch(e) { console.log(label, '→ ошибка:', e.message); }
           }
 
           (async () => {
-            await tryEndpoint('photos',       UZUM_API + '/v1/product/' + productId + '/photo');
-            await tryEndpoint('photos-list',  UZUM_API + '/v1/product/' + productId + '/photos');
-            await tryEndpoint('media',        UZUM_API + '/v1/product/' + productId + '/media');
-            await tryEndpoint('v2-detail',    UZUM_API + '/v2/product/' + productId);
-            await tryEndpoint('sku-photo',    UZUM_API + '/v1/sku/5024069/photo');
+            // Ищем продукт через публичный поиск
+            await tryUrl('search ABFT027', 'https://api.uzum.uz/api/v2/main/search?query=ABFT027&size=1');
+            await tryUrl('search v1',      'https://api.uzum.uz/api/main/search?text=ABFT027&size=1');
+            await tryUrl('catalog search', 'https://api.uzum.uz/api/v1/search?query=ABFT027&size=1');
+
+            // Пробуем разные форматы public product endpoint
+            await tryUrl('product web',    'https://api.uzum.uz/api/web/product/1530792');
+            await tryUrl('product v2',     'https://api.uzum.uz/api/v2/product/1530792');
+            await tryUrl('product catalog','https://api.uzum.uz/api/catalog/product/1530792');
           })().catch(console.error);
           "
-        env:
-          UZUM_TOKEN: ${{ secrets.UZUM_TOKEN }}
+
 
