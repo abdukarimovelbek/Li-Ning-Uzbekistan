@@ -1522,8 +1522,11 @@
 
       // Colors
       document.getElementById('colors-container').innerHTML = '';
-      const colors = Array.isArray(p.colors) ? p.colors : (p.colors || []);
-      colors.forEach(c => addColorTag(c.name, c.hex));
+      const colors = Array.isArray(p.colors) ? p.colors : [];
+      colors.forEach(c => {
+        if (typeof c === 'string') addColorTag(c, '#cccccc');
+        else if (c?.name) addColorTag(c.name, c.hex || '#cccccc');
+      });
 
       // Images
       currentImages = Array.isArray(p.images) ? p.images : [];
@@ -1538,9 +1541,9 @@
     async function saveProduct() {
       const id = document.getElementById('edit-product-id').value;
       const sizes = [...document.querySelectorAll('.size-tag.selected')].map(t => t.dataset.size);
-      const colors = [...document.querySelectorAll('#colors-container .color-item')].map(el => ({
-        name: el.dataset.name, hex: el.dataset.hex
-      }));
+      const colors = [...document.querySelectorAll('#colors-container .color-item')]
+        .map(el => el.dataset.name)
+        .filter(Boolean);
 
       const data = {
         article:     document.getElementById('f-article').value.trim(),
