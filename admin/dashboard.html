@@ -992,6 +992,12 @@
         <div id="image-urls" style="display:flex;flex-direction:column;gap:.3rem;margin-top:.4rem"></div>
       </div>
 
+      <!-- Фото по цветам -->
+      <div class="form-group" id="variants-section" style="display:none">
+        <label class="form-label">Фото по цветам (из Узума)</label>
+        <div id="variants-container"></div>
+      </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal('product-modal')">Отмена</button>
@@ -1391,6 +1397,46 @@
 
     // ADD/EDIT PRODUCT MODAL
     let currentImages = [];
+    let currentVariants = [];
+
+    function renderVariants() {
+        const section = document.getElementById('variants-section');
+        if (!currentVariants.length) { section.style.display = 'none'; return; }
+        section.style.display = '';
+        document.getElementById('variants-container').innerHTML = currentVariants.map((v, vi) => `
+            <div style="margin-bottom:.8rem;border:1px solid var(--border);border-radius:8px;padding:.8rem">
+                <div style="font-weight:600;margin-bottom:.5rem;color:var(--text)">${v.color}</div>
+                <div style="display:flex;flex-direction:column;gap:.3rem;margin-bottom:.5rem">
+                    ${(v.images || []).map((url, ii) => `
+                        <div style="display:flex;align-items:center;gap:.5rem;font-size:.78rem;background:#f5f5f5;padding:.3rem .6rem;border-radius:4px">
+                            <img src="${url}" style="height:28px;width:28px;object-fit:cover;border-radius:3px">
+                            <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)">${url}</span>
+                            <button onclick="removeVariantImage(${vi},${ii})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:1rem">✕</button>
+                        </div>
+                    `).join('') || '<span style="font-size:.78rem;color:var(--muted)">Нет фото</span>'}
+                </div>
+                <div style="display:flex;gap:.5rem">
+                    <input type="text" class="form-input" id="var-url-${vi}" placeholder="https://images.uzum.uz/.../original.jpg" style="font-size:.8rem">
+                    <button class="btn-save" style="padding:.4rem .7rem;font-size:.8rem;white-space:nowrap" onclick="addVariantImage(${vi})">+ Фото</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addVariantImage(vi) {
+        const input = document.getElementById('var-url-' + vi);
+        const url = input.value.trim();
+        if (!url) return;
+        if (!currentVariants[vi].images) currentVariants[vi].images = [];
+        currentVariants[vi].images.push(url);
+        input.value = '';
+        renderVariants();
+    }
+
+    function removeVariantImage(vi, ii) {
+        currentVariants[vi].images.splice(ii, 1);
+        renderVariants();
+    }
     function openAddModal() {
       document.getElementById('modal-title').textContent = 'Добавить товар';
       document.getElementById('edit-product-id').value = '';
@@ -1448,6 +1494,10 @@
           <button onclick="removeImage(${i})" style="background:none;border:none;color:var(--red);cursor:pointer">✕</button>
         </div>`).join('');
 
+      // Variants (фото по цветам)
+      currentVariants = Array.isArray(p.variants) ? JSON.parse(JSON.stringify(p.variants)) : [];
+      renderVariants();
+
       document.getElementById('product-modal').classList.add('open');
     }
 
@@ -1469,7 +1519,8 @@
         badge:       document.getElementById('f-badge').value,
         is_active:   document.getElementById('f-active').value === 'true',
         sizes, colors,
-        images: currentImages
+        images: currentImages,
+        variants: currentVariants.length > 0 ? currentVariants : null
       };
 
       if (!data.name || !data.price) { showToast('Заполните название и цену!', true); return; }
