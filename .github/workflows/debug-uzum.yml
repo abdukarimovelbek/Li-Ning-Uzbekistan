@@ -12,39 +12,46 @@ jobs:
           UZUM_TOKEN:   ${{ secrets.UZUM_TOKEN }}
           UZUM_SHOP_ID: ${{ secrets.UZUM_SHOP_ID }}
         run: |
-          node << 'EOF'
-          const UZUM_API = 'https://api-seller.uzum.uz/api/seller-openapi';
+      - name: Check Uzum API fields
+        env:
+          UZUM_TOKEN:   ${{ secrets.UZUM_TOKEN }}
+          UZUM_SHOP_ID: ${{ secrets.UZUM_SHOP_ID }}
+        run: |
+          node -e "
+          const token   = process.env.UZUM_TOKEN || '';
+          const shopId  = process.env.UZUM_SHOP_ID || '';
+          console.log('TOKEN длина:', token.length, '| начало:', token.substring(0,10));
+          console.log('SHOP_ID:', shopId);
 
-          async function main() {
-            const res = await fetch(
-              `${UZUM_API}/v1/product/shop/${process.env.UZUM_SHOP_ID}?page=0&size=3&filter=IN_STOCK&order=ASC&sortBy=DEFAULT&productRank=A`,
-              {
-                headers: {
-                  'Authorization': process.env.UZUM_TOKEN,
-                  'Content-Type': 'application/json',
-                  'Accept': 'application/json',
-                  'Accept-Language': 'ru-RU',
-                }
+          const UZUM_API = 'https://api-seller.uzum.uz/api/seller-openapi';
+          const FILTERS  = ['IN_STOCK','ACTIVE','INACTIVE'];
+
+          async function tryFilter(filter) {
+            const url = UZUM_API + '/v1/product/shop/' + shopId + '?page=0&size=1&filter=' + filter + '&order=ASC&sortBy=DEFAULT&productRank=A';
+            console.log('\nПробуем фильтр:', filter);
+            const res = await fetch(url, {
+              headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Accept-Language': 'ru-RU',
               }
-            );
+            });
             const data = await res.json();
             const items = data?.productList || data?.payload?.products || data?.products || data?.content || [];
-            const item = items[0];
-
-            if (!item) { console.log('Товар не найден. Ответ:', JSON.stringify(data, null, 2)); return; }
-
-            console.log('\n=== КЛЮЧИ ВЕРХНЕГО УРОВНЯ ===');
-            console.log(Object.keys(item));
-
-            console.log('\n=== ТОВАР БЕЗ skuList ===');
-            console.log(JSON.stringify({ ...item, skuList: '[скрыто]' }, null, 2));
-
-            console.log('\n=== ПЕРВЫЙ SKU ===');
-            console.log(JSON.stringify(item.skuList?.[0], null, 2));
-
-            console.log('\n=== ВСЕ КЛЮЧИ ПЕРВОГО SKU ===');
-            console.log(Object.keys(item.skuList?.[0] || {}));
+            if (items.length) {
+              const item = items[0];
+              console.log('НАЙДЕН товар:', item.title || item.name || '???');
+              console.log('КЛЮЧИ верхнего уровня:', Object.keys(item).join(', '));
+              console.log('КЛЮЧИ первого SKU:', Object.keys(item.skuList?.[0] || {}).join(', '));
+              console.log('ПЕРВЫЙ SKU:', JSON.stringify(item.skuList?.[0], null, 2));
+              console.log('ТОВАР без skuList:', JSON.stringify({...item, skuList:'[скрыто]'}, null, 2));
+            } else {
+              console.log('Товаров нет, ответ:', JSON.stringify(data).substring(0, 300));
+            }
           }
 
-          main().catch(console.error);
-          EOF
+          (async () => {
+            for (const f of FILTERS) await tryFilter(f);
+          })().catch(console.error);
+          "
