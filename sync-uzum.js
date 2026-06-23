@@ -262,15 +262,32 @@ async function getExistingArticles() {
   return existing;
 }
 
-// ── 5. Сохраняем в Supabase — только НОВЫЕ товары ───────────
+// ── 5. Сохраняем в Supabase ──────────────────────────────────
+// Шаг 1: вставляем НОВЫЕ товары с variants (существующие пропускаем)
+// Шаг 2: обновляем СУЩЕСТВУЮЩИЕ, но НЕ трогаем variants и badge
 async function saveToSupabase(products) {
-  console.log(`\n💾 Upsert ${products.length} товаров в Supabase...`);
+  console.log(`\n💾 Sync ${products.length} товаров в Supabase...`);
   const chunkSize = 50;
   let saved = 0, errors = 0;
 
   for (let i = 0; i < products.length; i += chunkSize) {
     const chunk = products.slice(i, i + chunkSize);
-    const res = await fetch(`${SB_URL}/rest/v1/products?on_conflict=uzum_article`, {
+
+    // Шаг 1: только новые (конфликт = пропустить)
+    const res1 = await fetch(`${SB_URL}/rest/v1/products?on_conflict=uzum_article`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=ignore-duplicates,return=minimal'
+      },
+      body: JSON.stringify(chunk)
+    });
+
+    // Шаг 2: обновляем существующие БЕЗ variants и badge
+    const updateChunk = chunk.map(({ variants, badge, ...rest }) => rest);
+    const res2 = await fetch(`${SB_URL}/rest/v1/products?on_conflict=uzum_article`, {
       method: 'POST',
       headers: {
         'apikey': SB_KEY,
@@ -278,14 +295,16 @@ async function saveToSupabase(products) {
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates,return=minimal'
       },
-      body: JSON.stringify(chunk)
+      body: JSON.stringify(updateChunk)
     });
 
-    if (res.ok) {
+    if (res1.ok && res2.ok) {
       saved += chunk.length;
-      console.log(`  ✅ Upsert: ${saved}/${products.length}`);
+      console.log(`  ✅ ${saved}/${products.length}`);
     } else {
-      console.error(`  ❌ Ошибка чанка ${i}:`, await res.text());
+      const e1 = res1.ok ? '' : await res1.text();
+      const e2 = res2.ok ? '' : await res2.text();
+      console.error(`  ❌ Чанк ${i}:`, e1, e2);
       errors += chunk.length;
     }
   }
