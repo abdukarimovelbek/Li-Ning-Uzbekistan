@@ -1469,7 +1469,32 @@ const openQuickView = async (productId) => {
         colorsBox.querySelectorAll('.qv-color').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
         colorName.textContent = el.dataset.name;
-      });
+
+        // Переключаем галерею на фото выбранного цвета
+        const variants = Array.isArray(p.variants) ? p.variants : [];
+        const variant = variants.find(v => v.color === el.dataset.name);
+        const variantImages = variant?.images?.length ? variant.images : images;
+
+        mainImg.style.opacity = '0';
+        setTimeout(() => {
+            mainImg.src = variantImages[0] || '';
+            mainImg.style.opacity = '1';
+        }, 160);
+
+        if (variantImages.length > 1) {
+            thumbsWrap.innerHTML = variantImages.slice(0, 4).map((src, i) =>
+                `<div class="qv-thumb ${i === 0 ? 'active' : ''}" data-src="${src}"><img src="${src}" alt=""></div>`
+            ).join('');
+            thumbsWrap.querySelectorAll('.qv-thumb').forEach(t => t.onclick = () => {
+                thumbsWrap.querySelectorAll('.qv-thumb').forEach(x => x.classList.remove('active'));
+                t.classList.add('active');
+                mainImg.style.opacity = '0';
+                setTimeout(() => { mainImg.src = t.dataset.src; mainImg.style.opacity = '1'; }, 160);
+            });
+        } else {
+            thumbsWrap.innerHTML = '';
+        }
+    });
       colorsWrap.style.display = '';
     } else { colorsWrap.style.display = 'none'; }
 
