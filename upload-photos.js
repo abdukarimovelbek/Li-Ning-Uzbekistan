@@ -99,7 +99,9 @@ async function main() {
             if (idx >= 0) {
                 variants[idx] = { ...variants[idx], images: urls };
             } else {
-                variants.push({ color: colorCode, code: colorCode, images: urls });
+                console.log(`   ⚠️  Вариант с кодом "${colorCode}" не найден`);
+                console.log(`   💡 Открой товар "${article}" в дашборде → задай код "${colorCode}" нужному цвету → запусти скрипт снова\n`);
+                continue;
             }
         } else {
             if (variants.length > 0) variants[0] = { ...variants[0], images: urls };
