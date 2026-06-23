@@ -451,12 +451,11 @@ const Cart = (() => {
     });
   };
 
-  const remove = (id, size) => {
-    items = items.filter(i => !(i.id === id && i.size === size));
+  const remove = (id, size, color) => {
+    items = items.filter(i => !(i.id === id && i.size === size && (i.color || '') === (color || '')));
     save();
     updateUI();
   };
-
 
   const clear = () => { 
     items = []; 
@@ -464,12 +463,12 @@ const Cart = (() => {
     updateUI(); 
   };
   
-  const changeQty = (id, size, delta) => {
-    const existing = items.find(i => i.id === id && i.size === size);
+  const changeQty = (id, size, color, delta) => {
+    const existing = items.find(i => i.id === id && i.size === size && (i.color || '') === (color || ''));
     if (!existing) return;
     existing.qty += delta;
     if (existing.qty <= 0) {
-      items = items.filter(i => !(i.id === id && i.size === size));
+      items = items.filter(i => !(i.id === id && i.size === size && (i.color || '') === (color || '')));
     }
     save();
     updateUI();
@@ -501,13 +500,13 @@ const Cart = (() => {
           <div class="cart-item-name">${item.name}</div>
           <div class="cart-item-meta">Размер: ${item.size}</div>
           <div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem">
-            <button onclick="window.cartChangeQty('${item.id}','${item.size}',-1)" style="width:44px;height:44px;background:var(--gray-100);border:1px solid var(--gray-100);border-radius:6px;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">−</button>
+            <button onclick="window.cartChangeQty('${item.id}','${item.size}','${item.color || ''}',-1)" style="width:44px;height:44px;background:var(--gray-100);border:1px solid var(--gray-100);border-radius:6px;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">−</button>
             <span style="font-size:.9rem;font-weight:700;min-width:24px;text-align:center">${item.qty}</span>
-            <button onclick="window.cartChangeQty('${item.id}','${item.size}',1)" style="width:44px;height:44px;background:var(--gray-100);border:1px solid var(--gray-100);border-radius:6px;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">+</button>
+            <button onclick="window.cartChangeQty('${item.id}','${item.size}','${item.color || ''}',1)" style="width:44px;height:44px;background:var(--gray-100);border:1px solid var(--gray-100);border-radius:6px;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">+</button>
           </div>
           <div class="cart-item-price" style="margin-top:.4rem">${(item.price * item.qty).toLocaleString('ru-RU')} сум</div>
         </div>
-        <button class="cart-item-remove" onclick="window.cartRemove('${item.id}','${item.size}')">✕</button>
+        <button class="cart-item-remove" onclick="window.cartRemove('${item.id}','${item.size}','${item.color || ''}')">✕</button>
       </div>
     `).join('');
     }
