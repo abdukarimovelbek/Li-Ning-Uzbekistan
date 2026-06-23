@@ -286,26 +286,33 @@ function fillProduct(p) {
   const openAcc = document.querySelector('.detail-acc .acc.open .acc-body');
   if (openAcc) openAcc.style.maxHeight = openAcc.firstElementChild.scrollHeight + 'px';
 
-  // Размеры (поле sold-out зарезервировано под остатки из 1С)
+  // Полная сетка размеров по категории товара
+  const FULL_SIZE_GRIDS = {
+      shoes:       ["6.5","7","7.5","8","8.5","9","9.5","10","10.5","11","12"],
+      clothing:    ["XS","S","M","L","XL","XXL","XXXL","4XL","5XL"],
+      accessories: ["1"]
+  };
+
+  const sizeLabelEl = document.querySelector('.detail-size-block .size-label span:first-child');
+  if (sizeLabelEl) {
+      if (p.category === 'shoes') sizeLabelEl.innerHTML = 'Размер US <span class="size-picked" id="size-picked"></span>';
+      else sizeLabelEl.innerHTML = 'Размер <span class="size-picked" id="size-picked"></span>';
+  }
+
   const sizeGrid = document.querySelector('.detail-size-grid');
   if (sizeGrid) {
-    const order = ['XS','S','M','L','XL','XXL','XXXL','4XL','5XL'];
-    const sizes = (Array.isArray(p.sizes) ? p.sizes.slice() : []).sort((a, b) => {
-    const strA = String(a).replace(',','.'), strB = String(b).replace(',','.');
-    const na = parseFloat(strA), nb = parseFloat(strB);
-    const aNum = !isNaN(na) && isFinite(strA), bNum = !isNaN(nb) && isFinite(strB);
-      if (aNum && bNum) return na - nb;
-      if (!aNum && !bNum) return order.indexOf(String(a).toUpperCase()) - order.indexOf(String(b).toUpperCase());
-      return aNum ? -1 : 1;
-    });
-    sizeGrid.innerHTML = sizes.map(s => `<button class="detail-size-btn" data-size="${s}">${s}</button>`).join('');
-    sizeGrid.querySelectorAll('.detail-size-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        sizeGrid.querySelectorAll('.detail-size-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const lbl = document.getElementById('size-picked');
-        if (lbl) lbl.textContent = '· ' + btn.dataset.size;
-      });
+    const fullGrid = FULL_SIZE_GRIDS[p.category] || FULL_SIZE_GRIDS.shoes;
+    const available = new Set((Array.isArray(p.sizes) ? p.sizes : []).map(String));
+    sizeGrid.innerHTML = fullGrid.map(s =>
+        `<button class="detail-size-btn${available.has(String(s)) ? '' : ' sold-out'}" data-size="${s}">${s}</button>`
+    ).join('');
+    sizeGrid.querySelectorAll('.detail-size-btn:not(.sold-out)').forEach(btn => {
+        btn.addEventListener('click', () => {
+            sizeGrid.querySelectorAll('.detail-size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const lbl = document.getElementById('size-picked');
+            if (lbl) lbl.textContent = '· ' + btn.dataset.size;
+        });
     });
   }
 

@@ -906,7 +906,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Категория</label>
-          <select class="form-select" id="f-category">
+          <select class="form-select" id="f-category" onchange="renderSizeGrid(this.value)">
             <option value="shoes">Обувь</option>
             <option value="clothing">Одежда</option>
             <option value="accessories">Аксессуары</option>
@@ -965,28 +965,8 @@
 
       <!-- Sizes -->
       <div class="form-group">
-        <label class="form-label">Размеры</label>
-        <div class="sizes-input" id="sizes-container">
-          <div class="size-tag" onclick="toggleSize(this)" data-size="36">36</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="37">37</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="38">38</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="39">39</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="40">40</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="41">41</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="42">42</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="43">43</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="44">44</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="45">45</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="S">S</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="M">M</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="L">L</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="XL">XL</div>
-          <div class="size-tag" onclick="toggleSize(this)" data-size="XXL">XXL</div>
-        </div>
-        <div class="size-add">
-          <input type="text" id="custom-size-input" placeholder="Свой размер...">
-          <button onclick="addCustomSize()">Добавить</button>
-        </div>
+        <label class="form-label" id="sizes-label">Размеры</label>
+        <div class="sizes-input" id="sizes-container"></div>
       </div>
 
       <!-- Colors -->
@@ -1520,7 +1500,7 @@
       document.getElementById('f-subcategory').value = '';
       document.getElementById('f-collection').value = '';
       document.getElementById('f-uzum-article').value = '';
-      document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
+      renderSizeGrid('shoes');
       document.getElementById('colors-container').innerHTML = '';
       currentImages = [];
       currentVariants = [];
@@ -1547,12 +1527,7 @@
       document.getElementById('f-uzum-article').value = p.uzum_article || '—';
 
       // Sizes
-      document.querySelectorAll('.size-tag').forEach(t => t.classList.remove('selected'));
-      const sizes = Array.isArray(p.sizes) ? p.sizes : (p.sizes || []);
-      sizes.forEach(s => {
-        const tag = document.querySelector(`.size-tag[data-size="${s}"]`);
-        if (tag) tag.classList.add('selected');
-      });
+      renderSizeGrid(p.category || 'shoes', Array.isArray(p.sizes) ? p.sizes : null);
 
       // Colors
       document.getElementById('colors-container').innerHTML = '';
@@ -1630,7 +1605,30 @@
     }
 
     // SIZES
-    function toggleSize(el) { el.classList.toggle('selected'); }
+    const SIZE_GRIDS = {
+        shoes:       ["6.5","7","7.5","8","8.5","9","9.5","10","10.5","11","12"],
+        clothing:    ["XS","S","M","L","XL","XXL","XXXL","4XL","5XL"],
+        accessories: ["1"]
+    };
+    const SIZE_LABELS = {
+        shoes:       'Размеры US (обувь)',
+        clothing:    'Размеры (одежда)',
+        accessories: 'Размер'
+    };
+
+    function renderSizeGrid(category, selectedSizes) {
+        const container = document.getElementById('sizes-container');
+        const label     = document.getElementById('sizes-label');
+        const grid      = SIZE_GRIDS[category] || SIZE_GRIDS.shoes;
+        if (label) label.textContent = SIZE_LABELS[category] || 'Размеры';
+        // если selectedSizes не передан — выделить все; если передан — только те что есть
+        const available = selectedSizes ? new Set(selectedSizes.map(String)) : null;
+        container.innerHTML = grid.map(s => {
+            const sel = (!available || available.has(String(s))) ? 'selected' : '';
+            return `<div class="size-tag ${sel}" onclick="toggleSize(this)" data-size="${s}">${s}</div>`;
+        }).join('');
+    }
+
     function addCustomSize() {
       const val = document.getElementById('custom-size-input').value.trim();
       if (!val) return;

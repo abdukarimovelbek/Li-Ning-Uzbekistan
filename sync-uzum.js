@@ -129,7 +129,9 @@ function mapUzumToSupabase(uzumProduct) {
     : `https://images.uzum.uz/${raw}/original.jpg`;
 
   // Собираем уникальные цвета → изображения + размеры из skuList
-  const sizesSet = new Set();
+  const SHOE_SIZES     = ["6.5","7","7.5","8","8.5","9","9.5","10","10.5","11","12"];
+  const CLOTHING_SIZES = ["XS","S","M","L","XL","XXL","XXXL","4XL","5XL"];
+
   const colorVariants = {};  // color → { images: [] }
   const colorsArr = [];      // порядок добавления цветов
 
@@ -141,7 +143,7 @@ function mapUzumToSupabase(uzumProduct) {
           const chars = (sku.characteristics || '').split(',').map(s => s.trim());
           const size  = chars[0];
           const color = chars[1];
-          if (size) sizesSet.add(size);
+          // size больше не добавляем в set — сетка теперь фиксированная по категории
           // пропускаем если цвет — число, пустая строка или паттерн размера
           if (color && !SIZE_RE.test(color)) {
               if (!colorVariants[color]) {
@@ -172,7 +174,6 @@ function mapUzumToSupabase(uzumProduct) {
   const hasColors = colorsArr.length > 0;
   const fallbackImages = colorVariants['__default__']?.images || [];
 
-  const sizes    = [...sizesSet];
   const colors   = colorsArr;
   const variants = colors.map(c => ({
       color: c,
@@ -219,7 +220,10 @@ function mapUzumToSupabase(uzumProduct) {
     brand: 'Li Ning',
     price: 0,
     old_price: null,
-    sizes: sizes.length > 0 ? sizes : null,
+    sizes: category === 'shoes'       ? SHOE_SIZES
+         : category === 'clothing'    ? CLOTHING_SIZES
+         : category === 'accessories' ? ['1']
+         : null,
     colors: colors.length > 0 ? colors : null,
     images,
     variants: variants.length > 0 ? variants : null,
