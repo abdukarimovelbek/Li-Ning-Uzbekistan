@@ -98,7 +98,15 @@
 
     <!-- Gallery -->
     <div class="product-gallery">
-      <div class="gallery-thumbs"></div>
+      <div class="gallery-thumbs-wrap">
+        <button class="gallery-thumb-nav hidden" id="thumbs-up">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="18 15 12 9 6 15"/></svg>
+        </button>
+        <div class="gallery-thumbs"></div>
+        <button class="gallery-thumb-nav hidden" id="thumbs-down">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
       <div class="gallery-main">
         <span class="gallery-badge" id="gallery-badge" style="display:none"></span>
         <img id="gallery-img" src="" alt="">
@@ -377,6 +385,31 @@ function fillProduct(p) {
     document.querySelector('.product-gallery')?.classList.add('in');
     document.querySelector('.product-info-panel')?.classList.add('in');
   });
+
+  // Навигация по миниатюрам
+  function updateThumbNav() {
+    const strip = document.querySelector('.gallery-thumbs');
+    if (!strip) return;
+    const upBtn = document.getElementById('thumbs-up');
+    const downBtn = document.getElementById('thumbs-down');
+    const atTop = strip.scrollTop <= 2;
+    const atBottom = strip.scrollTop + strip.clientHeight >= strip.scrollHeight - 2;
+    const hasScroll = strip.scrollHeight > strip.clientHeight + 4;
+    if (upBtn) upBtn.classList.toggle('hidden', atTop);
+    if (downBtn) downBtn.classList.toggle('hidden', !hasScroll || atBottom);
+  }
+
+  const THUMB_STEP = 84 + 12;
+  document.getElementById('thumbs-up')?.addEventListener('click', () => {
+    document.querySelector('.gallery-thumbs')?.scrollBy({ top: -THUMB_STEP, behavior: 'smooth' });
+    setTimeout(updateThumbNav, 350);
+  });
+  document.getElementById('thumbs-down')?.addEventListener('click', () => {
+    document.querySelector('.gallery-thumbs')?.scrollBy({ top: THUMB_STEP, behavior: 'smooth' });
+    setTimeout(updateThumbNav, 350);
+  });
+  document.querySelector('.gallery-thumbs')?.addEventListener('scroll', updateThumbNav);
+  setTimeout(updateThumbNav, 100);
 
   document.title = `${p.name} — Li-Ning Store`;
 
