@@ -302,7 +302,7 @@ function fillProduct(p) {
   const sizeGrid = document.querySelector('.detail-size-grid');
   if (sizeGrid) {
     const fullGrid = FULL_SIZE_GRIDS[p.category] || FULL_SIZE_GRIDS.shoes;
-    const available = new Set((Array.isArray(p.sizes) ? p.sizes : []).map(String));
+    const available = new Set((Array.isArray(p.sizes) ? p.sizes.filter(Boolean) : []).map(String));
     sizeGrid.innerHTML = fullGrid.map(s =>
         `<button class="detail-size-btn${available.has(String(s)) ? '' : ' sold-out'}" data-size="${s}">${s}</button>`
     ).join('');
@@ -580,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!p) return;
 
       const selectedSize  = document.querySelector('.detail-size-grid .detail-size-btn.active');
-      const selectedColor = document.querySelector('#detail-color-grid .detail-size-btn.active');
+      const selectedColor = document.querySelector('#detail-color-grid .detail-color-btn.active');
       if (!selectedSize) {
         const grid = document.querySelector('.detail-size-grid');
         if (grid) {

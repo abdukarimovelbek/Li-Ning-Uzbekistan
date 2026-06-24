@@ -604,21 +604,12 @@ const ProductCards = (() => {
       // Quick-add button
       const addBtn = card.querySelector('.btn-addcart');
       if (addBtn) {
-        addBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          const data = {
-            id:      card.dataset.productId || Math.random().toString(36).slice(2),
-            article: card.dataset.article || card.dataset.productId,
-            name:    card.querySelector('.product-name')?.textContent || 'Товар',
-            price:   parseInt(card.dataset.price || '0'),
-            size:    card.dataset.defaultSize || '42',
-            emoji:   card.querySelector('.product-img')?.textContent?.trim() || '👟',
-          };
-          if (window.Auth) {
-            window.Auth.requireAuth(() => Cart.add(data));
-          } else {
-            Cart.add(data);
-          }
+          addBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            const productId = card.dataset.productId;
+            if (productId && window.openQuickView) {
+              window.openQuickView(productId);
+            }
           addBtn.textContent = '✓ Добавлено';
           addBtn.style.background = '#22c55e';
           setTimeout(() => {
@@ -1512,10 +1503,56 @@ const openQuickView = async (productId) => {
 
     // ── избранное (визуальный тоггл; при наличии своего API можно вызвать его здесь) ──
     const favBtn = document.getElementById('qv-fav');
-    if (favBtn) favBtn.onclick = () => {
-      favBtn.classList.toggle('on');
-      favBtn.animate([{transform:'scale(.7)'},{transform:'scale(1.2)'},{transform:'scale(1)'}], {duration:360, easing:'cubic-bezier(.22,1,.36,1)'});
-    };
+    if (favBtn) {
+      // Инициализируем состояние из карточки товара
+      const sourceCard = document.querySelector(`.product-card[data-product-id="${p.id}"]`);
+      const isAlreadyWished = sourceCard?.querySelector('.btn-wishlist')?.dataset.wished === 'true';
+      if (isAlreadyWished) favBtn.classList.add('on');
+      else favBtn.classList.remove('on');
+
+      favBtn.onclick = () => {
+        if (!window.Auth) return;
+        window.Auth.requireAuth(async () => {
+          const user = window.Auth.getUser();
+          const session = JSON.parse(localStorage.getItem('lining_session') || 'null');
+          const token = session?.access_token || SB_KEY;
+          const isOn = favBtn.classList.contains('on');
+
+          favBtn.animate([{transform:'scale(.7)'},{transform:'scale(1.2)'},{transform:'scale(1)'}], {duration:360, easing:'cubic-bezier(.22,1,.36,1)'});
+
+          if (isOn) {
+            await fetch(
+              `${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&product_id=eq.${p.id}`,
+              { method: 'DELETE', headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${token}` } }
+            );
+            favBtn.classList.remove('on');
+            window.Toast?.show('Убрано из избранного', '', '');
+            // синхронизируем кнопку на карточке
+            if (sourceCard) {
+              sourceCard.querySelector('.btn-wishlist').dataset.wished = 'false';
+              sourceCard.querySelector('.btn-wishlist').textContent = '♡';
+            }
+          } else {
+            await fetch(`${SB_URL}/rest/v1/wishlists`, {
+              method: 'POST',
+              headers: {
+                'apikey': SB_KEY,
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'resolution=ignore-duplicates,return=minimal'
+              },
+              body: JSON.stringify({ user_id: user.id, product_id: p.id })
+            });
+            favBtn.classList.add('on');
+            window.Toast?.show('Добавлено в избранное', '', 'success');
+            if (sourceCard) {
+              sourceCard.querySelector('.btn-wishlist').dataset.wished = 'true';
+              sourceCard.querySelector('.btn-wishlist').textContent = '♥';
+            }
+          }
+        });
+      };
+    }
 
     // ── добавить в корзину ──
     document.getElementById('qv-add-btn').onclick = () => {
@@ -1536,7 +1573,8 @@ const openQuickView = async (productId) => {
 
       window.Cart.add({ id: p.id, article: fullArticle, name: p.name,
         brand: p.brand || 'Li Ning', price: p.price,
-        size: sel?.dataset.size || '', image: activeImage, qty: 1 });
+        size: sel?.dataset.size || '', color: activeColorName || null,
+        image: activeImage, qty: 1 });
       closeQuickView();
     };
   
