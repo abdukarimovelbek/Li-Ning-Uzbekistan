@@ -1408,20 +1408,28 @@ button {
     .detail-color-block {
         position: relative;
         overflow: hidden;
+        max-width: 100%;
+        min-width: 0;
     }
     .detail-size-grid,
     .detail-color-grid {
         flex-wrap: nowrap;
         overflow-x: scroll;
         overflow-y: hidden;
+        max-width: 100%;
+        min-width: 0;
         scrollbar-width: none;
     }
     .detail-size-grid::-webkit-scrollbar,
     .detail-color-grid::-webkit-scrollbar {
         display: none;
     }
-    .detail-size-btn:hover {
-        transform: none;
+    .detail-size-btn {
+        flex-shrink: 0;
+        transform: none !important;
+    }
+    .detail-color-btn {
+        flex-shrink: 0;
     }
     .detail-size-block::after,
     .detail-color-block::after {
