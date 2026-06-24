@@ -1571,11 +1571,13 @@ const openQuickView = async (productId) => {
           : p.article || p.id;
       const activeImage     = colorVariant?.images?.[0] || images[0] || null;
 
-      window.Cart.add({ id: p.id, article: fullArticle, name: p.name,
-        brand: p.brand || 'Li Ning', price: p.price,
-        size: sel?.dataset.size || '', color: activeColorName || null,
-        image: activeImage, qty: 1 });
-      closeQuickView();
+      window.Auth?.requireAuth(() => {
+        window.Cart.add({ id: p.id, article: fullArticle, name: p.name,
+          brand: p.brand || 'Li Ning', price: p.price,
+          size: sel?.dataset.size || '', color: activeColorName || null,
+          image: activeImage, qty: 1 });
+        closeQuickView();
+      });
     };
   
     document.getElementById('qv-open-link').onclick = () => {

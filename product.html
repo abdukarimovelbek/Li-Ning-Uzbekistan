@@ -663,16 +663,18 @@ document.addEventListener('DOMContentLoaded', () => {
         catch(e) { return []; }
       })();
       const fallbackImg = Array.isArray(p.images) ? (p.images[0] || null) : null;
-      window.Cart.add({
-        id:      p.id,
-        article: p.article || p.id,
-        name:    p.name,
-        brand:   p.brand || 'Li Ning',
-        price:   p.price,
-        size:    selectedSize.dataset.size,
-        color:   selectedColor?.dataset.color || null,
-        image:   colorImages[0] || fallbackImg,
-        qty:     1
+      window.Auth?.requireAuth(() => {
+        window.Cart.add({
+          id:      p.id,
+          article: p.article || p.id,
+          name:    p.name,
+          brand:   p.brand || 'Li Ning',
+          price:   p.price,
+          size:    selectedSize.dataset.size,
+          color:   selectedColor?.dataset.color || null,
+          image:   colorImages[0] || fallbackImg,
+          qty:     1
+        });
       });
     });
 });
