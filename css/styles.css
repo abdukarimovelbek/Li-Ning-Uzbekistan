@@ -1829,7 +1829,7 @@ button {
 }
 .breadcrumb a { color: var(--gray-500); transition: color var(--transition); }
 .breadcrumb a:hover { color: var(--white); }
-.breadcrumb span { color: var(--gray-700); }
+.breadcrumb span { color: var(--gray-500); }
 .bc-track {
     display: flex;
     align-items: center;
