@@ -76,7 +76,11 @@ async function main() {
 
         const files = fs.readdirSync(path.join(PHOTOS_DIR, folder))
             .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
-            .sort();
+            .sort((a, b) => {
+                const numA = parseInt(a.match(/(\d+)/)?.[1] || '0');
+                const numB = parseInt(b.match(/(\d+)/)?.[1] || '0');
+                return numA - numB;
+            });
 
         console.log(`   📷 Файлов: ${files.length}`);
 
