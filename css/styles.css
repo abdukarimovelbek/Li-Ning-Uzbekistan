@@ -1148,8 +1148,8 @@ button {
   max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: auto 440px;
-  gap: 3rem;
+  grid-template-columns: auto 520px;
+  gap: 2rem;
   align-items: start;
 }
 
@@ -1330,13 +1330,23 @@ button {
 .detail-size-grid{ 
   display:flex; 
   flex-wrap:wrap; 
-  gap:.6rem; 
+  gap:.4rem; 
 }
 .detail-size-btn{
-  min-width:50px; height:48px; padding:0 .8rem; background:#fff;
-  border:1.5px solid #D9D3CA; border-radius:10px;
-  font-size:.9rem; font-weight:600; color:var(--gray-700); cursor:pointer; transition:.2s var(--ease);
-  display:flex; align-items:center; justify-content:center;
+  min-width:44px; 
+  height:40px; 
+  padding:0 .5rem; 
+  background:#fff;
+  border:1.5px solid #D9D3CA; 
+  border-radius:10px;
+  font-size:.75rem; 
+  font-weight:650; 
+  color:var(--gray-700); 
+  cursor:pointer; 
+  transition:.2s var(--ease);
+  display:flex; 
+  align-items:center; 
+  justify-content:center;
 }
 .detail-size-btn:hover{ border-color:var(--black); transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,.08); }
 .detail-size-btn.active{ background:var(--black); color:#fff; border-color:var(--black); box-shadow:0 8px 20px rgba(20,20,20,.2); }
