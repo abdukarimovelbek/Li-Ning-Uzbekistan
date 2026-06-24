@@ -77,8 +77,9 @@ async function main() {
         const files = fs.readdirSync(path.join(PHOTOS_DIR, folder))
             .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f))
             .sort((a, b) => {
-                const numA = parseInt(a.match(/(\d+)/)?.[1] || '0');
-                const numB = parseInt(b.match(/(\d+)/)?.[1] || '0');
+                // берём число ПЕРЕД расширением (после пробела): "ARBW007-25 10.jpg" → 10
+                const numA = parseInt(a.match(/ (\d+)\.[^.]+$/)?.[1] || '0');
+                const numB = parseInt(b.match(/ (\d+)\.[^.]+$/)?.[1] || '0');
                 return numA - numB;
             });
 
