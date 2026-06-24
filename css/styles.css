@@ -1403,6 +1403,62 @@ button {
 .detail-size-btn.active{ background:var(--black); color:#fff; border-color:var(--black); box-shadow:0 8px 20px rgba(20,20,20,.2); }
 .detail-size-btn.sold-out{ opacity:.4; text-decoration:line-through; cursor:not-allowed; pointer-events:none; }
 .detail-size-grid.err{ animation:qvShake .45s; }
+@media (max-width: 768px) {
+    .detail-size-block,
+    .detail-color-block {
+        position: relative;
+        overflow: hidden;
+    }
+    .detail-size-grid,
+    .detail-color-grid {
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        scrollbar-width: none;
+    }
+    .detail-size-grid::-webkit-scrollbar,
+    .detail-color-grid::-webkit-scrollbar {
+        display: none;
+    }
+    .detail-size-btn:hover {
+        transform: none;
+    }
+    .detail-size-block::after,
+    .detail-color-block::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 44px;
+        background: linear-gradient(to right, transparent, #FAF8F5);
+        pointer-events: none;
+        z-index: 1;
+        transition: opacity .2s;
+    }
+    .detail-size-block::before,
+    .detail-color-block::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 44px;
+        background: linear-gradient(to left, transparent, #FAF8F5);
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0;
+        transition: opacity .2s;
+    }
+    .detail-size-block.left-fade::before,
+    .detail-color-block.left-fade::before {
+        opacity: 1;
+    }
+    .detail-size-block.no-right-fade::after,
+    .detail-color-block.no-right-fade::after {
+        opacity: 0;
+    }
+}
 
 /* Цвет — квадрат с фото товара */
 .detail-color-grid {
@@ -2331,6 +2387,7 @@ body.menu-open { overflow: hidden; }
 @media (max-width: 768px) {
   .sticky-cart-bar {
     padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+    z-index: 50;
   }
   .sticky-cart-inner {
     padding: .65rem 1rem;

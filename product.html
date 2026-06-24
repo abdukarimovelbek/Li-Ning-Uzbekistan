@@ -320,6 +320,7 @@ function fillProduct(p) {
             if (lbl) lbl.textContent = '· ' + btn.dataset.size;
         });
     });
+    initScrollFade(sizeGrid, document.querySelector('.detail-size-block'));
   }
 
   // Выбор цвета — квадраты с фото, показываем всегда если есть цвет
@@ -347,6 +348,7 @@ function fillProduct(p) {
         style="${v.images?.[0] ? `background-image:url('${v.images[0]}')` : ''}"
         title="${v.color || v.code}"></button>`
     ).join('');
+    initScrollFade(colorGrid, colorBlock);
     const colorPicked = document.getElementById('color-picked');
     if (colorPicked && colorSrc[0]) colorPicked.textContent = '· ' + colorSrc[0].color;
 
@@ -618,6 +620,17 @@ function loadRecentlyViewed() {
     window.ProductCards?.init();
     highlightWishlist();
   } catch(e) {}
+}
+
+function initScrollFade(gridEl, blockEl) {
+    if (!gridEl || !blockEl || window.innerWidth > 768) return;
+    function update() {
+        blockEl.classList.toggle('left-fade', gridEl.scrollLeft > 10);
+        blockEl.classList.toggle('no-right-fade',
+            gridEl.scrollLeft + gridEl.clientWidth >= gridEl.scrollWidth - 10);
+    }
+    gridEl.addEventListener('scroll', update);
+    setTimeout(update, 100);
 }
 
 // ─── ИНИЦИАЛИЗАЦИЯ ──────────────────────────
