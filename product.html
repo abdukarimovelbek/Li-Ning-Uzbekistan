@@ -212,7 +212,7 @@
         <div class="section-title">НЕДАВНО<br>СМОТРЕЛИ</div>
       </div>
     </div>
-    <div class="products-grid" style="grid-template-columns:repeat(4,1fr)" id="recent-grid"></div>
+    <div class="products-grid product-page-grid" id="recent-grid"></div>
   </div>
 </section>
 
@@ -226,7 +226,7 @@
       </div>
       <a href="catalog.html" class="see-all">Весь каталог →</a>
     </div>
-    <div class="products-grid" style="grid-template-columns:repeat(4,1fr)" id="related-products">
+    <div class="products-grid product-page-grid" id="related-products">
       <div style="padding:2rem;text-align:center;color:#aaa">Загрузка...</div>
     </div>
   </div>
@@ -371,7 +371,7 @@ function fillProduct(p) {
                   <img src="${url}">
                 </div>`).join('');
               thumbs.scrollTop = 0;
-              setTimeout(updateThumbNav, 50);
+              setTimeout(() => window.updateThumbNav?.(), 50);
             }
           }
         } catch(e) {}
@@ -391,7 +391,7 @@ function fillProduct(p) {
           <img src="${url}">
         </div>
       `).join('');
-      setTimeout(updateThumbNav, 50);
+      setTimeout(() => window.updateThumbNav?.(), 50);
     }
   }
 
@@ -433,8 +433,8 @@ function fillProduct(p) {
   document.getElementById('thumbs-down')?.addEventListener('click', () => switchByDelta(1));
   document.getElementById('gallery-prev')?.addEventListener('click', () => switchByDelta(-1));
   document.getElementById('gallery-next')?.addEventListener('click', () => switchByDelta(1));
-  document.querySelector('.gallery-thumbs')?.addEventListener('scroll', updateThumbNav);
-  setTimeout(updateThumbNav, 150);
+  document.querySelector('.gallery-thumbs')?.addEventListener('scroll', () => window.updateThumbNav?.());
+  setTimeout(() => window.updateThumbNav?.(), 150);
   
   // Свайп на главном фото (мобильный)
   let _touchStartX = 0;
@@ -452,15 +452,15 @@ function fillProduct(p) {
   // Фейды мобильной ленты
   const _thumbsEl   = document.querySelector('.gallery-thumbs');
   const _thumbsWrap = document.querySelector('.gallery-thumbs-wrap');
-  function updateMobileFade() {
+  window.updateMobileFade = function updateMobileFade() {
     if (!_thumbsEl || !_thumbsWrap || window.innerWidth > 560) return;
     _thumbsWrap.classList.toggle('left-fade',
       _thumbsEl.scrollLeft > 10);
     _thumbsWrap.classList.toggle('no-right-fade',
       _thumbsEl.scrollLeft + _thumbsEl.clientWidth >= _thumbsEl.scrollWidth - 10);
-  }
-  _thumbsEl?.addEventListener('scroll', updateMobileFade);
-  setTimeout(updateMobileFade, 200);
+  };
+  _thumbsEl?.addEventListener('scroll', () => window.updateMobileFade?.());
+  setTimeout(() => window.updateMobileFade?.(), 200);
 
   document.title = `${p.name} — Li-Ning Store`;
 
@@ -578,8 +578,8 @@ function switchImg(url, thumb) {
     }
     document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
     thumb.classList.add('active');
-    thumb.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    setTimeout(() => window.updateThumbNav?.(), 350);
+    thumb.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+    setTimeout(() => { window.updateThumbNav?.(); window.updateMobileFade?.(); }, 350);
 }
 
 // ─── RECENTLY VIEWED ────────────────────────
@@ -607,7 +607,7 @@ function loadRecentlyViewed() {
     const currentId = new URLSearchParams(window.location.search).get('id');
     const recent = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]')
       .filter(p => p.id !== currentId)
-      .slice(0, 4);
+      .slice(0, window.innerWidth <= 980 ? 3 : 4);
     if (!recent.length) return;
     section.style.display = '';
     document.getElementById('recent-grid').innerHTML = recent.map(p => buildCard(p)).join('');

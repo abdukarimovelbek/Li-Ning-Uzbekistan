@@ -1243,6 +1243,21 @@ button {
 }
 .gallery-arrow-left { left: 12px; }
 .gallery-arrow-right { right: 12px; }
+/* ── Product page grids (recently viewed + related) ── */
+.product-page-grid {
+    grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 980px) {
+    .product-page-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+@media (max-width: 560px) {
+    .product-page-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
 .gallery-thumb{
   width: 84px; 
   height: 84px; 
