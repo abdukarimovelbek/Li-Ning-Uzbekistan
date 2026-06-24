@@ -405,7 +405,7 @@ function fillProduct(p) {
   });
 
   // Навигация по миниатюрам
-  function updateThumbNav() {
+  window.updateThumbNav = function updateThumbNav() {
     const thumbs = [...document.querySelectorAll('.gallery-thumb')];
     const activeIdx = thumbs.findIndex(t => t.classList.contains('active'));
     const upBtn    = document.getElementById('thumbs-up');
@@ -579,7 +579,7 @@ function switchImg(url, thumb) {
     document.querySelectorAll('.gallery-thumb').forEach(t => t.classList.remove('active'));
     thumb.classList.add('active');
     thumb.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-    setTimeout(updateThumbNav, 350);
+    setTimeout(() => window.updateThumbNav?.(), 350);
 }
 
 // ─── RECENTLY VIEWED ────────────────────────
@@ -832,7 +832,8 @@ function showSizeAlert() {
   const gImg  = document.getElementById('gallery-img');
 
   // клик по фото → лайтбокс
-  if (gMain) gMain.addEventListener('click', () => {
+  if (gMain) gMain.addEventListener('click', (e) => {
+    if (e.target.closest('.gallery-arrow')) return;
     const thumbs = [...document.querySelectorAll('.gallery-thumb')];
     const idx = thumbs.findIndex(t => t.classList.contains('active'));
     if (typeof openLightbox === 'function') openLightbox(idx >= 0 ? idx : 0);

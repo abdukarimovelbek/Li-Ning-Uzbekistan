@@ -1180,6 +1180,7 @@ button {
 .gallery-thumbs {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: .75rem;
   overflow-y: scroll;
   height: calc(4 * 84px + 3 * .75rem);
@@ -1259,9 +1260,14 @@ button {
   height: 100%; 
   object-fit: contain;
 }
-.gallery-thumb.active{ border-color: var(--red); box-shadow: 0 0 0 3px rgba(196,30,58,.1); }
-.gallery-thumb:hover{ transform: translateY(-2px); }
-
+.gallery-thumb.active{ 
+  border-color: var(--red); 
+  box-shadow: 0 0 0 3px rgba(196,30,58,.1); 
+}
+.gallery-thumb:hover{ 
+  border-color: var(--gray-500); 
+  box-shadow:0 4px 14px rgba(0,0,0,.12); 
+}
 .gallery-main {
     grid-column: 2;
     grid-row: 1;
@@ -1472,6 +1478,8 @@ button {
   .product-gallery {
     grid-template-columns: 1fr;
     gap: .75rem;
+    max-width: 100%;
+    width: 100%;
   }
   .gallery-main {
     grid-column: 1;
@@ -1481,11 +1489,14 @@ button {
     grid-column: 1;
     grid-row: 2;
     width: 100%;
+    max-width: 100%;
     flex-direction: row;
     align-self: auto;
     position: relative;
+    overflow: hidden;
     padding: 0;
     gap: 0;
+    min-width: 0;
   }
   .gallery-thumb-nav {
     display: none;
@@ -1494,11 +1505,17 @@ button {
     flex-direction: row;
     height: auto;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow-x: scroll;
-    overflow-y: visible;
-    padding: 4px 4px;
+    overflow-y: hidden;
+    padding: 4px;
     gap: .5rem;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .gallery-thumbs::-webkit-scrollbar {
+    display: none;
   }
   .gallery-thumb {
     width: 60px;
@@ -1512,21 +1529,20 @@ button {
     right: 0;
     top: 0;
     bottom: 0;
-    width: 40px;
-    background: linear-gradient(to right, transparent, #f5f4f2);
+    width: 48px;
+    background: linear-gradient(to right, transparent, #FAF8F5);
     pointer-events: none;
     z-index: 1;
     transition: opacity .2s;
   }
-  /* Фейд слева — появляется при скролле */
   .gallery-thumbs-wrap::before {
     content: '';
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 40px;
-    background: linear-gradient(to left, transparent, #f5f4f2);
+    width: 48px;
+    background: linear-gradient(to left, transparent, #FAF8F5);
     pointer-events: none;
     z-index: 1;
     opacity: 0;
