@@ -348,8 +348,23 @@ async function main() {
 
         process.stdout.write(`  ${i + 1}/${uzumList.length} - ${item.title || item.name}... `);
         const mapped = mapUzumToSupabase(item);
+
+        // Тянем описание из details API
+        const productId = item.productId || item.id;
+        const details = await getProductDetails(productId);
+        const desc = details?.description
+            || details?.fullDescription
+            || details?.skuList?.[0]?.description
+            || null;
+        if (desc) {
+            mapped.description = desc;
+            console.log(`✓ (${mapped.images?.length || 0} фото, описание: ${desc.length} симв, цветов: ${mapped.colors?.length || 0})`);
+        } else {
+            console.log(`✓ (${mapped.images?.length || 0} фото, описание: ❌ не найдено, цветов: ${mapped.colors?.length || 0})`);
+        }
+
         products.push(mapped);
-        console.log(`✓ (${mapped.images?.length || 0} фото, цветов: ${mapped.colors?.length || 0}: ${(mapped.colors || []).join(', ')})`);
+        await new Promise(r => setTimeout(r, 300));
     }
 
     console.log(`\n✅ Итого: ${products.length} товаров`);
