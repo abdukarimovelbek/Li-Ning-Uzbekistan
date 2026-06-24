@@ -364,6 +364,8 @@ function fillProduct(p) {
                 <div class="gallery-thumb ${i===0?'active':''}" onclick="switchImg('${url}',this)">
                   <img src="${url}">
                 </div>`).join('');
+              thumbs.scrollTop = 0;
+              setTimeout(updateThumbNav, 50);
             }
           }
         } catch(e) {}
@@ -383,6 +385,7 @@ function fillProduct(p) {
           <img src="${url}">
         </div>
       `).join('');
+      setTimeout(updateThumbNav, 50);
     }
   }
 

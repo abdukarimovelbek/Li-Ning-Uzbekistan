@@ -1180,10 +1180,14 @@ button {
     display: flex;
     flex-direction: column;
     gap: .75rem;
-    overflow: hidden;
+    overflow-y: scroll;
     height: calc(4 * 84px + 3 * .75rem);
     scroll-behavior: smooth;
     width: 90px;
+    scrollbar-width: none;
+}
+.gallery-thumbs::-webkit-scrollbar {
+    display: none;
 }
 .gallery-thumb-nav {
   width: 100%;

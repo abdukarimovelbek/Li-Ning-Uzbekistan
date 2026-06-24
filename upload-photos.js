@@ -16,10 +16,13 @@ async function uploadFile(filePath, storageKey) {
         },
         body
     });
-    if (res.status === 409) {
-        return `${SB_URL}/storage/v1/object/public/product-images/${storageKey}`;
+    if (!res.ok) {
+        const text = await res.text();
+        if (text.includes('Duplicate') || text.includes('"409"')) {
+            return `${SB_URL}/storage/v1/object/public/product-images/${storageKey}`;
+        }
+        throw new Error(`${res.status}: ${text}`);
     }
-    if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
     return `${SB_URL}/storage/v1/object/public/product-images/${storageKey}`;
 }
 
