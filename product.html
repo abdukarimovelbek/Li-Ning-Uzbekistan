@@ -467,11 +467,15 @@ function fillProduct(p) {
   const _bc = document.querySelector('.breadcrumb');
   if (_bc) {
     const cat = p.category || '';
-    _bc.innerHTML = `
-      <a href="index.html">Главная</a><span>/</span>
+    const bcContent = `<a href="index.html">Главная</a><span>/</span>
       <a href="catalog.html">Каталог</a><span>/</span>
       ${cat ? `<a href="catalog.html?category=${encodeURIComponent(cat)}">${cat}</a><span>/</span>` : ''}
       <span>${p.name}</span>`;
+    if (window.innerWidth <= 768) {
+      _bc.innerHTML = `<div class="bc-track"><span class="bc-copy">${bcContent}<span class="bc-sep">·</span></span><span class="bc-copy" aria-hidden="true">${bcContent}<span class="bc-sep">·</span></span></div>`;
+    } else {
+      _bc.innerHTML = bcContent;
+    }
   }
 
   // Сохраняем данные товара для корзины
@@ -672,7 +676,10 @@ function initStickyCartBar() {
 
   // клик в sticky-bar = клик по основной кнопке
   document.getElementById('sticky-cart-btn')?.addEventListener('click', () => {
+    const selectedSize = document.querySelector('.detail-size-grid .detail-size-btn.active');
     document.querySelector('.btn-add-to-cart')?.click();
+
+    if (!selectedSize) return;
 
     // анимация успеха в sticky кнопке
     const sBtn = document.getElementById('sticky-cart-btn');
