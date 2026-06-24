@@ -1403,6 +1403,10 @@ button {
 .detail-size-btn.active{ background:var(--black); color:#fff; border-color:var(--black); box-shadow:0 8px 20px rgba(20,20,20,.2); }
 .detail-size-btn.sold-out{ opacity:.4; text-decoration:line-through; cursor:not-allowed; pointer-events:none; }
 .detail-size-grid.err{ animation:qvShake .45s; }
+.product-info-panel {
+  min-width: 0;
+  overflow: hidden;
+}
 @media (max-width: 768px) {
     .detail-size-block,
     .detail-color-block {
@@ -1413,7 +1417,7 @@ button {
     }
     .detail-size-grid,
     .detail-color-grid {
-        flex-wrap: nowrap;
+        flex-wrap: nowrap !important;
         overflow-x: scroll;
         overflow-y: hidden;
         max-width: 100%;
