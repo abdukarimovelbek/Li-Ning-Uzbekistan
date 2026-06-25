@@ -1353,7 +1353,8 @@
       try {
         allProducts = await sbFetch('products', 'GET', null, '?order=created_at.desc');
         populateFilterDropdowns();
-        renderProducts(allProducts);
+        const existingQuery = document.getElementById('product-search').value;
+        if (existingQuery) filterProducts(); else renderProducts(allProducts);
       } catch(e) {
         tbody.innerHTML = '<tr><td colspan="7" class="empty">Ошибка загрузки</td></tr>';
       }
