@@ -91,6 +91,23 @@ function isTelegram() {
   return !!window.Telegram?.WebApp?.initData;
 }
 
+function localizeAuthError(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes('already registered') || m.includes('already exists') || m.includes('user already')) {
+    return 'Этот email уже зарегистрирован. Попробуйте войти.';
+  }
+  if (m.includes('invalid email')) {
+    return 'Введите корректный email адрес.';
+  }
+  if (m.includes('password') && m.includes('least')) {
+    return 'Пароль слишком короткий. Минимум 6 символов.';
+  }
+  if (m.includes('rate limit') || m.includes('too many')) {
+    return 'Слишком много попыток. Подождите немного и попробуйте снова.';
+  }
+  return msg || 'Ошибка регистрации. Попробуйте снова.';
+}
+
 /* ─── AUTH MODULE ────────────────────────────── */
 // Вставить в main.js ПЕРЕД секцией Cart (перед /* ─── 2. CART STATE & MANAGER ─── */)
 
@@ -167,7 +184,10 @@ const Auth = (() => {
       body: JSON.stringify({ email, password, data: { full_name: name } })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error_description || data.msg || 'Ошибка регистрации');
+    if (!res.ok) {
+      const rawMsg = data.error_description || data.msg || '';
+      throw new Error(localizeAuthError(rawMsg));
+    }
     
     // Создаём профиль сразу после регистрации
     if (data.user?.id && data.session?.access_token) {
@@ -198,7 +218,10 @@ const Auth = (() => {
       body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error_description || data.msg || 'Неверный email или пароль');
+    if (!res.ok) {
+      const rawMsg = data.error_description || data.msg || '';
+      throw new Error(localizeAuthError(rawMsg) || 'Неверный email или пароль');
+    }
     
     data.expires_at = Math.floor(Date.now() / 1000) + (data.expires_in || 3600);
     localStorage.setItem('lining_session', JSON.stringify(data));
@@ -1298,7 +1321,7 @@ const buildCard = (p) => {
       data-rating="5"
       data-category="${p.category||''}"
       data-gender="${p.gender||'uni'}"
-      data-age="${p.age||'adult'}
+      data-age="${p.age||'adult'}"
       data-subcategory="${p.subcategory||''}"
       data-collection="${p.collection||''}"
       data-href="product.html?id=${p.id}"

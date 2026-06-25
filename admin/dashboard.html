@@ -985,7 +985,6 @@
         <label class="form-label">Цвета</label>
         <div style="display:flex;gap:.5rem;margin-bottom:.5rem">
           <input type="text" class="form-input" id="color-name-input" placeholder="Название (Белый)" style="flex:1">
-          <input type="color" id="color-picker" value="#ffffff" style="width:44px;height:38px;border:1.5px solid var(--border);padding:2px;cursor:pointer">
           <button class="btn-save" style="white-space:nowrap;padding:.5rem .8rem" onclick="addColor()">+ Цвет</button>
         </div>
         <div class="colors-row" id="colors-container"></div>
@@ -1577,8 +1576,8 @@
       document.getElementById('colors-container').innerHTML = '';
       const colors = Array.isArray(p.colors) ? p.colors : [];
       colors.forEach(c => {
-        if (typeof c === 'string') addColorTag(c, '#cccccc');
-        else if (c?.name) addColorTag(c.name, c.hex || '#cccccc');
+        if (typeof c === 'string') addColorTag(c);
+        else if (c?.name) addColorTag(c.name);
       });
 
       // Images
@@ -1688,15 +1687,14 @@
     // COLORS
     function addColor() {
       const name = document.getElementById('color-name-input').value.trim() || 'Цвет';
-      const hex  = document.getElementById('color-picker').value;
-      addColorTag(name, hex);
+      addColorTag(name);
       document.getElementById('color-name-input').value = '';
     }
-    function addColorTag(name, hex) {
+    function addColorTag(name) {
       const div = document.createElement('div');
       div.className = 'color-item';
-      div.dataset.name = name; div.dataset.hex = hex;
-      div.innerHTML = `<div class="color-swatch" style="background:${hex}"></div><span>${name}</span><button class="color-remove" onclick="this.parentElement.remove()">✕</button>`;
+      div.dataset.name = name;
+      div.innerHTML = `<span>${name}</span><button class="color-remove" onclick="this.parentElement.remove()">✕</button>`;
       document.getElementById('colors-container').appendChild(div);
     }
 
