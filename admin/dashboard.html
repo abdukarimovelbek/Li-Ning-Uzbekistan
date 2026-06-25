@@ -1351,13 +1351,27 @@
       const tbody = document.getElementById('products-table-body');
       tbody.innerHTML = '<tr><td colspan="7" class="loading">Загрузка...</td></tr>';
       try {
-        allProducts = await sbFetch('products', 'GET', null, '?order=created_at.desc');
+        allProducts = await fetchAllProducts();
         populateFilterDropdowns();
         const existingQuery = document.getElementById('product-search').value;
         if (existingQuery) filterProducts(); else renderProducts(allProducts);
       } catch(e) {
         tbody.innerHTML = '<tr><td colspan="7" class="empty">Ошибка загрузки</td></tr>';
       }
+    }
+
+    async function fetchAllProducts() {
+      let all = [];
+      let from = 0;
+      const pageSize = 1000;
+      while (true) {
+        const page = await sbFetch('products', 'GET', null,
+          `?order=created_at.desc&limit=${pageSize}&offset=${from}`);
+        all = all.concat(page);
+        if (page.length < pageSize) break;
+        from += pageSize;
+      }
+      return all;
     }
 
     function renderProducts(products) {
