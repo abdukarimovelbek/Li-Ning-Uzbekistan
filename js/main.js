@@ -2501,7 +2501,7 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
 
 /* ─── COOKIE BANNER ─────────────────────────── */
 (function () {
-    if (localStorage.getItem('cookie_accepted')) return;
+    if (sessionStorage.getItem('cookie_accepted')) return;
 
     const banner = document.createElement('div');
     banner.id = 'cookie-banner';
@@ -2518,7 +2518,7 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
 
     document.getElementById('cookie-accept-btn').addEventListener('click', () => {
         banner.classList.remove('visible');
-        localStorage.setItem('cookie_accepted', '1');
+        sessionStorage.setItem('cookie_accepted', '1');
         setTimeout(() => banner.remove(), 450);
     });
 })();
