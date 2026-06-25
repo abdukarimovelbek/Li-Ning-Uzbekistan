@@ -958,7 +958,7 @@ button {
 
 .cat-header-mob {
   display: block; position: relative;
-  height: 240px; background: var(--black); overflow: hidden;
+  height: 280px; background: var(--black); overflow: hidden;
 }
 .ch-photos { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
 .ch-photos-track {
