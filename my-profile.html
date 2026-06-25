@@ -165,8 +165,19 @@
   <script src="js/main.js"></script>
   <script>
   document.addEventListener('DOMContentLoaded', () => {
+    let attempts = 0;
+    const MAX_ATTEMPTS = 50;
     const tryLoad = () => {
-      if (!document.getElementById('auth-btn')) { setTimeout(tryLoad, 100); return; }
+      attempts++;
+      if (!document.getElementById('auth-btn')) {
+        if (attempts >= MAX_ATTEMPTS) {
+          document.getElementById('mp-page').innerHTML =
+            '<div class="mp-loading">Ошибка загрузки страницы. Обновите страницу.</div>';
+          return;
+        }
+        setTimeout(tryLoad, 100);
+        return;
+      }
       if (!window.Auth?.isLoggedIn()) {
         window.Auth?.openModal('login');
         document.getElementById('mp-page').innerHTML =
@@ -187,11 +198,13 @@
     const email = user.email || '';
     const initials = name.split(' ').map(w => w[0]).filter(Boolean).join('').toUpperCase().slice(0, 2) || '?';
 
-    const [ordersCount, wishlistCount, profile] = await Promise.all([
+    const [ordersByEmail, ordersByUserId, wishlistCount, profile] = await Promise.all([
       fetchCount(`${SB_URL}/rest/v1/orders?email=eq.${encodeURIComponent(email)}&select=id`),
+      fetchCount(`${SB_URL}/rest/v1/orders?user_id=eq.${user.id}&select=id`),
       fetchCount(`${SB_URL}/rest/v1/wishlists?user_id=eq.${user.id}&select=id`),
       fetchOne(`${SB_URL}/rest/v1/profiles?id=eq.${user.id}&select=*`)
     ]);
+    const ordersCount = Math.max(ordersByEmail, ordersByUserId);
 
     const phone = profile?.phone || '—';
 

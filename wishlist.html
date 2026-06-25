@@ -145,17 +145,6 @@
   const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
   const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRneWlyZ2lucmVmdmpzYmhob29pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDUzNjgsImV4cCI6MjA5MzI4MTM2OH0.A-ueG5j_wcxZ7joJM645hrImLwFYjz_SM4ATLTc0cfU';
 
-  // Ключи localStorage
-  const WISHLIST_KEY = 'lining_wishlist';
-
-  function getWishlist() {
-    return JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
-  }
-
-  function saveWishlist(ids) {
-    localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
-  }
-
   async function renderWishlist() {
     const container = document.getElementById('wishlist-container');
     const user = window.Auth?.getUser();
@@ -256,8 +245,19 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
+    let attempts = 0;
+    const MAX_ATTEMPTS = 50; // 5 секунд максимум
     const tryLoad = () => {
-      if (!document.getElementById('auth-btn')) { setTimeout(tryLoad, 100); return; }
+      attempts++;
+      if (!document.getElementById('auth-btn')) {
+        if (attempts >= MAX_ATTEMPTS) {
+          document.getElementById('wishlist-container').innerHTML =
+            '<div style="text-align:center;padding:3rem;color:var(--gray-500)">Ошибка загрузки страницы. Обновите страницу.</div>';
+          return;
+        }
+        setTimeout(tryLoad, 100);
+        return;
+      }
       if (!window.Auth?.isLoggedIn()) {
         window.Auth?.openModal('login');
       } else {

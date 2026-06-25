@@ -1922,11 +1922,20 @@
       let success = 0, notFound = 0;
       const notFoundList = [];
 
-      for (const article of promoArticlesList) {
-        try {
-          await sbFetch('products', 'PATCH', {badge: activePromoType}, `?article=eq.${encodeURIComponent(article)}`);
-          success++;
-        } catch(e) { notFound++; notFoundList.push(article); }
+      const BATCH_SIZE = 20;
+      for (let i = 0; i < promoArticlesList.length; i += BATCH_SIZE) {
+        const batch = promoArticlesList.slice(i, i + BATCH_SIZE);
+        const results = await Promise.allSettled(
+          batch.map(article =>
+            sbFetch('products', 'PATCH', {badge: activePromoType}, `?article=eq.${encodeURIComponent(article)}`)
+          )
+        );
+        results.forEach((r, idx) => {
+          if (r.status === 'fulfilled') success++;
+          else { notFound++; notFoundList.push(batch[idx]); }
+        });
+        // Обновляем прогресс на кнопке
+        btn.textContent = `Обработано ${Math.min(i + BATCH_SIZE, promoArticlesList.length)}/${promoArticlesList.length}...`;
       }
 
       const starts = document.getElementById('promo-start').value;
@@ -2223,10 +2232,8 @@
       btn.disabled = true;
 
       try {
-        // Загружаем все заказы
         const orders = await sbFetch('orders', 'GET', null, '?order=created_at.desc');
 
-        // Разворачиваем каждый товар в отдельную строку
         const rows = [];
         orders.forEach(order => {
           const items = Array.isArray(order.items) ? order.items : [];
@@ -2277,26 +2284,13 @@
           }
         });
 
-        // Генерируем CSV с BOM для корректного отображения кириллицы в Excel
-        const headers = Object.keys(rows[0]);
-        const csvContent = '\uFEFF' + [
-          headers.join(';'),
-          ...rows.map(row => headers.map(h => {
-            const val = row[h] ?? '';
-            if (typeof val === 'number') return val;
-            return `"${String(val).replace(/"/g, '""').replace(/;/g, ',').replace(/\n/g, ' ')}"`;
-          }).join(';'))
-        ].join('\n');
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = Object.keys(rows[0] || {}).map(() => ({ wch: 18 }));
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Заказы');
 
-        // Скачиваем файл
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
         const date = new Date().toISOString().split('T')[0];
-        a.href = url;
-        a.download = `li-ning-orders-${date}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
+        XLSX.writeFile(wb, `li-ning-orders-${date}.xlsx`);
 
         showToast(`✅ Экспортировано ${orders.length} заказов (${rows.length} строк)`);
       } catch(e) {

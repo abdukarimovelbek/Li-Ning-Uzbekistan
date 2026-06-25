@@ -1298,6 +1298,7 @@ const buildCard = (p) => {
       data-rating="5"
       data-category="${p.category||''}"
       data-gender="${p.gender||'uni'}"
+      data-age="${p.age||'adult'}
       data-subcategory="${p.subcategory||''}"
       data-collection="${p.collection||''}"
       data-href="product.html?id=${p.id}"
@@ -2201,17 +2202,20 @@ document.addEventListener('DOMContentLoaded', () => {
 function applyCatalogFilters(cat, gender) {
   const params = new URLSearchParams(window.location.search);
   const subcategory = params.get('subcategory');
+  const age = params.get('age');
 
   document.querySelectorAll('.product-card').forEach(card => {
     const cardCat    = card.dataset.category || '';
     const cardGender = card.dataset.gender || 'uni';
     const cardSub    = card.dataset.subcategory || '';
+    const cardAge    = card.dataset.age || 'adult';
 
     const catOk    = !cat         || cardCat === cat;
-    const genderOk = !gender || cardGender === gender || (cardGender === 'uni' && cardCat === cat && cardGender !== 'kids');
+    const genderOk = !gender || cardGender === gender;
     const subOk    = !subcategory || cardSub === subcategory;
+    const ageOk    = !age || cardAge === age;
 
-    card.style.display = (catOk && genderOk && subOk) ? '' : 'none';
+    card.style.display = (catOk && genderOk && subOk && ageOk) ? '' : 'none';
   });
 
   const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
