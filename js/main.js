@@ -1196,38 +1196,45 @@ const PageTransition = (() => {
 })();
 
 async function fetchProducts(filter = '') {
-  const cacheKey = CACHE_KEY + filter;
-  
   try {
-    const cached = sessionStorage.getItem(cacheKey);
-    if (cached) {
-      const { data, time } = JSON.parse(cached);
-      if (Date.now() - time < CACHE_TTL) {
-        return data;
-      }
-    }
-  } catch(e) {}
-
-  try {
-    const res = await fetch(
-      `${SB_URL}/rest/v1/products?is_active=eq.true${filter}&order=created_at.desc`,
-      {
-        headers: {
-          'apikey': SB_KEY,
-          'Authorization': `Bearer ${SB_KEY}`
-        }
-      }
+    const cacheKey = CACHE_KEY + filter;
+    const cached = JSON.parse(
+      sessionStorage.getItem(cacheKey)
     );
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    if (
+      cached &&
+      Date.now() - cached.time < CACHE_TTL
+    ) {return cached.data;}
 
-    try {
-      sessionStorage.setItem(cacheKey, JSON.stringify({ data, time: Date.now() }));
-    } catch(e) {}
-
-    return data;
-  } catch(e) {
-    console.error('fetchProducts error:', e);
+    let allProducts = [];
+    let offset = 0;
+    const limit = 1000;
+    
+    while (true) {
+      const res = await fetch(
+        `${SB_URL}/rest/v1/products?is_active=eq.true${filter}&order=created_at.desc&limit=${limit}&offset=${offset}`,
+        {
+          headers: {
+            apikey: SB_KEY,
+            Authorization: `Bearer ${SB_KEY}`
+          }
+        }
+      );
+      if (!res.ok) {throw new Error(await res.text());}
+      const page = await res.json();
+      allProducts.push(...page);
+      if (page.length < limit) {break;}
+      offset += limit;
+    }
+    sessionStorage.setItem(
+      cacheKey,
+      JSON.stringify({
+        time: Date.now(),
+        data: allProducts
+      })
+    );
+    return allProducts;
+  } catch (e) {console.error('fetchProducts error:',e);
     return [];
   }
 }
