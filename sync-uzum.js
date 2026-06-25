@@ -17,19 +17,17 @@ const UZUM_API = 'https://api-seller.uzum.uz/api/seller-openapi';
 
 // ── 1. Получаем все товары из Узум (все статусы) ────────────
 async function getUzumProducts() {
-  // Uzum разбивает товары по фильтрам-статусам
-  // filter=ALL даёт только IN_STOCK (~69 шт)
-  // Перебираем все возможные фильтры чтобы получить все товары
-  const FILTERS = ['IN_STOCK', 'ACTIVE', 'INACTIVE', 'ARCHIVED', 'MODERATION', 'BLOCKED'];
+  // '' = без фильтра (все), затем по отдельным статусам
+  const FILTERS = ['', 'ACTIVE', 'INACTIVE', 'ARCHIVE', 'MODERATION', 'BLOCKED', 'REJECTED'];
 
-  const seenIds = new Set();      // защита от дублей между фильтрами
+  const seenIds = new Set();
   let allProducts = [];
-  const size = 24;
+  const size = 50;
 
   console.log('📦 Получаем товары из Узум (все статусы)...');
 
   for (const filter of FILTERS) {
-    console.log(`\n  🔍 Фильтр: ${filter}`);
+    console.log(`\n  🔍 Фильтр: ${filter || '(без фильтра)'}`);
     let page = 0;
     let filterCount = 0;
 
@@ -37,8 +35,9 @@ async function getUzumProducts() {
       let res;
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
+          const filterParam = filter ? `&filter=${filter}` : '';
           res = await fetch(
-            `${UZUM_API}/v1/product/shop/${UZUM_SHOP_ID}?page=${page}&size=${size}&filter=${filter}&order=ASC&sortBy=DEFAULT&productRank=A`,
+            `${UZUM_API}/v1/product/shop/${UZUM_SHOP_ID}?page=${page}&size=${size}${filterParam}&order=ASC&sortBy=DEFAULT`,
             {
               headers: {
                 'Authorization': UZUM_TOKEN,
@@ -57,14 +56,27 @@ async function getUzumProducts() {
       }
 
       if (!res.ok) {
-        console.log(`    ⚠️  Фильтр ${filter} стр.${page}: ${res.status} — пропускаем`);
+        const errBody = await res.text().catch(() => '');
+        console.log(`    ⚠️  Фильтр "${filter || 'без фильтра'}" стр.${page}: HTTP ${res.status}`);
+        console.log(`    📋 Ответ: ${errBody.substring(0, 400)}`);
         break;
       }
 
       const data = await res.json();
-      const items = data?.productList || data?.payload?.products || data?.products || data?.content || [];
+      const items = data?.productList
+        || data?.payload?.products
+        || data?.payload?.productList
+        || data?.products
+        || data?.content
+        || data?.items
+        || data?.data
+        || data?.list
+        || [];
 
-      if (items.length === 0) break;
+      if (items.length === 0) {
+        if (page === 0) console.log(`    ℹ️  Пустой ответ. Ключи: ${Object.keys(data || {}).join(', ')}`);
+        break;
+      }
 
       // Добавляем только новые (по productId) чтобы не дублировать между фильтрами
       let addedThisPage = 0;
