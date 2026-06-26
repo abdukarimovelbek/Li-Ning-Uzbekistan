@@ -65,12 +65,27 @@ const SITE_CONFIG = {
     const res = await fetch(`${SB_URL}/rest/v1/site_settings?id=eq.main`,
       { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
     const data = await res.json();
-    if (data?.[0]) Object.assign(SITE_CONFIG, {
-      auth_enabled:     data[0].auth_enabled     ?? true,
-      cart_enabled:     data[0].cart_enabled     ?? true,
-      wishlist_enabled: data[0].wishlist_enabled ?? true,
-      orders_enabled:   data[0].orders_enabled   ?? true,
-    });
+    if (data?.[0]) {
+      Object.assign(SITE_CONFIG, {
+        auth_enabled:     data[0].auth_enabled     ?? true,
+        cart_enabled:     data[0].cart_enabled     ?? true,
+        wishlist_enabled: data[0].wishlist_enabled ?? true,
+        orders_enabled:   data[0].orders_enabled   ?? true,
+      });
+    }
+
+    // Загружаем активные акции из таблицы promotions
+    window.PROMO_DATES = {};
+    try {
+        const promoRes = await fetch(
+            `${SB_URL}/rest/v1/promotions?is_active=eq.true&select=type,starts_at,ends_at`,
+            { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+        );
+        const promos = await promoRes.json();
+        for (const p of promos) {
+            window.PROMO_DATES[p.type] = { starts: p.starts_at, ends: p.ends_at };
+        }
+    } catch(e) {}
   } catch(e) {}
 })();
 
@@ -1311,6 +1326,17 @@ function initScrollFadeIn() {
 
 
 /* ─── LOAD PRODUCTS FROM SUPABASE ───────────── */
+function isPromoActive(badge) {
+    const promoBadges = ['1=3', '-50%', '-70%'];
+    if (!badge || !promoBadges.includes(badge)) return true;
+    const promo = window.PROMO_DATES?.[badge];
+    if (!promo) return true;
+    const now = new Date();
+    if (promo.starts && now < new Date(promo.starts)) return false;
+    if (promo.ends   && now > new Date(promo.ends))   return false;
+    return true;
+}
+
 const buildCard = (p) => {
   const images = parseArrayField(p.images);
   const sizes  = parseArrayField(p.sizes);
@@ -1321,11 +1347,12 @@ const buildCard = (p) => {
     : `<span style="font-size:5rem">👟</span>`;
 
 
-  const badge = p.badge
-    ? `<span class="product-badge badge-${p.badge.toLowerCase().replace('%','').replace('=','eq')}">${p.badge}</span>`
+  const activeBadge = isPromoActive(p.badge) ? p.badge : '';
+  const badge = activeBadge
+    ? `<span class="product-badge badge-${activeBadge.toLowerCase().replace('%','').replace('=','eq')}">${activeBadge}</span>`
     : '';
 
-  const oldPrice = p.old_price
+  const oldPrice = (activeBadge && p.old_price)
     ? `<span class="old-price">${p.old_price.toLocaleString('ru-RU')}</span>`
     : '';
 

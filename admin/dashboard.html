@@ -1952,9 +1952,7 @@
       if (activePromoType === '1=3') {
         try {
           await sbFetch('products', 'PATCH', {badge: '1=3'}, `?is_active=eq.true`);
-          const saved = JSON.parse(localStorage.getItem('promo_data') || '{}');
-          saved['1=3'] = {starts, ends};
-          localStorage.setItem('promo_data', JSON.stringify(saved));
+          await savePromoDatesToDB('1=3', starts, ends);
           updatePromoCardUI('1=3', true);
           document.getElementById('promo-apply-results').style.display = 'block';
           document.getElementById('promo-apply-results').innerHTML = `
@@ -1993,9 +1991,7 @@
         btn.textContent = `Обработано ${Math.min(i + BATCH_SIZE, promoArticlesList.length)}/${promoArticlesList.length}...`;
       }
 
-      const saved = JSON.parse(localStorage.getItem('promo_data') || '{}');
-      saved[activePromoType] = {starts, ends};
-      localStorage.setItem('promo_data', JSON.stringify(saved));
+      await savePromoDatesToDB(activePromoType, starts, ends);
       updatePromoCardUI(activePromoType, true);
 
       const ok = notFound === 0;
@@ -2015,9 +2011,7 @@
       if (!confirm(`Выключить акцию "${type}"?\nЗначок будет убран со всех товаров.`)) return;
       try {
         await sbFetch('products', 'PATCH', {badge: null}, `?badge=eq.${encodeURIComponent(type)}`);
-        const saved = JSON.parse(localStorage.getItem('promo_data') || '{}');
-        delete saved[type];
-        localStorage.setItem('promo_data', JSON.stringify(saved));
+        await removePromoDateFromDB(type);
         updatePromoCardUI(type, false);
         closePromoPanel();
         showToast(`Акция "${type}" выключена ✓`);
@@ -2365,8 +2359,47 @@
           document.getElementById('toggle-cart').checked     = data[0].cart_enabled     ?? true;
           document.getElementById('toggle-wishlist').checked = data[0].wishlist_enabled ?? true;
           document.getElementById('toggle-orders').checked   = data[0].orders_enabled   ?? true;
+
+          // Загружаем активные акции из таблицы promotions
+          const promos = await sbFetch('promotions', 'GET', null, `?is_active=eq.true`);
+          for (const promo of promos) {
+              updatePromoCardUI(promo.type, true);
+              const key    = promoKey(promo.type);
+              const datesEl = document.getElementById(`promo-dates-${key}`);
+              if (datesEl && (promo.starts_at || promo.ends_at)) {
+                  const fmt = d => d ? new Date(d).toLocaleDateString('ru-RU') : '?';
+                  datesEl.textContent = `${fmt(promo.starts_at)} — ${fmt(promo.ends_at)}`;
+              }
+          }
         }
       } catch(e) {}
+    }
+
+    async function savePromoDatesToDB(type, starts, ends) {
+        try {
+            const nameMap     = { '1=3': 'Акция 1=3', '-50%': 'Скидка 50%', '-70%': 'Скидка 70%' };
+            const discountMap = { '1=3': 0, '-50%': 50, '-70%': 70 };
+            const existing    = await sbFetch('promotions', 'GET', null, `?type=eq.${encodeURIComponent(type)}`);
+            const payload     = {
+                name:       nameMap[type] || type,
+                type,
+                discount:   discountMap[type] || 0,
+                starts_at:  starts || null,
+                ends_at:    ends   || null,
+                is_active:  true
+            };
+            if (existing?.length) {
+                await sbFetch('promotions', 'PATCH', payload, `?type=eq.${encodeURIComponent(type)}`);
+            } else {
+                await sbFetch('promotions', 'POST', payload);
+            }
+        } catch(e) { console.error('Ошибка сохранения акции:', e); }
+    }
+
+    async function removePromoDateFromDB(type) {
+        try {
+            await sbFetch('promotions', 'PATCH', { is_active: false }, `?type=eq.${encodeURIComponent(type)}`);
+        } catch(e) { console.error('Ошибка деактивации акции:', e); }
     }
 
     async function saveFeatureFlags() {
@@ -2458,10 +2491,10 @@
           parsedPriceData = [];
           for (let i = 1; i < rows.length; i++) {
             const row = rows[i];
-            const article = String(row[0] || '').trim();
-            const price = parseInt(String(row[1] || '').replace(/\D/g,'')) || 0;
-            if (article && price > 0) {
-              parsedPriceData.push({article, price});
+            const article  = String(row[0] || '').trim();
+            const newPrice = parseInt(String(row[3] || '').replace(/\D/g,'')) || 0;
+            if (article && newPrice > 0) {
+              parsedPriceData.push({article, price: newPrice});
             }
           }
 
