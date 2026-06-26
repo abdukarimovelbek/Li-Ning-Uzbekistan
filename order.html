@@ -1914,6 +1914,11 @@
     coRenderSidebar();
     coUpdateStrip();
     coSetStep(1, true);
+    window.addEventListener('promo-dates-loaded', () => {
+      coRenderSidebar();
+      coRenderTotals();
+      coUpdateStrip();
+    }, { once: true });
     document.querySelectorAll('.co-store-opt').forEach(opt => {
       opt.addEventListener('change', () => {
         const name = opt.querySelector('.co-store-opt-name').textContent;

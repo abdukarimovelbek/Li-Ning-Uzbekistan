@@ -85,9 +85,11 @@ const SITE_CONFIG = {
         for (const p of promos) {
             window.PROMO_DATES[p.type] = { starts: p.starts_at, ends: p.ends_at };
         }
+        window.dispatchEvent(new Event('promo-dates-loaded'));
     } catch(e) {}
   } catch(e) {}
 })();
+
 
 
 const CACHE_KEY = 'lining_products_cache';
