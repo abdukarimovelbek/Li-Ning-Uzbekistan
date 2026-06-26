@@ -763,9 +763,14 @@ const FilterSidebar = (() => {
     });
 
 
-    // Price range radio
-    document.querySelectorAll('input[name="price-range"]').forEach(radio => {
-        radio.addEventListener('change', applyFilters);
+    // Price buttons
+    document.querySelectorAll('.price-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const isActive = btn.classList.contains('active');
+            document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('active'));
+            if (!isActive) btn.classList.add('active');
+            applyFilters();
+        });
     });
 
     // Apply button
@@ -774,42 +779,40 @@ const FilterSidebar = (() => {
       Toast.show('Фильтры применены');
     });
 
-    // Clear button
     document.querySelector('.filter-clear-btn')?.addEventListener('click', () => {
-      document.querySelectorAll('.filter-brand-item input').forEach(cb => cb.checked = false);
-      document.querySelectorAll('.filter-promo-item input').forEach(cb => cb.checked = false);
-      document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
-      if (slider) slider.value = slider.max;
-      if (maxInput) maxInput.value = parseInt(slider?.max || 0).toLocaleString('ru-RU');
-      applyFilters();
-      Toast.show('Фильтры сброшены');
+        document.querySelectorAll('.filter-brand-item input').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.filter-gender-item').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.filter-promo-item input').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.price-btn').forEach(b => b.classList.remove('active'));
+        applyFilters();
+        Toast.show('Фильтры сброшены');
     });
   };
 
   const applyFilters = () => {
-    const checkedBrands = [...document.querySelectorAll('.filter-brand-item input:checked')].map(cb => cb.value);
-    const activeSize    = document.querySelector('.size-btn.active')?.dataset.size;
-    const checkedPromos = [...document.querySelectorAll('.filter-promo-item input:checked')].map(cb => cb.value);
-    const priceRangeVal = document.querySelector('input[name="price-range"]:checked')?.value;
-    let priceMin = 0, priceMax = Infinity;
-    if (priceRangeVal) {
-        const [mn, mx] = priceRangeVal.split('-').map(Number);
-        priceMin = mn;
-        priceMax = mx;
-    }
+    const checkedBrands  = [...document.querySelectorAll('.filter-brand-item input:not(.filter-gender-item):checked')].map(cb => cb.value);
+    const checkedGenders = [...document.querySelectorAll('.filter-gender-item:checked')].map(cb => cb.value);
+    const activeSize     = document.querySelector('.size-btn.active')?.dataset.size;
+    const checkedPromos  = [...document.querySelectorAll('.filter-promo-item input:checked')].map(cb => cb.value);
+    const activePriceBtn = document.querySelector('.price-btn.active');
+    const priceMin       = activePriceBtn ? parseInt(activePriceBtn.dataset.min) : 0;
+    const priceMax       = activePriceBtn ? parseInt(activePriceBtn.dataset.max) : Infinity;
 
     document.querySelectorAll('.product-card').forEach(card => {
-        const brand = card.dataset.brand?.toLowerCase() || '';
-        const price = parseInt(card.dataset.price || '0');
-        const sizes = (card.dataset.sizes || '').split(',');
-        const badge = card.dataset.badge || '';
+        const brand  = card.dataset.brand?.toLowerCase() || '';
+        const gender = card.dataset.gender || 'uni';
+        const price  = parseInt(card.dataset.price || '0');
+        const sizes  = (card.dataset.sizes || '').split(',');
+        const badge  = card.dataset.badge || '';
 
-        const brandOk = checkedBrands.length === 0 || checkedBrands.includes(brand);
-        const priceOk = price >= priceMin && price <= priceMax;
-        const sizeOk  = !activeSize || sizes.includes(activeSize);
-        const promoOk = checkedPromos.length === 0 || checkedPromos.includes(badge);
+        const brandOk  = checkedBrands.length === 0 || checkedBrands.includes(brand);
+        const genderOk = checkedGenders.length === 0 || checkedGenders.includes(gender);
+        const priceOk  = price >= priceMin && price <= priceMax;
+        const sizeOk   = !activeSize || sizes.includes(activeSize);
+        const promoOk  = checkedPromos.length === 0 || checkedPromos.includes(badge);
 
-        card.style.display = (brandOk && priceOk && sizeOk && promoOk) ? '' : 'none';
+        card.style.display = (brandOk && genderOk && priceOk && sizeOk && promoOk) ? '' : 'none';
     });
 
     updateCount();
