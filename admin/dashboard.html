@@ -2394,17 +2394,54 @@
     /* ── PRICES ── */
     let parsedPriceData = [];
 
-    function downloadPriceTemplate() {
-      const wb = XLSX.utils.book_new();
-      const wsData = [
-        ['Артикул', 'Цена (сум)'],
-        ['ABCD056', 890000],
-        ['ARBW018', 750000],
-      ];
-      const ws = XLSX.utils.aoa_to_sheet(wsData);
-      ws['!cols'] = [{wch:16}, {wch:16}];
-      XLSX.utils.book_append_sheet(wb, ws, 'Цены');
-      XLSX.writeFile(wb, 'lining-prices-template.xlsx');
+    async function downloadPriceTemplate() {
+      const btn = event.currentTarget || document.querySelector('[onclick="downloadPriceTemplate()"]');
+      const origText = btn?.textContent || '';
+      if (btn) { btn.textContent = '⏳ Загружаем артикулы...'; btn.disabled = true; }
+
+      try {
+        let allProducts = [];
+        let offset = 0;
+        const limit = 1000;
+
+        while (true) {
+          const page = await sbFetch('products', 'GET', null,
+            `?select=article,name,price&is_active=eq.true&order=article.asc&limit=${limit}&offset=${offset}`);
+          allProducts.push(...page);
+          if (page.length < limit) break;
+          offset += limit;
+        }
+
+        const wsData = [
+          ['Артикул', 'Название', 'Текущая цена (сум)', 'Новая цена (сум)'],
+          ...allProducts
+            .filter(p => p.article)
+            .map(p => [
+              p.article,
+              p.name || '',
+              p.price || '',
+              ''
+            ])
+        ];
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        ws['!cols'] = [{wch:18}, {wch:40}, {wch:22}, {wch:22}];
+
+        // Заголовок жирным
+        ['A1','B1','C1','D1'].forEach(cell => {
+          if (ws[cell]) ws[cell].s = { font: { bold: true } };
+        });
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Цены');
+        XLSX.writeFile(wb, `lining-prices-${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast(`Выгружено ${allProducts.filter(p=>p.article).length} артикулов ✓`);
+      } catch(e) {
+        showToast('Ошибка загрузки артикулов', true);
+        console.error(e);
+      } finally {
+        if (btn) { btn.textContent = origText; btn.disabled = false; }
+      }
     }
 
     function handlePriceFile(input) {
