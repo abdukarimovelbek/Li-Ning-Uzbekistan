@@ -2545,16 +2545,20 @@
 
       let success = 0, notFound = 0;
       const notFoundList = [];
+      const BATCH_SIZE = 20;
 
-      for (const row of parsedPriceData) {
-        try {
-          const update = {price: row.price};
-          await sbFetch('products', 'PATCH', update, `?article=eq.${encodeURIComponent(row.article)}`);
-          success++;
-        } catch(e) {
-          notFound++;
-          notFoundList.push(row.article);
-        }
+      for (let i = 0; i < parsedPriceData.length; i += BATCH_SIZE) {
+        const batch = parsedPriceData.slice(i, i + BATCH_SIZE);
+        const results = await Promise.allSettled(
+          batch.map(row =>
+            sbFetch('products', 'PATCH', {price: row.price}, `?article=eq.${encodeURIComponent(row.article)}`)
+          )
+        );
+        results.forEach((r, idx) => {
+          if (r.status === 'fulfilled') success++;
+          else { notFound++; notFoundList.push(batch[idx].article); }
+        });
+        btn.textContent = `Обновлено ${Math.min(i + BATCH_SIZE, parsedPriceData.length)} из ${parsedPriceData.length}...`;
       }
 
       const ok = notFound === 0;
