@@ -525,7 +525,31 @@ const Cart = (() => {
     updateUI();
   };
 
-  const getTotal = () => items.reduce((s, i) => s + i.price * i.qty, 0);
+  const calcPromo13 = (cartItems) => {
+      if (!isPromoActive('1=3')) return 0;
+      const units = [];
+      cartItems.forEach(item => {
+          if (item.badge === '1=3') {
+              for (let q = 0; q < item.qty; q++) {
+                  units.push(item.price);
+              }
+          }
+      });
+      let discount = 0;
+      for (let i = 0; i < units.length; i += 3) {
+          const group = units.slice(i, i + 3);
+          if (group.length === 3) {
+              const sorted = [...group].sort((a, b) => b - a);
+              discount += sorted[1] + sorted[2];
+          }
+      }
+      return discount;
+  };
+
+  const getTotal = () => {
+      const base = items.reduce((s, i) => s + i.price * i.qty, 0);
+      return base - calcPromo13(items);
+  };
 
   const getItems = () => items;
 
@@ -560,6 +584,14 @@ const Cart = (() => {
         <button class="cart-item-remove" onclick="window.cartRemove('${item.id}','${item.size}','${item.color || ''}')">✕</button>
       </div>
     `).join('');
+      const discount = calcPromo13(items);
+      if (discount > 0) {
+          body.innerHTML += `
+              <div class="cart-promo-line">
+                  <span>Скидка по акции 1=3</span>
+                  <span class="cart-promo-amount">−${discount.toLocaleString('ru-RU')} сум</span>
+              </div>`;
+      }
     }
 
     const totalEl = document.querySelector('.cart-total strong');
@@ -567,7 +599,7 @@ const Cart = (() => {
   };
 
   // Expose globally
-  window.Cart = { add, remove, clear, changeQty, getTotal, getItems, updateUI};
+  window.Cart = { add, remove, clear, changeQty, getTotal, getItems, updateUI, calcPromo13 };
   window.cartRemove = remove;
   window.cartChangeQty = changeQty;
 

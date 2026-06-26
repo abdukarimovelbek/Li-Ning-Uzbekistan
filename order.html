@@ -1676,11 +1676,19 @@
   /* ─── ИТОГИ ─── */
   function coRenderTotals() {
     const items = coGetCart();
-    const sub = items.reduce((a, it) => a + it.price * it.qty, 0);
-    const tot = sub + (items.length > 0 ? coDelP : 0);
-    const cnt = items.reduce((a, it) => a + it.qty, 0);
+    const sub      = items.reduce((a, it) => a + it.price * it.qty, 0);
+    const discount = window.Cart?.calcPromo13?.(items) || 0;
+    const tot      = sub - discount + (items.length > 0 ? coDelP : 0);
+    const cnt      = items.reduce((a, it) => a + it.qty, 0);
+    const discountRow = discount > 0
+        ? `<div class="co-otr" style="color:#e63946">
+               <span class="co-otl">Скидка 1=3 🎁</span>
+               <span class="co-otv">−${coFP(discount)}</span>
+           </div>`
+        : '';
     const html = `
       <div class="co-otr"><span class="co-otl">Товары (${cnt} шт.)</span><span class="co-otv">${coFP(sub)}</span></div>
+      ${discountRow}
       <div class="co-otr"><span class="co-otl">Доставка</span><span class="co-otv ${coDelP ? '' : 'co-del-free'}">${coDelP ? coFP(coDelP) : 'Бесплатно'}</span></div>
       <div class="co-otr total"><span class="co-otl">ИТОГО</span><span class="co-otv">${coFP(tot)}</span></div>`;
     const a = document.getElementById('co-osi-totals');
@@ -1692,9 +1700,10 @@
   }
 
   function coUpdateStrip() {
-    const items = coGetCart();
-    const tot = items.reduce((a, it) => a + it.price * it.qty, 0) + (items.length > 0 ? coDelP : 0);
-    const cnt = items.reduce((a, it) => a + it.qty, 0);
+    const items    = coGetCart();
+    const sub      = items.reduce((a, it) => a + it.price * it.qty, 0);
+    const discount = window.Cart?.calcPromo13?.(items) || 0;
+    const tot      = sub - discount + (items.length > 0 ? coDelP : 0);
     const t = document.getElementById('co-strip-total');
     const c = document.getElementById('co-strip-cnt');
     if (t) t.innerHTML = tot.toLocaleString('ru-RU') + ' <b>сум</b>';
