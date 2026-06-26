@@ -403,7 +403,7 @@
     <div class="section" id="section-products">
       <div class="toolbar">
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
-          <input type="search" class="search-input" placeholder="🔍 Поиск..." id="product-search" oninput="filterProducts()" autocomplete="off" style="width:220px">
+          <input type="search" class="search-input" placeholder="🔍 Поиск..." id="product-search" oninput="debouncedFilterProducts()" autocomplete="off" style="width:220px">
           <select class="filter-select" id="product-cat-filter" onchange="filterProducts()">
             <option value="">Все категории</option>
             <option value="shoes">Обувь</option>
@@ -1434,6 +1434,12 @@
         subs.map(s => `<option value="${s}">${s}</option>`).join('');
       colSel.innerHTML = '<option value="">Коллекция</option>' +
         cols.map(c => `<option value="${c}">${c}</option>`).join('');
+    }
+
+    let _filterTimeout = null;
+    function debouncedFilterProducts() {
+      clearTimeout(_filterTimeout);
+      _filterTimeout = setTimeout(filterProducts, 300);
     }
 
     function filterProducts() {
