@@ -10,6 +10,19 @@
 const SB_URL = 'https://dgyirginrefvjsbhhooi.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRneWlyZ2lucmVmdmpzYmhob29pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc3MDUzNjgsImV4cCI6MjA5MzI4MTM2OH0.A-ueG5j_wcxZ7joJM645hrImLwFYjz_SM4ATLTc0cfU';
 
+function parseArrayField(val) {
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'string') {
+    try {
+      const parsed = JSON.parse(val);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+  return [];
+}
+
 /* ─── LOAD COMPONENTS ───────────────────────── */
 async function loadComponents() {
   const components = [
@@ -1300,8 +1313,8 @@ function initScrollFadeIn() {
 
 /* ─── LOAD PRODUCTS FROM SUPABASE ───────────── */
 const buildCard = (p) => {
-  const images = Array.isArray(p.images) ? p.images : (p.images || []);
-  const sizes  = Array.isArray(p.sizes)  ? p.sizes  : (p.sizes  || []);
+  const images = parseArrayField(p.images);
+  const sizes  = parseArrayField(p.sizes);
   const hasHover = images.length > 1;
   const imgHtml = images[0]
     ? `<img class="img-main" src="${images[0]}" style="width:100%;height:100%;object-fit:cover;display:block">
@@ -1428,8 +1441,8 @@ const openQuickView = async (productId) => {
 
   if (!p) return;
 
-  const images = Array.isArray(p.images) ? p.images : [];
-  const sizes  = Array.isArray(p.sizes)  ? p.sizes  : [];
+  const images = parseArrayField(p.images);
+  const sizes  = parseArrayField(p.sizes);
 
     // ── изображение + миниатюры ──
     const mainImg = document.getElementById('qv-img');
@@ -1480,7 +1493,7 @@ const openQuickView = async (productId) => {
     const colorsWrap = document.getElementById('qv-colors-wrap');
     const colorsBox  = document.getElementById('qv-colors');
     const colorName  = document.getElementById('qv-color-name');
-    const colors = Array.isArray(p.colors) ? p.colors.filter(c => typeof c === 'string' && c) : [];
+    const colors = parseArrayField(p.colors).filter(c => typeof c === 'string' && c);
     if (colors.length) {
       colorName.textContent = colors[0];
       colorsBox.innerHTML = colors.map((c, i) =>
@@ -1492,7 +1505,7 @@ const openQuickView = async (productId) => {
         colorName.textContent = el.dataset.name;
 
         // Переключаем галерею на фото выбранного цвета
-        const variants = Array.isArray(p.variants) ? p.variants : [];
+        const variants = parseArrayField(p.variants);
         const variant = variants.find(v => v.color === el.dataset.name);
         const variantImages = variant?.images?.length ? variant.images : images;
 
@@ -1595,7 +1608,7 @@ const openQuickView = async (productId) => {
         return;
       }
       const activeColorName = colorsBox?.querySelector('.qv-color.active')?.dataset.name;
-      const colorVariant    = (Array.isArray(p.variants) ? p.variants : []).find(v => v.color === activeColorName);
+      const colorVariant    = parseArrayField(p.variants).find(v => v.color === activeColorName);
       const colorCode       = colorVariant?.code;
       const fullArticle     = (p.article && colorCode && colorCode !== activeColorName)
           ? `${p.article}-${colorCode}`
