@@ -529,10 +529,8 @@ const Cart = (() => {
       if (!isPromoActive('1=3')) return 0;
       const units = [];
       cartItems.forEach(item => {
-          if (item.badge === '1=3') {
-              for (let q = 0; q < item.qty; q++) {
-                  units.push(item.price);
-              }
+          for (let q = 0; q < item.qty; q++) {
+              units.push(item.price);
           }
       });
       let discount = 0;
@@ -573,7 +571,7 @@ const Cart = (() => {
         </div>
         <div class="cart-item-info">
           <div class="cart-item-name">${item.name}</div>
-          <div class="cart-item-meta">Размер: ${item.size}</div>
+          <div class="cart-item-meta">Размер: ${item.size}${item.color ? ' · Цвет: ' + item.color : ''}</div>
           <div style="display:flex;align-items:center;gap:.5rem;margin-top:.4rem">
             <button onclick="window.cartChangeQty('${item.id}','${item.size}','${item.color || ''}',-1)" style="width:44px;height:44px;background:var(--gray-100);border:1px solid var(--gray-100);border-radius:6px;font-size:1.1rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">−</button>
             <span style="font-size:.9rem;font-weight:700;min-width:24px;text-align:center">${item.qty}</span>
@@ -584,12 +582,22 @@ const Cart = (() => {
         <button class="cart-item-remove" onclick="window.cartRemove('${item.id}','${item.size}','${item.color || ''}')">✕</button>
       </div>
     `).join('');
-      const discount = calcPromo13(items);
+      const discount    = calcPromo13(items);
+      const totalUnits  = items.reduce((s, i) => s + i.qty, 0);
+      const remainder   = totalUnits % 3;
+      const need        = remainder > 0 ? 3 - remainder : 0;
+
       if (discount > 0) {
           body.innerHTML += `
               <div class="cart-promo-line">
                   <span>Скидка по акции 1=3</span>
                   <span class="cart-promo-amount">−${discount.toLocaleString('ru-RU')} сум</span>
+              </div>`;
+      } else if (isPromoActive('1=3') && need > 0) {
+          body.innerHTML += `
+              <div class="cart-promo-hint">
+                  Добавьте ещё ${need} ${need === 1 ? 'товар' : 'товара'} —
+                  ${need === 1 ? 'один получите' : 'два получите'} бесплатно по акции 1=3
               </div>`;
       }
     }
@@ -1359,10 +1367,8 @@ function initScrollFadeIn() {
 
 /* ─── LOAD PRODUCTS FROM SUPABASE ───────────── */
 function isPromoActive(badge) {
-    const promoBadges = ['1=3', '-50%', '-70%'];
-    if (!badge || !promoBadges.includes(badge)) return true;
     const promo = window.PROMO_DATES?.[badge];
-    if (!promo) return true;
+    if (!promo) return false;
     const now = new Date();
     if (promo.starts && now < new Date(promo.starts)) return false;
     if (promo.ends   && now > new Date(promo.ends))   return false;

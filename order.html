@@ -1704,6 +1704,7 @@
     const sub      = items.reduce((a, it) => a + it.price * it.qty, 0);
     const discount = window.Cart?.calcPromo13?.(items) || 0;
     const tot      = sub - discount + (items.length > 0 ? coDelP : 0);
+    const cnt      = items.reduce((a, it) => a + it.qty, 0);
     const t = document.getElementById('co-strip-total');
     const c = document.getElementById('co-strip-cnt');
     if (t) t.innerHTML = tot.toLocaleString('ru-RU') + ' <b>сум</b>';

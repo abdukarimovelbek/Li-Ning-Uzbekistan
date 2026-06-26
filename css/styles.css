@@ -345,7 +345,16 @@ button {
     font-weight: 700;
     color: #e63946;
 }
-
+.cart-promo-hint {
+    margin: .4rem .8rem;
+    padding: .55rem 1rem;
+    background: rgba(200, 150, 62, .1);
+    border-left: 3px solid var(--gold, #c8963e);
+    border-radius: 0 6px 6px 0;
+    font-size: .78rem;
+    color: var(--gold, #c8963e);
+    line-height: 1.4;
+}
 
 .btn-checkout {
   width: 100%;
