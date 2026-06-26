@@ -15,16 +15,14 @@
     gtag('js', new Date());
     gtag('config', 'G-8K29V08VJM');
 
-    function toggleMobileFilter() {
-      const sidebar = document.querySelector('.filter-sidebar');
+    function toggleFilterPanel() {
+      const panel = document.getElementById('filter-panel');
       const btn = document.getElementById('filter-toggle-btn');
-      const overlay = document.getElementById('filter-overlay');
-      const isOpen = sidebar?.classList.contains('open');
-      sidebar?.classList.toggle('open');
+      panel?.classList.toggle('open');
       btn?.classList.toggle('active');
-      overlay?.classList.toggle('open');
-      document.body.style.overflow = isOpen ? '' : 'hidden';
     }
+    function toggleMobileFilter() { toggleFilterPanel(); }
+
     document.addEventListener('DOMContentLoaded', () => {
       const handle = document.querySelector('.filter-handle');
       const sidebar = document.querySelector('.filter-sidebar');
@@ -235,143 +233,151 @@
 
 <!-- Catalog Layout -->
 <div class="section catalog-section">
-  <div class="filter-sidebar-overlay" id="filter-overlay" onclick="toggleMobileFilter()"></div>
   <div class="catalog-layout">
 
-    <!-- Filter Sidebar -->
-    <aside class="filter-sidebar">
-      <div class="filter-handle"><span></span></div>
-      <button class="filter-apply-btn" onclick="toggleMobileFilter()">Применить</button>
-
-      <div class="filter-block">
-      <div class="filter-block-head">
-        Поиск <span class="toggle">▼</span>
-      </div>
-      <div class="filter-block-body open">
-        <div style="display:flex;align-items:center;gap:.5rem;border:1.5px solid var(--gray-100);border-radius:var(--radius-sm);overflow:hidden;background:var(--cream)">
-          <input 
-            type="text" 
-            id="catalog-search-input"
-            placeholder="Поиск по каталогу..."
-            style="flex:1;border:none;background:transparent;padding:.7rem .8rem;font-family:var(--font-body);font-size:.85rem;outline:none;color:var(--gray-900)"
-            oninput="catalogSearchFilter(this.value)"
-            onkeydown="if(event.key==='Enter') catalogSearchFilter(this.value)">
-          <button onclick="catalogSearchFilter(document.getElementById('catalog-search-input').value)" 
-            style="background:var(--red);border:none;padding:.7rem .9rem;cursor:pointer;display:flex;align-items:center;justify-content:center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-      <div class="filter-block">
-        <div class="filter-block-head">
-          Цена (сум) <span class="toggle">▼</span>
-        </div>
-        <div class="filter-block-body">
-          <div class="price-btn-grid">
-            <button class="price-btn" data-min="0" data-max="199999">до 200 000</button>
-            <button class="price-btn" data-min="200000" data-max="499900">200 — 499K</button>
-            <button class="price-btn" data-min="500000" data-max="999900">500 — 999K</button>
-            <button class="price-btn" data-min="1000000" data-max="1299900">1 000 — 1 299K</button>
-            <button class="price-btn" data-min="1300000" data-max="1499900">1 300 — 1 499K</button>
-            <button class="price-btn" data-min="1500000" data-max="1999900">1 500 — 1 999K</button>
-            <button class="price-btn" data-min="2000000" data-max="99999999">от 2 000K</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="filter-block">
-        <div class="filter-block-head">
-          Размер (EU) <span class="toggle">▼</span>
-        </div>
-        <div class="filter-block-body">
-          <div class="size-grid">
-            <button class="size-btn" data-size="36">36</button>
-            <button class="size-btn" data-size="37">37</button>
-            <button class="size-btn" data-size="38">38</button>
-            <button class="size-btn" data-size="39">39</button>
-            <button class="size-btn" data-size="40">40</button>
-            <button class="size-btn" data-size="41">41</button>
-            <button class="size-btn" data-size="42">42</button>
-            <button class="size-btn" data-size="43">43</button>
-            <button class="size-btn" data-size="44">44</button>
-            <button class="size-btn" data-size="45">45</button>
-            <button class="size-btn" data-size="46">46</button>
-            <button class="size-btn unavailable" data-size="47">47</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="filter-block">
-        <div class="filter-block-head">
-          Категория <span class="toggle">▼</span>
-        </div>
-        <div class="filter-block-body">
-          <label class="filter-brand-item"><input type="checkbox" value="shoes"> Кроссовки</label>
-          <label class="filter-brand-item"><input type="checkbox" value="clothing"> Одежда</label>
-          <label class="filter-brand-item"><input type="checkbox" value="running"> Бег</label>
-          <label class="filter-brand-item"><input type="checkbox" value="training"> Тренировка</label>
-          <label class="filter-brand-item"><input type="checkbox" value="accessories"> Аксессуары</label>
-        </div>
-      </div>
-
-      <div class="filter-block" id="promo-filter-block" style="display:none">
-        <div class="filter-block-head">
-          Акции <span class="toggle">▼</span>
-        </div>
-        <div class="filter-block-body">
-          <label class="filter-promo-item" id="promo-filter-1eq3" style="display:none">
-            <input type="checkbox" value="1=3">
-            <span style="display:inline-flex;align-items:center;gap:.4rem">
-              <span style="background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .4rem">1=3</span>
-              Акция 1 = 3
-            </span>
-          </label>
-          <label class="filter-promo-item" id="promo-filter-50pct" style="display:none">
-            <input type="checkbox" value="-50%">
-            <span style="display:inline-flex;align-items:center;gap:.4rem">
-              <span style="background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .4rem">-50%</span>
-              Скидка 50%
-            </span>
-          </label>
-          <label class="filter-promo-item" id="promo-filter-70pct" style="display:none">
-            <input type="checkbox" value="-70%">
-            <span style="display:inline-flex;align-items:center;gap:.4rem">
-              <span style="background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .4rem">-70%</span>
-              Скидка 70%
-            </span>
-          </label>
-        </div>
-      </div>
-
-      <button class="filter-clear-btn">Сбросить всё</button>
-    </aside>
-
     <div class="catalog-products-col">
-      <!-- Products -->
+
+      <!-- Toolbar -->
       <div class="catalog-toolbar">
-        <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleMobileFilter()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
-          Фильтры
-        </button>
         <div class="catalog-count">Найдено <strong>—</strong> товаров</div>
-        <div class="catalog-sort">
-          <select class="sort-select-styled">
-            <option value="">По умолчанию</option>
-            <option value="price-asc">Цена: по возрастанию</option>
-            <option value="price-desc">Цена: по убыванию</option>
-            <option value="rating">По рейтингу</option>
-            <option value="new">Новинки</option>
-          </select>
+        <div class="catalog-toolbar-right">
+          <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleFilterPanel()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="4" y1="6" x2="20" y2="6"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+              <line x1="11" y1="18" x2="13" y2="18"/>
+            </svg>
+            Фильтры
+          </button>
+          <div class="catalog-sort">
+            <select class="sort-select-styled">
+              <option value="">По умолчанию</option>
+              <option value="price-asc">Цена: по возрастанию</option>
+              <option value="price-desc">Цена: по убыванию</option>
+              <option value="rating">По рейтингу</option>
+              <option value="new">Новинки</option>
+            </select>
+          </div>
         </div>
       </div>
 
+      <!-- Filter Panel (скрытая панель) -->
+      <div class="filter-panel" id="filter-panel">
+        <div class="filter-panel-grid">
+
+          <div class="fp-section">
+            <div class="fp-title">Поиск</div>
+            <div style="display:flex;align-items:center;gap:.5rem;border:1.5px solid var(--gray-100);border-radius:var(--radius-sm);overflow:hidden;background:var(--cream)">
+              <input type="text" id="catalog-search-input" placeholder="Поиск по каталогу..."
+                style="flex:1;border:none;background:transparent;padding:.6rem .7rem;font-family:var(--font-body);font-size:.84rem;outline:none;color:var(--gray-900)"
+                oninput="catalogSearchFilter(this.value)"
+                onkeydown="if(event.key==='Enter') catalogSearchFilter(this.value)">
+              <button onclick="catalogSearchFilter(document.getElementById('catalog-search-input').value)"
+                style="background:var(--red);border:none;padding:.6rem .8rem;cursor:pointer;display:flex;align-items:center;justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+                  <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="fp-section">
+            <div class="fp-title">Цена (сум)</div>
+            <div class="price-btn-grid">
+              <button class="price-btn" data-min="0" data-max="199999">до 200 000</button>
+              <button class="price-btn" data-min="200000" data-max="499900">200 000 — 499 900</button>
+              <button class="price-btn" data-min="500000" data-max="999900">500 000 — 999 900</button>
+              <button class="price-btn" data-min="1000000" data-max="1299900">1 000 000 — 1 299 900</button>
+              <button class="price-btn" data-min="1300000" data-max="1499900">1 300 000 — 1 499 900</button>
+              <button class="price-btn" data-min="1500000" data-max="1999900">1 500 000 — 1 999 900</button>
+              <button class="price-btn" data-min="2000000" data-max="99999999">от 2 000 000</button>
+            </div>
+          </div>
+
+          <div class="fp-section">
+            <div class="fp-title">Размер (EU)</div>
+            <div class="size-grid">
+              <button class="size-btn" data-size="36">36</button>
+              <button class="size-btn" data-size="37">37</button>
+              <button class="size-btn" data-size="38">38</button>
+              <button class="size-btn" data-size="39">39</button>
+              <button class="size-btn" data-size="40">40</button>
+              <button class="size-btn" data-size="41">41</button>
+              <button class="size-btn" data-size="42">42</button>
+              <button class="size-btn" data-size="43">43</button>
+              <button class="size-btn" data-size="44">44</button>
+              <button class="size-btn" data-size="45">45</button>
+              <button class="size-btn" data-size="46">46</button>
+              <button class="size-btn unavailable" data-size="47">47</button>
+            </div>
+          </div>
+
+          <div class="fp-section">
+            <div class="fp-title">Пол</div>
+            <label class="filter-brand-item">
+              <input type="checkbox" class="filter-gender-item" value="kids">
+              Дети <span class="gender-count" data-gender="kids"></span>
+            </label>
+            <label class="filter-brand-item">
+              <input type="checkbox" class="filter-gender-item" value="female">
+              Женщины <span class="gender-count" data-gender="female"></span>
+            </label>
+            <label class="filter-brand-item">
+              <input type="checkbox" class="filter-gender-item" value="male">
+              Мужчины <span class="gender-count" data-gender="male"></span>
+            </label>
+            <label class="filter-brand-item">
+              <input type="checkbox" class="filter-gender-item" value="uni">
+              Унисекс <span class="gender-count" data-gender="uni"></span>
+            </label>
+          </div>
+
+          <div class="fp-section">
+            <div class="fp-title">Категория</div>
+            <label class="filter-brand-item"><input type="checkbox" value="shoes"> Кроссовки</label>
+            <label class="filter-brand-item"><input type="checkbox" value="clothing"> Одежда</label>
+            <label class="filter-brand-item"><input type="checkbox" value="running"> Бег</label>
+            <label class="filter-brand-item"><input type="checkbox" value="training"> Тренировка</label>
+            <label class="filter-brand-item"><input type="checkbox" value="accessories"> Аксессуары</label>
+          </div>
+
+          <div class="fp-section" id="promo-filter-block" style="display:none">
+            <div class="fp-title">Акции</div>
+            <label class="filter-promo-item" id="promo-filter-1eq3" style="display:none">
+              <input type="checkbox" value="1=3">
+              <span style="display:inline-flex;align-items:center;gap:.4rem">
+                <span style="background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .4rem">1=3</span>
+                Акция 1 = 3
+              </span>
+            </label>
+            <label class="filter-promo-item" id="promo-filter-50pct" style="display:none">
+              <input type="checkbox" value="-50%">
+              <span style="display:inline-flex;align-items:center;gap:.4rem">
+                <span style="background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .4rem">-50%</span>
+                Скидка 50%
+              </span>
+            </label>
+            <label class="filter-promo-item" id="promo-filter-70pct" style="display:none">
+              <input type="checkbox" value="-70%">
+              <span style="display:inline-flex;align-items:center;gap:.4rem">
+                <span style="background:var(--red);color:#fff;font-size:.65rem;font-weight:800;padding:.15rem .4rem">-70%</span>
+                Скидка 70%
+              </span>
+            </label>
+          </div>
+
+        </div>
+        <div class="filter-panel-footer">
+          <button class="filter-clear-btn">Сбросить всё</button>
+          <button class="filter-apply-btn" onclick="toggleFilterPanel()">Применить</button>
+        </div>
+      </div>
+
+      <!-- Products -->
       <div class="products-grid" id="catalog-products">
         <div style="padding:3rem;text-align:center;color:#aaa">Загрузка товаров...</div>
       </div>
+
     </div>
 
   </div>
