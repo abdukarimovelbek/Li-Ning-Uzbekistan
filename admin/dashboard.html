@@ -528,7 +528,7 @@
             </div>
           </div>
 
-          <div style="margin-bottom:1.5rem">
+          <div id="promo-article-section" style="margin-bottom:1.5rem">
             <label class="form-label">Товары, участвующие в акции</label>
             <div style="display:flex;gap:.8rem;margin-bottom:.7rem;align-items:center">
               <button onclick="downloadPromoTemplate()" style="background:var(--text);color:#fff;border:none;padding:.5rem 1rem;font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer">⬇ Шаблон Excel</button>
@@ -679,7 +679,7 @@
         <div style="margin-bottom:1.8rem;padding:1rem 1.2rem;background:#f9f9f9;border:1px solid var(--border);border-radius:6px">
           <div style="font-weight:600;font-size:.88rem;margin-bottom:.6rem">Шаг 1 — Скачайте шаблон</div>
           <button onclick="downloadPriceTemplate()" style="background:var(--text);color:#fff;border:none;padding:.55rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:1px;cursor:pointer">⬇ Скачать шаблон Excel</button>
-          <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">Колонки: <strong>Артикул</strong> · <strong>Цена (сум)</strong> · <strong>Старая цена (сум)</strong></p>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">Колонки: <strong>Артикул</strong> · <strong>Цена (сум)</strong></p>
         </div>
 
         <div style="margin-bottom:1.8rem;padding:1rem 1.2rem;background:#f9f9f9;border:1px solid var(--border);border-radius:6px">
@@ -928,14 +928,10 @@
         <textarea class="form-textarea" id="f-description" placeholder="Описание товара..."></textarea>
       </div>
 
-      <div class="form-row-3">
+      <div class="form-row">
         <div class="form-group">
           <label class="form-label">Цена (сум) *</label>
           <input type="text" class="form-input" id="f-price" placeholder="890 000" oninput="formatPrice(this)">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Старая цена (сум)</label>
-          <input type="text" class="form-input" id="f-old-price" placeholder="1 100 000" oninput="formatPrice(this)">
         </div>
         <div class="form-group">
           <label class="form-label">Категория</label>
@@ -1588,7 +1584,6 @@
       document.getElementById('f-name').value = p.name || '';
       document.getElementById('f-description').value = p.description || '';
       document.getElementById('f-price').value = p.price || '';
-      document.getElementById('f-old-price').value = p.old_price || '';
       document.getElementById('f-badge').value = p.badge || '';
       document.getElementById('f-active').value = String(p.is_active);
       document.getElementById('f-category').value = p.category || 'shoes';
@@ -1631,7 +1626,13 @@
         name:        document.getElementById('f-name').value.trim(),
         description: document.getElementById('f-description').value.trim(),
         price:       getRawPrice('f-price'),
-        old_price:   getRawPrice('f-old-price') || null,
+        old_price:   (function() {
+            const p = getRawPrice('f-price');
+            const b = document.getElementById('f-badge').value;
+            if (b === '-50%') return Math.round(p * 2);
+            if (b === '-70%') return Math.round(p / 0.3);
+            return null;
+        })(),
         category:    document.getElementById('f-category').value,
         gender:      document.getElementById('f-gender').value,
         subcategory: document.getElementById('f-subcategory').value.trim() || null,
@@ -1885,7 +1886,6 @@
 
     function openPromoPanel(type) {
       activePromoType = type;
-      const key = promoKey(type);
       document.getElementById('promo-panel-title').textContent = `Активация акции "${type}"`;
       document.getElementById('promo-activation-panel').style.display = 'block';
       document.getElementById('promo-activation-panel').scrollIntoView({behavior:'smooth', block:'nearest'});
@@ -1893,6 +1893,7 @@
       document.getElementById('promo-file').value = '';
       document.getElementById('promo-article-preview').style.display = 'none';
       document.getElementById('promo-apply-results').style.display = 'none';
+      document.getElementById('promo-article-section').style.display = type === '1=3' ? 'none' : 'block';
     }
 
     function closePromoPanel() {
@@ -1941,14 +1942,43 @@
 
     async function confirmPromoActivation() {
       if (!activePromoType) return;
-      if (promoArticlesList.length === 0) { showToast('Загрузите файл с артикулами', true); return; }
       const btn = document.getElementById('promo-confirm-btn');
       btn.disabled = true; btn.textContent = 'Активируем...';
 
+      const starts = document.getElementById('promo-start').value;
+      const ends   = document.getElementById('promo-end').value;
+
+      // ── Акция 1=3 — применяется на ВСЕ товары ──
+      if (activePromoType === '1=3') {
+        try {
+          await sbFetch('products', 'PATCH', {badge: '1=3'}, `?is_active=eq.true`);
+          const saved = JSON.parse(localStorage.getItem('promo_data') || '{}');
+          saved['1=3'] = {starts, ends};
+          localStorage.setItem('promo_data', JSON.stringify(saved));
+          updatePromoCardUI('1=3', true);
+          document.getElementById('promo-apply-results').style.display = 'block';
+          document.getElementById('promo-apply-results').innerHTML = `
+            <div style="padding:1rem 1.2rem;border-left:4px solid var(--green);background:#d1e7dd">
+              <div style="font-weight:600;margin-bottom:.3rem">✓ Акция 1=3 активирована на все товары!</div>
+              <div style="font-size:.82rem">Значок 1=3 проставлен всем активным товарам в базе</div>
+            </div>`;
+          showToast('Акция 1=3 активирована на все товары ✓');
+        } catch(e) { showToast('Ошибка активации', true); }
+        btn.disabled = false; btn.textContent = '✓ Активировать акцию';
+        return;
+      }
+
+      // ── Акции -50% и -70% — по артикулам ──
+      if (promoArticlesList.length === 0) {
+        showToast('Загрузите файл с артикулами', true);
+        btn.disabled = false; btn.textContent = '✓ Активировать акцию';
+        return;
+      }
+
       let success = 0, notFound = 0;
       const notFoundList = [];
-
       const BATCH_SIZE = 20;
+
       for (let i = 0; i < promoArticlesList.length; i += BATCH_SIZE) {
         const batch = promoArticlesList.slice(i, i + BATCH_SIZE);
         const results = await Promise.allSettled(
@@ -1960,16 +1990,12 @@
           if (r.status === 'fulfilled') success++;
           else { notFound++; notFoundList.push(batch[idx]); }
         });
-        // Обновляем прогресс на кнопке
         btn.textContent = `Обработано ${Math.min(i + BATCH_SIZE, promoArticlesList.length)}/${promoArticlesList.length}...`;
       }
 
-      const starts = document.getElementById('promo-start').value;
-      const ends   = document.getElementById('promo-end').value;
-      const saved  = JSON.parse(localStorage.getItem('promo_data') || '{}');
+      const saved = JSON.parse(localStorage.getItem('promo_data') || '{}');
       saved[activePromoType] = {starts, ends};
       localStorage.setItem('promo_data', JSON.stringify(saved));
-
       updatePromoCardUI(activePromoType, true);
 
       const ok = notFound === 0;
@@ -2371,12 +2397,12 @@
     function downloadPriceTemplate() {
       const wb = XLSX.utils.book_new();
       const wsData = [
-        ['Артикул', 'Цена (сум)', 'Старая цена (сум)'],
-        ['ABCD056', 890000, 1100000],
-        ['ARBW018', 750000, ''],
+        ['Артикул', 'Цена (сум)'],
+        ['ABCD056', 890000],
+        ['ARBW018', 750000],
       ];
       const ws = XLSX.utils.aoa_to_sheet(wsData);
-      ws['!cols'] = [{wch:16}, {wch:16}, {wch:20}];
+      ws['!cols'] = [{wch:16}, {wch:16}];
       XLSX.utils.book_append_sheet(wb, ws, 'Цены');
       XLSX.writeFile(wb, 'lining-prices-template.xlsx');
     }
@@ -2397,9 +2423,8 @@
             const row = rows[i];
             const article = String(row[0] || '').trim();
             const price = parseInt(String(row[1] || '').replace(/\D/g,'')) || 0;
-            const oldPrice = parseInt(String(row[2] || '').replace(/\D/g,'')) || 0;
             if (article && price > 0) {
-              parsedPriceData.push({article, price, old_price: oldPrice || null});
+              parsedPriceData.push({article, price});
             }
           }
 
@@ -2408,16 +2433,13 @@
             return;
           }
 
-          document.getElementById('price-preview-title').textContent =
-            `Найдено ${parsedPriceData.length} товаров — проверьте данные перед применением:`;
           document.getElementById('price-preview-table').innerHTML = `
             <table style="width:100%;border-collapse:collapse;font-size:.83rem">
               <thead>
                 <tr style="background:#f5f5f5;position:sticky;top:0">
                   <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">#</th>
                   <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">Артикул</th>
-                  <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">Новая цена</th>
-                  <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">Старая цена</th>
+                  <th style="padding:.5rem 1rem;text-align:left;border-bottom:1px solid var(--border)">Цена</th>
                 </tr>
               </thead>
               <tbody>
@@ -2426,7 +2448,6 @@
                     <td style="padding:.5rem 1rem;border-bottom:1px solid #f5f5f5;color:var(--muted)">${i+1}</td>
                     <td style="padding:.5rem 1rem;border-bottom:1px solid #f5f5f5;font-weight:600">${row.article}</td>
                     <td style="padding:.5rem 1rem;border-bottom:1px solid #f5f5f5">${row.price.toLocaleString('ru-RU')} сум</td>
-                    <td style="padding:.5rem 1rem;border-bottom:1px solid #f5f5f5">${row.old_price ? row.old_price.toLocaleString('ru-RU') + ' сум' : '—'}</td>
                   </tr>`).join('')}
               </tbody>
             </table>`;
@@ -2457,7 +2478,7 @@
 
       for (const row of parsedPriceData) {
         try {
-          const update = {price: row.price, old_price: row.old_price || null};
+          const update = {price: row.price};
           await sbFetch('products', 'PATCH', update, `?article=eq.${encodeURIComponent(row.article)}`);
           success++;
         } catch(e) {

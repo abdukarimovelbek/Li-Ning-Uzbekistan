@@ -1157,12 +1157,14 @@ button {
     align-items: center;
     gap: 0.5rem;
     background: var(--white);
-    border: 1px solid var(--gray-200);
+    border: 1px solid var(--gray-100);
+    border-radius: 4px;
     padding: 0.45rem 0.9rem;
     font-family: var(--font-body);
     font-size: 0.82rem;
     color: var(--gray-700);
     cursor: pointer;
+    outline: none;
     transition: all 0.2s ease;
 }
 .filter-toggle-btn:hover {
