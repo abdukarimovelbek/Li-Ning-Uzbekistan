@@ -1088,16 +1088,35 @@ button {
 }
 .filter-brand-item:hover { color: var(--red); }
 .filter-brand-item input[type=checkbox] { accent-color: var(--red); width: 15px; height: 15px; }
-.price-range { display: flex; flex-direction: column; gap: 0.8rem; }
-.price-inputs { display: flex; gap: 0.6rem; }
-.price-inputs input {
-  flex: 1; background: var(--gray-100); border: 1px solid var(--gray-100);
-  padding: 0.5rem 0.7rem; font-family: var(--font-body); font-size: 0.82rem;
-  color: var(--gray-900); outline: none; width: 100%;
-  transition: border-color var(--transition);
+.price-range-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
 }
-.price-inputs input:focus { border-color: var(--red); }
-.price-slider { width: 100%; accent-color: var(--red); }
+.price-range-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.2rem;
+    font-size: 0.86rem;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: color var(--transition);
+}
+.price-range-item:hover {
+    color: var(--red);
+}
+.price-range-item input[type="radio"] {
+    accent-color: var(--red);
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+.price-range-item:has(input:checked) {
+    color: var(--red);
+    font-weight: 600;
+}
 .size-grid {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem;
 }

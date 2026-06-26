@@ -763,19 +763,10 @@ const FilterSidebar = (() => {
     });
 
 
-    // Price slider sync
-    const slider = document.querySelector('#price-slider');
-    const maxInput = document.querySelector('#price-max');
-    if (slider && maxInput) {
-      slider.addEventListener('input', () => {
-        maxInput.value = parseInt(slider.value).toLocaleString('ru-RU');
-        applyFilters();
-      });
-      maxInput.addEventListener('input', () => {
-        slider.value = maxInput.value.replace(/\D/g,'');
-        applyFilters();
-      });
-    }
+    // Price range radio
+    document.querySelectorAll('input[name="price-range"]').forEach(radio => {
+        radio.addEventListener('change', applyFilters);
+    });
 
     // Apply button
     document.querySelector('.filter-apply-btn')?.addEventListener('click', () => {
@@ -798,26 +789,31 @@ const FilterSidebar = (() => {
   const applyFilters = () => {
     const checkedBrands = [...document.querySelectorAll('.filter-brand-item input:checked')].map(cb => cb.value);
     const activeSize    = document.querySelector('.size-btn.active')?.dataset.size;
-    const maxPrice      = parseInt(document.querySelector('#price-slider')?.value || Infinity);
     const checkedPromos = [...document.querySelectorAll('.filter-promo-item input:checked')].map(cb => cb.value);
+    const priceRangeVal = document.querySelector('input[name="price-range"]:checked')?.value;
+    let priceMin = 0, priceMax = Infinity;
+    if (priceRangeVal) {
+        const [mn, mx] = priceRangeVal.split('-').map(Number);
+        priceMin = mn;
+        priceMax = mx;
+    }
 
     document.querySelectorAll('.product-card').forEach(card => {
-      const brand = card.dataset.brand?.toLowerCase() || '';
-      const price = parseInt(card.dataset.price || '0');
-      const sizes = (card.dataset.sizes || '').split(',');
-      const badge = card.dataset.badge || '';
+        const brand = card.dataset.brand?.toLowerCase() || '';
+        const price = parseInt(card.dataset.price || '0');
+        const sizes = (card.dataset.sizes || '').split(',');
+        const badge = card.dataset.badge || '';
 
-      const brandOk = checkedBrands.length === 0 || checkedBrands.includes(brand);
-      const priceOk = price <= maxPrice;
-      const sizeOk  = !activeSize || sizes.includes(activeSize);
-      const promoOk = checkedPromos.length === 0 || checkedPromos.includes(badge);
+        const brandOk = checkedBrands.length === 0 || checkedBrands.includes(brand);
+        const priceOk = price >= priceMin && price <= priceMax;
+        const sizeOk  = !activeSize || sizes.includes(activeSize);
+        const promoOk = checkedPromos.length === 0 || checkedPromos.includes(badge);
 
-      card.style.display = (brandOk && priceOk && sizeOk && promoOk) ? '' : 'none';
+        card.style.display = (brandOk && priceOk && sizeOk && promoOk) ? '' : 'none';
     });
 
     updateCount();
   };
-
 
   const updateCount = () => {
     const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;

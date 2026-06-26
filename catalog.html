@@ -271,12 +271,28 @@
           Цена (сум) <span class="toggle">▼</span>
         </div>
         <div class="filter-block-body">
-          <div class="price-range">
-            <div class="price-inputs">
-              <input type="text" placeholder="От" value="0">
-              <input type="text" id="price-max" placeholder="До" value="1 500 000">
-            </div>
-            <input type="range" id="price-slider" class="price-slider" min="0" max="1500000" value="1500000" step="50000">
+          <div class="price-range-list">
+            <label class="price-range-item">
+              <input type="radio" name="price-range" value="0-199999"> до 200 000
+            </label>
+            <label class="price-range-item">
+              <input type="radio" name="price-range" value="200000-499900"> 200 000 — 499 900
+            </label>
+            <label class="price-range-item">
+              <input type="radio" name="price-range" value="500000-999900"> 500 000 — 999 900
+            </label>
+            <label class="price-range-item">
+              <input type="radio" name="price-range" value="1000000-1299900"> 1 000 000 — 1 299 900
+            </label>
+            <label class="price-range-item">
+              <input type="radio" name="price-range" value="1300000-1499900"> 1 300 000 — 1 499 900
+            </label>
+            <label class="price-range-item">
+              <input type="radio" name="price-range" value="1500000-1999900"> 1 500 000 — 1 999 900
+            </label>
+            <label class="price-range-item">
+              <input type="radio" name="price-range" value="2000000-99999999"> от 2 000 000
+            </label>
           </div>
         </div>
       </div>
