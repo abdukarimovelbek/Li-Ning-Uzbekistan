@@ -647,8 +647,9 @@ button {
 .img-main { 
   transition: opacity 0.4s ease; 
 }
-.img-hover { 
-  transition: opacity 0.4s ease; 
+.img-hover {
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 .product-card:hover .has-hover-img .img-main { 
   opacity: 0; 

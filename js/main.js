@@ -1318,7 +1318,7 @@ const buildCard = (p) => {
   const hasHover = images.length > 1;
   const imgHtml = images[0]
     ? `<img class="img-main" src="${images[0]}" style="width:100%;height:100%;object-fit:cover;display:block">
-       ${hasHover ? `<img class="img-hover" src="${images[1]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0">` : ''}`
+       ${hasHover ? `<img class="img-hover" src="${images[1]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : ''}`
     : `<span style="font-size:5rem">👟</span>`;
 
 
