@@ -1239,16 +1239,27 @@
       if (gaTop.length > 0) {
         topEl.innerHTML = '<div style="color:var(--muted);font-size:.78rem">Загрузка артикулов...</div>';
         try {
-          const ids   = gaTop.map(p => p.id).join(',');
-          const prods = await sbFetch('products', 'GET', null,
-            `?id=in.(${ids})&select=id,name,article`);
-          const prodMap = Object.fromEntries(prods.map(p => [p.id, p]));
-          const enriched = gaTop.map(p => ({
-            name:    prodMap[p.id]?.name    || '—',
-            article: prodMap[p.id]?.article || '—',
-            views:   p.views
-          }));
-          renderTopProductsBar(topEl, enriched);
+          const ids = gaTop.map(p => p.id).filter(id => id && id.trim());
+
+          if (ids.length === 0) {
+            // GA скрипт ещё старый — показываем name напрямую
+            const enriched = gaTop.map(p => ({
+              name:    p.name || '—',
+              article: p.article || '—',
+              views:   p.views
+            }));
+            renderTopProductsBar(topEl, enriched);
+          } else {
+            const prods = await sbFetch('products', 'GET', null,
+              `?id=in.(${ids.join(',')})&select=id,name,article`);
+            const prodMap = Object.fromEntries(prods.map(p => [p.id, p]));
+            const enriched = gaTop.map(p => ({
+              name:    prodMap[p.id]?.name    || p.name || '—',
+              article: prodMap[p.id]?.article || '—',
+              views:   p.views
+            }));
+            renderTopProductsBar(topEl, enriched);
+          }
         } catch(e) {
           topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Ошибка загрузки</div>';
         }
