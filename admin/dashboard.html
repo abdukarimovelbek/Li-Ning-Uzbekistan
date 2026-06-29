@@ -1234,37 +1234,26 @@
       }
 
       // Топ-5 товаров — если GA пустой, берём из заказов Supabase
+      // Топ-5 просматриваемых товаров
       const topEl = document.getElementById('ga-top-products');
-      const gaTop = d.topProducts || [];
-      if (gaTop.length > 0) {
-        topEl.innerHTML = '<div style="color:var(--muted);font-size:.78rem">Загрузка артикулов...</div>';
-        try {
-          const ids = gaTop.map(p => p.id).filter(id => id && id.trim());
+      const gaTop = (d.topProducts || []).filter(p => p.id);
 
-          if (ids.length === 0) {
-            // GA скрипт ещё старый — показываем name напрямую
-            const enriched = gaTop.map(p => ({
-              name:    p.name || '—',
-              article: p.article || '—',
-              views:   p.views
-            }));
-            renderTopProductsBar(topEl, enriched);
-          } else {
-            const prods = await sbFetch('products', 'GET', null,
-              `?id=in.(${ids.join(',')})&select=id,name,article`);
-            const prodMap = Object.fromEntries(prods.map(p => [p.id, p]));
-            const enriched = gaTop.map(p => ({
-              name:    prodMap[p.id]?.name    || p.name || '—',
-              article: prodMap[p.id]?.article || '—',
-              views:   p.views
-            }));
-            renderTopProductsBar(topEl, enriched);
-          }
+      if (gaTop.length === 0) {
+        topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет просмотров за 7 дней</div>';
+      } else {
+        topEl.innerHTML = '<div style="color:var(--muted);font-size:.78rem">Загрузка...</div>';
+        try {
+          const prods = await sbFetch('products', 'GET', null,
+            `?id=in.(${gaTop.map(p => p.id).join(',')})&select=id,name,article`);
+          const prodMap = Object.fromEntries(prods.map(p => [p.id, p]));
+          renderTopProductsBar(topEl, gaTop.map(p => ({
+            name:    prodMap[p.id]?.name    || '—',
+            article: prodMap[p.id]?.article || '—',
+            views:   p.views
+          })));
         } catch(e) {
           topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Ошибка загрузки</div>';
         }
-      } else {
-        topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет просмотров за 7 дней</div>';
       }
 
       // ТОП ИЗБРАННЫХ ТОВАРОВ
