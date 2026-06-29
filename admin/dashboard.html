@@ -1626,8 +1626,9 @@
         name:        document.getElementById('f-name').value.trim(),
         description: document.getElementById('f-description').value.trim(),
         price:       getRawPrice('f-price'),
-        old_price:   (function() {
+        old_price: (function() {
             const p = getRawPrice('f-price');
+            if (!p) return null;
             const b = document.getElementById('f-badge').value;
             if (b === '-50%') return Math.round(p * 2);
             if (b === '-70%') return Math.round(p / 0.3);

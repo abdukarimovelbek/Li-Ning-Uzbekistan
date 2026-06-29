@@ -76,6 +76,7 @@ const SITE_CONFIG = {
 
     // Загружаем активные акции из таблицы promotions
     window.PROMO_DATES = {};
+    window.PROMO_DATES_LOADED = false;
     try {
         const promoRes = await fetch(
             `${SB_URL}/rest/v1/promotions?is_active=eq.true&select=type,starts_at,ends_at`,
@@ -85,6 +86,7 @@ const SITE_CONFIG = {
         for (const p of promos) {
             window.PROMO_DATES[p.type] = { starts: p.starts_at, ends: p.ends_at };
         }
+        window.PROMO_DATES_LOADED = true;
         window.dispatchEvent(new Event('promo-dates-loaded'));
     } catch(e) {}
   } catch(e) {}

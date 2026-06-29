@@ -1826,7 +1826,7 @@
       comment:        document.getElementById('comment')?.value.trim() || null,
       payment_method: selPay?.dataset.v || 'cash',
       items: items.map(it => ({ article: it.article || it.id, name: it.name, price: it.price, quantity: it.qty, size: it.size, image: it.image || null })),
-      total: items.reduce((s, it) => s + it.price * it.qty, 0) + (items.length > 0 ? coDelP : 0),
+      total: items.reduce((s, it) => s + it.price * it.qty, 0) - (window.Cart?.calcPromo13?.(items) || 0) + (items.length > 0 ? coDelP : 0),
       status: 'new', source: 'website'
     };
 
@@ -1914,11 +1914,17 @@
     coRenderSidebar();
     coUpdateStrip();
     coSetStep(1, true);
-    window.addEventListener('promo-dates-loaded', () => {
+    if (window.PROMO_DATES_LOADED) {
       coRenderSidebar();
       coRenderTotals();
       coUpdateStrip();
-    }, { once: true });
+    } else {
+      window.addEventListener('promo-dates-loaded', () => {
+        coRenderSidebar();
+        coRenderTotals();
+        coUpdateStrip();
+      }, { once: true });
+    }
     document.querySelectorAll('.co-store-opt').forEach(opt => {
       opt.addEventListener('change', () => {
         const name = opt.querySelector('.co-store-opt-name').textContent;
