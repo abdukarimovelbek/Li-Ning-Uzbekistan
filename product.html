@@ -184,6 +184,32 @@
         </div>
       </div>
 
+      <!-- Store Availability -->
+      <div class="store-avail">
+        <button class="store-avail-btn" id="store-avail-btn">
+          <div class="store-avail-btn-left">
+            <span class="store-avail-ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </span>
+            <div>
+              <div class="store-avail-title">Посмотреть наличие в магазинах</div>
+              <div class="store-avail-hint" id="store-avail-hint">Выберите размер для точных остатков</div>
+            </div>
+          </div>
+          <svg class="store-avail-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="store-avail-panel" id="store-avail-panel">
+          <div class="store-avail-panel-inner">
+            <div class="store-avail-realtime">
+              <span class="pulse-dot"></span>
+              Данные обновляются в реальном времени
+            </div>
+            <div id="store-avail-list"></div>
+            <div class="store-avail-footer">Указано наличие выбранного размера. Остаток может поменяться в случае, если товар продадут.</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Accordions -->
       <div class="detail-acc">
         <div class="acc open">
@@ -804,6 +830,82 @@ function showSizeAlert() {
     setTimeout(() => el.remove(), 300);
   }, 2500);
 }
+
+// ── Store Availability ──
+(function () {
+  const STORE_STOCK = [
+    { name: 'Tashkent City Mall',      address: 'ул. Батыра Закирова, 7', phone: '+998 71 200 00 01',
+      bySize: {38:5,39:12,40:8,41:24,42:3,43:7,44:2,45:0,46:4} },
+    { name: 'Li-Ning Eco Park',        address: 'ул. Махатмы Ганди, 14',  phone: '+998 71 200 00 02',
+      bySize: {38:0,39:3,40:5,41:5,42:2,43:1,44:0,45:3,46:0} },
+    { name: 'Li-Ning Alayskiy',        address: 'пр. Амира Темура, 60',   phone: '+998 71 200 00 03',
+      bySize: {38:2,39:8,40:16,41:16,42:4,43:0,44:6,45:1,46:2} },
+    { name: 'Magic City',              address: 'ул. Фурката',             phone: '+998 71 200 00 04',
+      bySize: {38:0,39:1,40:2,41:2,42:0,43:0,44:0,45:0,46:0} },
+    { name: 'Family Park · Самарканд', address: 'ул. Нарпайская, 76А',    phone: '+998 66 200 00 05',
+      bySize: {38:4,39:12,40:9,41:12,42:7,43:3,44:5,45:2,46:1} }
+  ];
+
+  let open = false;
+  const btn   = document.getElementById('store-avail-btn');
+  const panel = document.getElementById('store-avail-panel');
+  const hint  = document.getElementById('store-avail-hint');
+  const list  = document.getElementById('store-avail-list');
+
+  function badge(qty) {
+    if (qty > 3) return `<span class="store-badge green">В наличии · ${qty} шт.</span>`;
+    if (qty > 0) return `<span class="store-badge gold">Мало · ${qty} шт.</span>`;
+    return `<span class="store-badge gray">Нет в наличии</span>`;
+  }
+
+  function renderStock(size) {
+    list.innerHTML = STORE_STOCK.map(s => {
+      const qty = size != null ? (s.bySize[+size] ?? s.bySize[size] ?? 0) : null;
+      return `<div class="store-row">
+        <div class="store-row-info">
+          <div class="store-row-name">${s.name}</div>
+          <div class="store-row-addr">${s.address} · <a href="tel:${s.phone.replace(/\s/g,'')}" style="color:inherit;text-decoration:none">${s.phone}</a></div>
+        </div>
+        ${qty != null ? badge(qty) : '<span class="store-badge gray">—</span>'}
+      </div>`;
+    }).join('');
+  }
+
+  function activeSize() {
+    return document.querySelector('.detail-size-btn.active')?.dataset.size ?? null;
+  }
+
+  function updateHint(size) {
+    if (!size) { hint.textContent = 'Выберите размер для точных остатков'; return; }
+    const n = STORE_STOCK.filter(s => (s.bySize[+size] ?? s.bySize[size] ?? 0) > 0).length;
+    hint.textContent = `Размер ${size}: есть в ${n} ${n===1?'магазине':n<5?'магазинах':'магазинах'}`;
+  }
+
+  function openPanel() {
+    open = true;
+    btn.classList.add('open');
+    renderStock(activeSize());
+    panel.style.maxHeight = panel.querySelector('.store-avail-panel-inner').scrollHeight + 'px';
+  }
+
+  function closePanel() {
+    open = false;
+    btn.classList.remove('open');
+    panel.style.maxHeight = '0';
+  }
+
+  btn?.addEventListener('click', () => open ? closePanel() : openPanel());
+
+  document.querySelector('.detail-size-grid')?.addEventListener('click', e => {
+    const sb = e.target.closest('.detail-size-btn');
+    if (!sb || sb.classList.contains('sold-out')) return;
+    updateHint(sb.dataset.size);
+    if (open) {
+      renderStock(sb.dataset.size);
+      panel.style.maxHeight = panel.querySelector('.store-avail-panel-inner').scrollHeight + 'px';
+    }
+  });
+})();
 
 </script>
 
