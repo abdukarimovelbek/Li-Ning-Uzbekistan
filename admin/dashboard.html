@@ -1237,33 +1237,23 @@
       const topEl = document.getElementById('ga-top-products');
       const gaTop = d.topProducts || [];
       if (gaTop.length > 0) {
-        renderTopProductsBar(topEl, gaTop);
-      } else {
-        // Fallback: топ по просмотрам за 7 дней из Supabase (таблица product_views)
-        topEl.innerHTML = '<div style="color:var(--muted);font-size:.78rem">Загрузка просмотров...</div>';
+        topEl.innerHTML = '<div style="color:var(--muted);font-size:.78rem">Загрузка артикулов...</div>';
         try {
-          const sevenDaysAgo = new Date();
-          sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-          const views = await sbFetch('product_views', 'GET', null,
-            `?created_at=gte.${sevenDaysAgo.toISOString()}&select=article,name`);
-
-          const counts = {};
-          views.forEach(v => {
-            const key = v.article || v.name;
-            if (!key) return;
-            if (!counts[key]) counts[key] = { article: v.article || '—', name: v.name || key, views: 0 };
-            counts[key].views++;
-          });
-
-          const top = Object.values(counts).sort((a, b) => b.views - a.views).slice(0, 5);
-          if (top.length > 0) {
-            renderTopProductsBar(topEl, top);
-          } else {
-            topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет просмотров за 7 дней</div>';
-          }
+          const ids   = gaTop.map(p => p.id).join(',');
+          const prods = await sbFetch('products', 'GET', null,
+            `?id=in.(${ids})&select=id,name,article`);
+          const prodMap = Object.fromEntries(prods.map(p => [p.id, p]));
+          const enriched = gaTop.map(p => ({
+            name:    prodMap[p.id]?.name    || '—',
+            article: prodMap[p.id]?.article || '—',
+            views:   p.views
+          }));
+          renderTopProductsBar(topEl, enriched);
         } catch(e) {
-          topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет данных за 7 дней</div>';
+          topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Ошибка загрузки</div>';
         }
+      } else {
+        topEl.innerHTML = '<div style="color:var(--muted);font-size:.82rem">Нет просмотров за 7 дней</div>';
       }
 
       // ТОП ИЗБРАННЫХ ТОВАРОВ
@@ -2046,7 +2036,7 @@
       } catch(e) { showToast('Ошибка', true); }
     }
 
-    function updatePromoCardUI(type, isActive) {
+    async function updatePromoCardUI(type, isActive) {
       const key = promoKey(type);
       const statusEl  = document.getElementById(`promo-status-${key}`);
       const datesEl   = document.getElementById(`promo-dates-${key}`);
@@ -2056,23 +2046,27 @@
       if (enableBtn)  enableBtn.style.display  = isActive ? 'none'   : 'inline';
       if (disableBtn) disableBtn.style.display = isActive ? 'inline' : 'none';
       if (datesEl && isActive) {
-        const saved = JSON.parse(localStorage.getItem('promo_data') || '{}');
-        const d = saved[type];
-        if (d?.starts || d?.ends) {
-          datesEl.textContent = `${d.starts ? new Date(d.starts).toLocaleDateString('ru-RU') : '?'} — ${d.ends ? new Date(d.ends).toLocaleDateString('ru-RU') : 'бессрочно'}`;
-        }
+        try {
+          const rows = await sbFetch('promotions', 'GET', null,
+            `?type=eq.${encodeURIComponent(type)}&is_active=eq.true&select=starts_at,ends_at`);
+          const p = rows?.[0];
+          if (p?.starts_at || p?.ends_at) {
+            const fmt = d => d ? new Date(d).toLocaleDateString('ru-RU') : 'бессрочно';
+            datesEl.textContent = `${fmt(p.starts_at)} — ${fmt(p.ends_at)}`;
+          }
+        } catch(e) {}
       } else if (datesEl) { datesEl.textContent = ''; }
     }
 
     async function loadPromoStatuses() {
-      for (const type of ['1=3', '-50%', '-70%']) {
-        try {
-          const result = await sbFetch('products', 'GET', null, `?badge=eq.${encodeURIComponent(type)}&select=id&limit=1`);
-          updatePromoCardUI(type, result.length > 0);
-        } catch(e) {}
-      }
+      try {
+        const rows = await sbFetch('promotions', 'GET', null, `?select=type,is_active`);
+        for (const type of ['1=3', '-50%', '-70%']) {
+          const promo = rows.find(r => r.type === type);
+          await updatePromoCardUI(type, promo?.is_active === true);
+        }
+      } catch(e) {}
     }
-
 
     // SETTINGS
     async function saveSettings() {
