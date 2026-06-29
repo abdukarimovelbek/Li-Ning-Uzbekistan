@@ -1243,8 +1243,11 @@
       } else {
         topEl.innerHTML = '<div style="color:var(--muted);font-size:.78rem">Загрузка...</div>';
         try {
+          const ids = gaTop.map(p => p.id);
+          console.log('IDs из GA:', ids);
           const prods = await sbFetch('products', 'GET', null,
-            `?id=in.(${gaTop.map(p => p.id).join(',')})&select=id,name,article`);
+            `?id=in.(${ids.join(',')})&select=id,name,article`);
+          console.log('Найдено в Supabase:', prods.map(p => p.id));
           const prodMap = Object.fromEntries(prods.map(p => [p.id, p]));
           renderTopProductsBar(topEl, gaTop.map(p => ({
             name:    prodMap[p.id]?.name    || '—',
