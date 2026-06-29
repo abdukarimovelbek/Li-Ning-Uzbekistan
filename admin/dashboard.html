@@ -1089,6 +1089,7 @@
       window.location.href = 'login.html';
     }
 
+    const GA_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkWGM5YN12zPP_3iieAyNCOE7PY7ivpoJN-D2osSwIYXVz9xdaDxVvGm-YwlUkwia6zQ/exec';
     const savedSection = localStorage.getItem('admin_section') || 'dashboard';
     showSection(savedSection);
 
@@ -1145,8 +1146,6 @@
     }
 
     // ANALYTICS
-    const GA_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkWGM5YN12zPP_3iieAyNCOE7PY7ivpoJN-D2osSwIYXVz9xdaDxVvGm-YwlUkwia6zQ/exec';
-
     async function loadAnalytics() {
       document.getElementById('ga-updated').textContent = 'Загрузка данных из Google Analytics...';
       try {
