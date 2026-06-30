@@ -72,6 +72,8 @@ const SITE_CONFIG = {
         wishlist_enabled: data[0].wishlist_enabled ?? true,
         orders_enabled:   data[0].orders_enabled   ?? true,
       });
+      window.FEATURED_ARTICLES = Array.isArray(data[0].featured_articles)
+        ? data[0].featured_articles : [];
     }
 
     // Загружаем активные акции из таблицы promotions
@@ -97,6 +99,33 @@ const SITE_CONFIG = {
 const CACHE_KEY = 'lining_products_cache';
 const CACHE_TTL = 5 * 60 * 1000;
 
+function getFeaturedOrder() {
+  const featured = window.FEATURED_ARTICLES || [];
+  if (!featured.length) return [];
+  const stored = sessionStorage.getItem('lining_featured_order');
+  if (stored) { try { return JSON.parse(stored); } catch(e) {} }
+  const arr = [...featured];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  sessionStorage.setItem('lining_featured_order', JSON.stringify(arr));
+  return arr;
+}
+
+function sortWithFeatured(products) {
+  const order = getFeaturedOrder();
+  if (!order.length) return products;
+  const orderMap = new Map(order.map((art, i) => [art.toUpperCase(), i]));
+  const top = [], rest = [];
+  products.forEach(p => {
+    (orderMap.has((p.article || '').toUpperCase()) ? top : rest).push(p);
+  });
+  top.sort((a, b) =>
+    orderMap.get((a.article||'').toUpperCase()) - orderMap.get((b.article||'').toUpperCase())
+  );
+  return [...top, ...rest];
+}
 
 /* ─── TELEGRAM MINI APP ─────────────────────── */
 const tg = window.Telegram?.WebApp;
@@ -1747,57 +1776,52 @@ document.addEventListener('DOMContentLoaded', async () => {
   await new Promise(r => setTimeout(r, 0));
 
 
-  // Главная страница — популярные товары за последние 2 недели
+  // Главная страница — популярные товары
   const homeGrid = document.getElementById('home-products');
   if (homeGrid) {
     try {
-      // Дата 2 недели назад
-      const twoWeeksAgo = new Date();
-      twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-      const dateStr = twoWeeksAgo.toISOString();
+      let products = [];
+      const featuredOrder = getFeaturedOrder();
 
-      // Получаем заказы за последние 2 недели
-      const ordersRes = await fetch(
-        `${SB_URL}/rest/v1/orders?created_at=gte.${dateStr}&select=items`,
-        { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
-      );
-      const orders = await ordersRes.json();
-
-      // Считаем сколько раз каждый товар заказывали
-      const productCount = {};
-      orders.forEach(order => {
-        const items = Array.isArray(order.items) ? order.items : [];
-        items.forEach(item => {
-          const id = item.article || item.id;
-          if (!id) return;
-          productCount[id] = (productCount[id] || 0) + (item.quantity || 1);
+      if (featuredOrder.length > 0) {
+        // featured список задан — берём первые 8 в сохранённом порядке сессии
+        const top8 = featuredOrder.slice(0, 8);
+        const res = await fetch(
+          `${SB_URL}/rest/v1/products?article=in.(${top8.join(',')})&is_active=eq.true&limit=8`,
+          { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+        );
+        const fetched = await res.json();
+        const artMap = new Map(fetched.map(p => [(p.article||'').toUpperCase(), p]));
+        products = top8.map(a => artMap.get(a.toUpperCase())).filter(Boolean);
+      } else {
+        // Fallback: популярные по заказам за 2 недели
+        const twoWeeksAgo = new Date();
+        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+        const ordersRes = await fetch(
+          `${SB_URL}/rest/v1/orders?created_at=gte.${twoWeeksAgo.toISOString()}&select=items`,
+          { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+        );
+        const orders = await ordersRes.json();
+        const productCount = {};
+        orders.forEach(order => {
+          (Array.isArray(order.items) ? order.items : []).forEach(item => {
+            const id = item.article || item.id;
+            if (id) productCount[id] = (productCount[id] || 0) + (item.quantity || 1);
+          });
         });
-      });
-
-      // Сортируем по количеству заказов
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         const topArticles = Object.entries(productCount)
           .filter(([id]) => !uuidRegex.test(id))
           .sort((a, b) => b[1] - a[1])
-          .slice(0, 8)
-          .map(([id]) => id);
-
-      let products = [];
-
-      if (topArticles.length > 0) {
-        // Загружаем топ товары по article
-        const res = await fetch(
-          `${SB_URL}/rest/v1/products?article=in.(${topArticles.join(',')})&is_active=eq.true&limit=8`,
-          { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
-        );
-        products = await res.json();
-
-        // Сортируем в том же порядке что и topArticles
-        products.sort((a, b) => {
-          const ai = topArticles.indexOf(a.article);
-          const bi = topArticles.indexOf(b.article);
-          return ai - bi;
-        });
+          .slice(0, 8).map(([id]) => id);
+        if (topArticles.length > 0) {
+          const res = await fetch(
+            `${SB_URL}/rest/v1/products?article=in.(${topArticles.join(',')})&is_active=eq.true&limit=8`,
+            { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+          );
+          const fetched = await res.json();
+          products = topArticles.map(a => fetched.find(p => p.article === a)).filter(Boolean);
+        }
       }
 
       // Если заказов нет — показываем просто последние товары
@@ -1833,7 +1857,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (catalogGrid) {
     try {
       catalogGrid.innerHTML = buildSkeletons(8);
-      const products = await fetchProducts();
+      const products = sortWithFeatured(await fetchProducts());
       if (products.length > 0) {
         catalogGrid.innerHTML = products.map(buildCard).join('');
         window.ProductCards?.init();

@@ -901,6 +901,44 @@
         </div>
       </div>
 
+      <div class="settings-section">
+        <h3>Топ товары</h3>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.5rem">
+          Эти артикулы показываются первыми везде: главная, каталог, фильтры. Порядок внутри топ-списка случайный и стабильный на одну сессию.
+        </p>
+
+        <div id="featured-current-status" style="margin-bottom:1.2rem;padding:.8rem 1rem;background:#f9f9f9;border:1px solid var(--border);border-radius:6px;font-size:.82rem;color:var(--muted)">
+          Загрузка...
+        </div>
+
+        <div style="margin-bottom:1.2rem;padding:1rem 1.2rem;background:#f9f9f9;border:1px solid var(--border);border-radius:6px">
+          <div style="font-weight:600;font-size:.88rem;margin-bottom:.6rem">Шаг 1 — Скачайте шаблон</div>
+          <button onclick="downloadFeaturedTemplate()" style="background:var(--text);color:#fff;border:none;padding:.55rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;letter-spacing:1px;cursor:pointer">⬇ Скачать шаблон Excel</button>
+          <p style="font-size:.75rem;color:var(--muted);margin-top:.5rem">Одна колонка: <strong>Артикул</strong></p>
+        </div>
+
+        <div style="margin-bottom:1.2rem;padding:1rem 1.2rem;background:#f9f9f9;border:1px solid var(--border);border-radius:6px">
+          <div style="font-weight:600;font-size:.88rem;margin-bottom:.6rem">Шаг 2 — Загрузите заполненный файл</div>
+          <div style="border:2px dashed var(--border);padding:1.5rem 2rem;text-align:center;cursor:pointer;transition:border-color .2s;background:#fff;position:relative"
+               onclick="document.getElementById('featured-file').click()"
+               id="featured-drop-zone">
+            <input type="file" id="featured-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleFeaturedFile(this)">
+            <div style="font-size:2rem;margin-bottom:.3rem">📋</div>
+            <p style="font-size:.85rem;font-weight:600;margin-bottom:.2rem">Нажмите для выбора файла</p>
+            <p style="font-size:.75rem;color:var(--muted)">Поддерживается: .xlsx, .xls, .csv</p>
+          </div>
+        </div>
+
+        <div id="featured-preview" style="display:none;margin-bottom:1.2rem">
+          <div style="font-weight:600;font-size:.88rem;margin-bottom:.8rem" id="featured-preview-title"></div>
+          <div id="featured-preview-list" style="max-height:260px;overflow-y:auto;border:1px solid var(--border);background:#fff;padding:.6rem 1rem;font-size:.83rem;line-height:1.9;border-radius:4px"></div>
+          <div style="margin-top:1rem;display:flex;gap:.8rem;align-items:center">
+            <button class="btn-save" onclick="saveFeaturedArticles()">✓ Сохранить топ-список</button>
+            <button class="btn-cancel" onclick="cancelFeatured()">Отмена</button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -2452,7 +2490,91 @@
       } catch(e) { showToast(`Ошибка сохранения: ${e.message}`, true); }
     }
 
-    document.addEventListener('DOMContentLoaded', loadFeatureFlags);
+    async function loadFeaturedStatus() {
+      const el = document.getElementById('featured-current-status');
+      if (!el) return;
+      try {
+        const res = await fetch(`${SB_URL}/rest/v1/site_settings?id=eq.main&select=featured_articles,updated_at`,
+          { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } });
+        const data = await res.json();
+        const arr = data?.[0]?.featured_articles;
+        const upd = data?.[0]?.updated_at;
+        if (Array.isArray(arr) && arr.length > 0) {
+          const dateStr = upd ? new Date(upd).toLocaleString('ru-RU') : '';
+          el.innerHTML = `<strong style="color:#22c55e">✓ Активно: ${arr.length} артикулов</strong>${dateStr ? `<span style="margin-left:1rem">Обновлено: ${dateStr}</span>` : ''}<br>
+            <span style="color:#555">${arr.slice(0, 10).join(', ')}${arr.length > 10 ? ` ... (+${arr.length - 10} ещё)` : ''}</span>`;
+        } else {
+          el.innerHTML = '<span>Топ-список не задан — каталог работает в обычном режиме</span>';
+        }
+      } catch(e) { el.innerHTML = 'Ошибка загрузки'; }
+    }
+
+    let parsedFeaturedData = [];
+
+    function downloadFeaturedTemplate() {
+      const ws = XLSX.utils.aoa_to_sheet([['Артикул'], ['']]);
+      ws['!cols'] = [{wch: 20}];
+      if (ws['A1']) ws['A1'].s = { font: { bold: true } };
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Топ товары');
+      XLSX.writeFile(wb, 'lining-top-articles.xlsx');
+    }
+
+    function handleFeaturedFile(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
+          const ws = wb.Sheets[wb.SheetNames[0]];
+          const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
+          parsedFeaturedData = [];
+          for (let i = 1; i < rows.length; i++) {
+            const art = String(rows[i][0] || '').trim();
+            if (art) parsedFeaturedData.push(art);
+          }
+          if (parsedFeaturedData.length === 0) {
+            showToast('Нет артикулов в файле — проверьте колонку A', true); return;
+          }
+          document.getElementById('featured-preview-title').textContent =
+            `Распознано ${parsedFeaturedData.length} артикулов:`;
+          document.getElementById('featured-preview-list').innerHTML =
+            parsedFeaturedData.map((a, i) =>
+              `<span style="color:var(--muted);margin-right:.5rem">${i+1}.</span><strong>${a}</strong><br>`
+            ).join('');
+          document.getElementById('featured-preview').style.display = 'block';
+        } catch(e) { showToast('Ошибка чтения файла', true); }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function cancelFeatured() {
+      parsedFeaturedData = [];
+      document.getElementById('featured-preview').style.display = 'none';
+      document.getElementById('featured-file').value = '';
+    }
+
+    async function saveFeaturedArticles() {
+      if (!parsedFeaturedData.length) return;
+      try {
+        const res = await fetch(`${SB_URL}/rest/v1/site_settings?id=eq.main`, {
+          method: 'PATCH',
+          headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ featured_articles: parsedFeaturedData, updated_at: new Date().toISOString() }),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        showToast(`Топ-список сохранён: ${parsedFeaturedData.length} артикулов ✓`);
+        cancelFeatured();
+        loadFeaturedStatus();
+      } catch(e) { showToast(`Ошибка: ${e.message}`, true); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadFeatureFlags();
+      loadFeaturedStatus();
+    });
 
     /* ── PRICES ── */
     let parsedPriceData = [];
