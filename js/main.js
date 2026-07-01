@@ -881,6 +881,7 @@ const FilterSidebar = (() => {
   const applyFilters = () => {
     const checkedBrands  = [...document.querySelectorAll('.filter-brand-item input:not(.filter-gender-item):checked')].map(cb => cb.value);
     const checkedGenders = [...document.querySelectorAll('.filter-gender-item:checked')].map(cb => cb.value);
+    const checkedAges    = [...document.querySelectorAll('.filter-age-item:checked')].map(cb => cb.value);
     const activeSize     = document.querySelector('.size-btn.active')?.dataset.size;
     const checkedPromos  = [...document.querySelectorAll('.filter-promo-item input:checked')].map(cb => cb.value);
     const activePriceBtn = document.querySelector('.price-btn.active');
@@ -896,11 +897,12 @@ const FilterSidebar = (() => {
 
         const brandOk  = checkedBrands.length === 0 || checkedBrands.includes(brand);
         const genderOk = checkedGenders.length === 0 || checkedGenders.includes(gender);
+        const ageOk    = checkedAges.length === 0 || checkedAges.includes(card.dataset.age || 'adult');
         const priceOk  = price >= priceMin && price <= priceMax;
         const sizeOk   = !activeSize || sizes.includes(activeSize);
         const promoOk  = checkedPromos.length === 0 || checkedPromos.includes(badge);
 
-        card.style.display = (brandOk && genderOk && priceOk && sizeOk && promoOk) ? '' : 'none';
+        card.style.display = (brandOk && genderOk && ageOk && priceOk && sizeOk && promoOk) ? '' : 'none';
     });
 
     updateCount();
@@ -1353,6 +1355,21 @@ function updatePromoFilterVisibility() {
   }
   block.style.display = anyVisible ? '' : 'none';
 }
+
+function updateGenderCounts() {
+  const counts = { male: 0, female: 0, uni: 0 };
+  document.querySelectorAll('.product-card').forEach(card => {
+    const g = card.dataset.gender;
+    if (counts[g] !== undefined) counts[g]++;
+  });
+  document.querySelectorAll('.gender-count').forEach(span => {
+    const g = span.dataset.gender;
+    if (counts[g] !== undefined) {
+      span.textContent = counts[g] ? `(${counts[g]})` : '';
+    }
+  });
+}
+window.updateGenderCounts = updateGenderCounts;
 
 /* ─── SKELETON & FADE-IN ────────────────────── */
 function buildSkeletons(n = 8) {
@@ -1863,7 +1880,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.ProductCards?.init();
         highlightWishlist();
         updatePromoFilterVisibility();
-
+        updateGenderCounts();
 
         // Применяем фильтры из URL ПОСЛЕ загрузки карточек
         const urlParams = new URLSearchParams(window.location.search);
@@ -2394,6 +2411,20 @@ function setCategoryFilter(cat) {
   if (countEl) countEl.textContent = visible;
 }
 window.setCategoryFilter = setCategoryFilter;
+
+function setCollectionFilter(collection) {
+  document.querySelectorAll('.product-card').forEach(card => {
+    if (!collection || card.dataset.collection === collection) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+  const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
+  const countEl = document.querySelector('.catalog-count strong');
+  if (countEl) countEl.textContent = visible;
+}
+window.setCollectionFilter = setCollectionFilter;
 
 /* ─── WISHLIST NAV ───────────────────────────── */
 function openWishlist() {

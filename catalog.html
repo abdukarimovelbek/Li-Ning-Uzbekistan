@@ -190,13 +190,13 @@
 <!-- ════ QUICK FILTER CHIPS ════ -->
 <div class="cat-chips-mob">
   <div class="chips-scroll-mob" id="chipsScrollMob">
-    <button class="chip-mob on" data-cat="">Все</button>
-    <button class="chip-mob" data-cat="shoes">Обувь</button>
-    <button class="chip-mob" data-cat="clothing">Одежда</button>
-    <button class="chip-mob" data-cat="basketball">Баскетбол</button>
-    <button class="chip-mob" data-cat="running">Бег</button>
-    <button class="chip-mob" data-cat="fitness">Фитнес</button>
-    <button class="chip-mob" data-cat="accessories">Аксессуары</button>
+    <button class="chip-mob on" data-filter-type="category" data-cat="">Все</button>
+    <button class="chip-mob" data-filter-type="category" data-cat="shoes">Обувь</button>
+    <button class="chip-mob" data-filter-type="category" data-cat="clothing">Одежда</button>
+    <button class="chip-mob" data-filter-type="collection" data-cat="Basketball">Баскетбол</button>
+    <button class="chip-mob" data-filter-type="collection" data-cat="Running">Бег</button>
+    <button class="chip-mob" data-filter-type="collection" data-cat="Fitness">Фитнес</button>
+    <button class="chip-mob" data-filter-type="category" data-cat="accessories">Аксессуары</button>
   </div>
 </div>
 
@@ -314,10 +314,10 @@
     <div class="fp-section">
       <button class="fp-acc-head">Пол <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
       <div class="fp-acc-body">
-        <label class="filter-brand-item"><input type="checkbox" class="filter-gender-item" value="kids"> Дети <span class="gender-count" data-gender="kids"></span></label>
-        <label class="filter-brand-item"><input type="checkbox" class="filter-gender-item" value="female"> Женщины <span class="gender-count" data-gender="female"></span></label>
-        <label class="filter-brand-item"><input type="checkbox" class="filter-gender-item" value="male"> Мужчины <span class="gender-count" data-gender="male"></span></label>
-        <label class="filter-brand-item"><input type="checkbox" class="filter-gender-item" value="uni"> Унисекс <span class="gender-count" data-gender="uni"></span></label>
+        <label class="filter-brand-item"><input type="checkbox" class="filter-age-item" value="kids"> Дети</label>
+        <label class="filter-brand-item"><input type="checkbox" class="filter-gender-item" value="female"> Женщины</label>
+        <label class="filter-brand-item"><input type="checkbox" class="filter-gender-item" value="male"> Мужчины</label>
+        <label class="filter-brand-item"><input type="checkbox" class="filter-gender-item" value="uni"> Унисекс</label>
       </div>
     </div>
 
@@ -405,7 +405,13 @@
     if(!btn) return;
     document.querySelectorAll('.chip-mob').forEach(c=>c.classList.remove('on'));
     btn.classList.add('on');
-    window.setCategoryFilter?.(btn.dataset.cat);
+    const filterType = btn.dataset.filterType;
+    const cat = btn.dataset.cat;
+    if (filterType === 'collection') {
+      window.setCollectionFilter?.(cat);
+    } else {
+      window.setCategoryFilter?.(cat);
+    }
   });
 
   // Параллакс кинетического текста при скролле
