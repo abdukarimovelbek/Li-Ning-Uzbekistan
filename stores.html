@@ -463,6 +463,46 @@
         });
     });
 })();
+
+// Реальный статус открыт/закрыт по расписанию
+(function() {
+  const HOURS = {
+    'Tashkent City Mall':      { open: 10, close: 23 },
+    'Li-Ning Eco Park':        { open: 9,  close: 23 },
+    'Li-Ning Alayskiy':        { open: 9,  close: 20 },
+    'Magic City':              { open: 10, close: 23 },
+    'Atlas Chimgan':           { open: 10, close: 22 },
+    'High Town Mall':          { open: 10, close: 23 },
+    'Malika Outlet':           { open: 9,  close: 23 },
+    'Li-Ning Novza':           { open: 9,  close: 22 },
+    'Yunusabad Gallery':       { open: 9,  close: 23 },
+    'Li-Ning Shota Rustavely': { open: 9,  close: 22 },
+    'Scopus Mall':             { open: 10, close: 22 },
+    'Family Park':             { open: 10, close: 22 },
+    'M. Baraka':               { open: 10, close: 22 },
+    'ТЦ Узбегим':              { open: 10, close: 22 },
+  };
+
+  const now = new Date();
+  const h = now.getHours();
+
+  document.querySelectorAll('.store-card').forEach(card => {
+    const nameEl  = card.querySelector('.store-name');
+    const hoursEl = card.querySelector('.store-hours');
+    if (!nameEl || !hoursEl) return;
+
+    const name = nameEl.textContent.trim();
+    const match = Object.entries(HOURS).find(([key]) => name.includes(key));
+    if (!match) return;
+
+    const { open, close } = match[1];
+    const isOpen = h >= open && h < close;
+    hoursEl.innerHTML = isOpen
+      ? `<span style="color:#22c55e">● Открыто</span> · ${open}:00 – ${close}:00`
+      : `<span style="color:#ef4444">● Закрыто</span> · откроется в ${open}:00`;
+  });
+})();
+
   </script>
 
   <!-- AUTH MODAL и CITY MODAL — скопируй из index.html -->

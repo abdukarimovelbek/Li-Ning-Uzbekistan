@@ -1509,7 +1509,11 @@
       <div class="co-osi-head"><h3>ВАШ ЗАКАЗ</h3><span class="co-osi-cnt" id="co-osi-cnt">0 товаров</span></div>
       <div class="co-osi-items" id="co-osi-items"></div>
       <div class="co-osi-promo">
-        <div class="co-promo-row"><input type="text" placeholder="Промокод"><button>Применить</button></div>
+        <div class="co-promo-row">
+          <input type="text" id="promo-input" placeholder="Промокод">
+          <button onclick="coApplyPromo()">Применить</button>
+        </div>
+        <div id="promo-msg" style="font-size:.72rem;margin-top:.4rem;display:none"></div>
       </div>
       <div class="co-osi-totals" id="co-osi-totals"></div>
       <div class="co-osi-guar">
@@ -1677,14 +1681,15 @@
   function coRenderTotals() {
     const items = coGetCart();
     const sub      = items.reduce((a, it) => a + it.price * it.qty, 0);
-    const discount = window.Cart?.calcPromo13?.(items) || 0;
-    const tot      = sub - discount + (items.length > 0 ? coDelP : 0);
-    const cnt      = items.reduce((a, it) => a + it.qty, 0);
+    const promoActive = typeof isPromoActive === 'function' && isPromoActive('1=3');
+    const discount    = promoActive ? (window.Cart?.calcPromo13?.(items) || 0) : 0;
+    const tot         = sub - discount + (items.length > 0 ? coDelP : 0);
+    const cnt         = items.reduce((a, it) => a + it.qty, 0);
     const discountRow = discount > 0
         ? `<div class="co-otr" style="color:#e63946">
-               <span class="co-otl">Скидка 1=3 🎁</span>
-               <span class="co-otv">−${coFP(discount)}</span>
-           </div>`
+              <span class="co-otl">Скидка 1=3 🎁</span>
+              <span class="co-otv">−${coFP(discount)}</span>
+          </div>`
         : '';
     const html = `
       <div class="co-otr"><span class="co-otl">Товары (${cnt} шт.)</span><span class="co-otv">${coFP(sub)}</span></div>
@@ -1748,10 +1753,13 @@
 
   function coGoNext(from) {
     if (from === 1) {
-      const nm = document.getElementById('first-name').value.trim();
+      const nm  = document.getElementById('first-name').value.trim();
+      const ln  = document.getElementById('last-name').value.trim();
       const tel = document.getElementById('phone').value.trim();
-      if (!nm || !tel) { coShake(nm ? 'phone' : 'first-name'); return; }
-      document.getElementById('co-ss1').textContent = nm + ' · ' + tel;
+      if (!nm)  { coShake('first-name'); return; }
+      if (!ln)  { coShake('last-name');  return; }
+      if (!tel) { coShake('phone');      return; }
+      document.getElementById('co-ss1').textContent = nm + ' ' + ln + ' · ' + tel;
     }
     if (from === 2) {
       const sel = document.querySelector('.co-dopt.on');
@@ -1799,6 +1807,17 @@
   async function coDoSubmit() {
     const items = coGetCart();
     if (!items.length) { window.Toast?.show('Корзина пуста', 'Добавьте товары', ''); return; }
+
+    const deliveryOpt = document.querySelector('.co-dopt.on');
+    if (deliveryOpt?.dataset.v !== 'pickup') {
+      const addr = document.getElementById('address');
+      if (!addr?.value.trim()) {
+        window.Toast?.show('Укажите адрес доставки', '', '');
+        coGoPrev(3);
+        setTimeout(() => coShake('address'), 400);
+        return;
+      }
+    }
 
     const btn = document.getElementById('co-submit-btn');
     btn.classList.add('loading');
@@ -1939,7 +1958,16 @@
       });
     });
   });
+  function coApplyPromo() {
+    const input = document.getElementById('promo-input');
+    const msg   = document.getElementById('promo-msg');
+    if (!input || !msg) return;
+    const val = input.value.trim();
+    if (!val) return;
+    msg.style.display = '';
+    msg.style.color = 'rgba(255,255,255,.45)';
+    msg.textContent = 'Промокоды временно недоступны. Следите за акциями в каталоге.';
+  }
   </script>
-
 </body>
 </html>

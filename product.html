@@ -202,7 +202,7 @@
           <div class="store-avail-panel-inner">
             <div class="store-avail-realtime">
               <span class="pulse-dot"></span>
-              Данные обновляются в реальном времени
+              Наличие уточняйте по телефону магазина
             </div>
             <div id="store-avail-list"></div>
             <div class="store-avail-footer">Указано наличие выбранного размера. Остаток может поменяться в случае, если товар продадут.</div>
@@ -834,16 +834,20 @@ function showSizeAlert() {
 // ── Store Availability ──
 (function () {
   const STORE_STOCK = [
-    { name: 'Tashkent City Mall',      address: 'ул. Батыра Закирова, 7', phone: '+998 71 200 00 01',
-      bySize: {38:5,39:12,40:8,41:24,42:3,43:7,44:2,45:0,46:4} },
-    { name: 'Li-Ning Eco Park',        address: 'ул. Махатмы Ганди, 14',  phone: '+998 71 200 00 02',
-      bySize: {38:0,39:3,40:5,41:5,42:2,43:1,44:0,45:3,46:0} },
-    { name: 'Li-Ning Alayskiy',        address: 'пр. Амира Темура, 60',   phone: '+998 71 200 00 03',
-      bySize: {38:2,39:8,40:16,41:16,42:4,43:0,44:6,45:1,46:2} },
-    { name: 'Magic City',              address: 'ул. Фурката',             phone: '+998 71 200 00 04',
-      bySize: {38:0,39:1,40:2,41:2,42:0,43:0,44:0,45:0,46:0} },
-    { name: 'Family Park · Самарканд', address: 'ул. Нарпайская, 76А',    phone: '+998 66 200 00 05',
-      bySize: {38:4,39:12,40:9,41:12,42:7,43:3,44:5,45:2,46:1} }
+    { name: 'Tashkent City Mall',    address: 'ул. Батыра Закирова, 7',          phone: '+998993114884' },
+    { name: 'Li-Ning Eco Park',      address: 'ул. Махатмы Ганды, 14, Ц1',       phone: '+998954784884' },
+    { name: 'Li-Ning Alayskiy',      address: 'пр. Амира Темура, 60',            phone: '+998999704884' },
+    { name: 'Magic City',            address: 'ул. Фурката',                      phone: '+998999714884' },
+    { name: 'Atlas Chimgan',         address: 'ул. Темура Малика, 3А',            phone: '+998951944884' },
+    { name: 'High Town Mall',        address: 'ул. Янгишахар, 67',               phone: '+998954224884' },
+    { name: 'Malika Outlet',         address: 'ул. Сандиккурган 4-проезд, 1',    phone: '+998958914884' },
+    { name: 'Li-Ning Novza',         address: 'ул. Мукими, 20Б',                 phone: '+998954790009' },
+    { name: 'Yunusabad Gallery',     address: 'ул. Рихсили, 2',                  phone: '+998958904884' },
+    { name: 'Li-Ning Shota Rustavely', address: 'ул. Шота Руставели, 13',        phone: '+998991444884' },
+    { name: 'Scopus Mall',           address: 'Малая Кольцевая Дорога, 25',       phone: null },
+    { name: 'Family Park · Самарканд', address: 'ул. Нарпайская, 76А',           phone: '+998954334884' },
+    { name: 'M. Baraka · Самарканд', address: 'ул. Мир Саид Барака, 2',          phone: '+998959784884' },
+    { name: 'ТЦ Узбегим · Андижан',  address: 'проспект Чулпана, 10',            phone: null },
   ];
 
   let open = false;
