@@ -1578,7 +1578,11 @@
     }
 
     async function uploadVariantFiles(input, vi) {
-        const files = [...input.files];
+        const files = [...input.files].sort((a, b) => {
+            const numA = parseInt(a.name.match(/(\d+)\.[^.]+$/)?.[1] ?? '0');
+            const numB = parseInt(b.name.match(/(\d+)\.[^.]+$/)?.[1] ?? '0');
+            return numA - numB;
+        });
         for (const file of files) {
             const fileName = Date.now() + '_' + file.name.replace(/\s/g, '_');
             showToast('Загружаем фото...');

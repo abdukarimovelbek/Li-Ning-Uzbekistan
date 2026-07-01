@@ -4,7 +4,7 @@ const path = require('path');
 
 const SB_URL = process.env.SB_URL || 'https://dgyirginrefvjsbhhooi.supabase.co';
 const SB_KEY = process.env.SB_KEY;
-const PHOTOS_DIR = path.join(__dirname, 'admin', 'Photos');
+const PHOTOS_DIR = process.env.PHOTOS_DIR || path.join(__dirname, 'admin', 'Photos');
 
 if (!SB_KEY) {
   console.error('❌ SB_KEY не найден! Создай файл .env с переменной SB_KEY=твой_ключ');
