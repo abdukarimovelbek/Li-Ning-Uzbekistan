@@ -555,6 +555,52 @@
           </div>
         </div>
       </div>
+        <!-- Sale Hero Video -->
+        <div style="margin-top:1.5rem">
+          <div class="settings-section">
+            <h3>🎬 Видео для страницы Sale</h3>
+            <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.2rem">
+              Загрузите видео — оно будет показываться в hero-секции страницы распродажи вместо красного фона.
+            </p>
+
+            <div id="sale-video-preview" style="display:none;margin-bottom:1rem">
+              <video id="sale-video-player" controls muted
+                style="width:100%;max-height:220px;border-radius:8px;background:#000;display:block"></video>
+              <div style="display:flex;align-items:center;gap:1rem;margin-top:.6rem">
+                <span id="sale-video-url-label" style="font-size:.75rem;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+                <button onclick="clearSaleVideo()"
+                  style="background:#fff0f0;color:var(--red);border:1px solid #ffd7d7;padding:.35rem .8rem;font-size:.75rem;font-weight:600;cursor:pointer;border-radius:4px;white-space:nowrap">
+                  ✕ Удалить видео
+                </button>
+              </div>
+            </div>
+
+            <div id="sale-video-drop"
+              style="border:2px dashed var(--border);border-radius:6px;padding:2rem;text-align:center;cursor:pointer;background:#fafafa;transition:border-color .2s"
+              onclick="document.getElementById('sale-video-input').click()"
+              ondragover="event.preventDefault();this.style.borderColor='var(--red)'"
+              ondragleave="this.style.borderColor='var(--border)'"
+              ondrop="handleSaleVideoDrop(event)">
+              <input type="file" id="sale-video-input" accept="video/mp4,video/webm,video/mov" style="display:none"
+                onchange="handleSaleVideoFile(this.files[0])">
+              <div style="font-size:2.5rem;margin-bottom:.5rem">🎬</div>
+              <p style="font-size:.88rem;font-weight:600;margin-bottom:.3rem">Нажмите или перетащите видео</p>
+              <p style="font-size:.75rem;color:var(--muted)">MP4, WebM, MOV · рекомендуется 1920×1080 · до 50MB</p>
+            </div>
+
+            <div id="sale-video-progress" style="display:none;margin-top:.8rem">
+              <div style="height:4px;background:#eee;border-radius:2px">
+                <div id="sale-video-progress-bar" style="height:100%;width:0%;background:var(--red);border-radius:2px;transition:width .3s"></div>
+              </div>
+              <p id="sale-video-progress-txt" style="font-size:.75rem;color:var(--muted);margin-top:.4rem">Загружаем...</p>
+            </div>
+
+            <div id="sale-video-status" style="margin-top:.8rem;font-size:.8rem"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
     </div>
 
 
@@ -1188,7 +1234,7 @@
       if (name === 'orders') loadOrders();
       if (name === 'dashboard') loadDashboard();
       if (name === 'slides') loadSlides();
-      if (name === 'promotions') loadPromoStatuses();
+      if (name === 'promotions') { loadPromoStatuses(); loadSaleVideoSettings(); }
       if (name === 'analytics') loadAnalytics();
     }
 
@@ -2747,7 +2793,122 @@
       parsedPriceData = [];
       document.getElementById('price-file').value = '';
     }
+    // ── Sale Hero Video ──
+    async function loadSaleVideoSettings() {
+      try {
+        const res = await fetch(
+          `${SB_URL}/rest/v1/site_settings?id=eq.main&select=sale_hero_video`,
+          { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
+        );
+        const data = await res.json();
+        const url = data?.[0]?.sale_hero_video;
+        if (url) showSaleVideoPreview(url);
+      } catch(e) {}
+    }
 
+    function showSaleVideoPreview(url) {
+      const preview  = document.getElementById('sale-video-preview');
+      const player   = document.getElementById('sale-video-player');
+      const drop     = document.getElementById('sale-video-drop');
+      const urlLabel = document.getElementById('sale-video-url-label');
+      if (player)   { player.src = url; }
+      if (urlLabel) { urlLabel.textContent = url; }
+      if (preview)  { preview.style.display = ''; }
+      if (drop)     { drop.style.display = 'none'; }
+    }
+
+    function handleSaleVideoDrop(e) {
+      e.preventDefault();
+      document.getElementById('sale-video-drop').style.borderColor = 'var(--border)';
+      const file = e.dataTransfer.files[0];
+      if (file) handleSaleVideoFile(file);
+    }
+
+    async function handleSaleVideoFile(file) {
+      if (!file) return;
+      const status   = document.getElementById('sale-video-status');
+      const progress = document.getElementById('sale-video-progress');
+      const bar      = document.getElementById('sale-video-progress-bar');
+      const txt      = document.getElementById('sale-video-progress-txt');
+
+      progress.style.display = '';
+      bar.style.width = '10%';
+      txt.textContent = 'Загружаем видео...';
+      if (status) status.textContent = '';
+
+      try {
+        const ext      = file.name.split('.').pop();
+        const fileName = `sale-hero-${Date.now()}.${ext}`;
+
+        bar.style.width = '40%';
+
+        const uploadRes = await fetch(
+          `${SB_URL}/storage/v1/object/product-images/${fileName}`,
+          {
+            method: 'POST',
+            headers: {
+              'apikey': SB_KEY,
+              'Authorization': `Bearer ${SB_KEY}`,
+              'Content-Type': file.type,
+              'x-upsert': 'true'
+            },
+            body: file
+          }
+        );
+
+        bar.style.width = '80%';
+
+        if (!uploadRes.ok) throw new Error(await uploadRes.text());
+
+        const videoUrl = `${SB_URL}/storage/v1/object/public/product-images/${fileName}`;
+
+        await fetch(`${SB_URL}/rest/v1/site_settings?id=eq.main`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ sale_hero_video: videoUrl })
+        });
+
+        bar.style.width = '100%';
+        txt.textContent = '✓ Видео загружено';
+        setTimeout(() => { progress.style.display = 'none'; }, 1500);
+
+        showSaleVideoPreview(videoUrl);
+        showToast('Видео для Sale сохранено ✓');
+
+      } catch(e) {
+        progress.style.display = 'none';
+        if (status) { status.style.color = 'var(--red)'; status.textContent = '❌ Ошибка: ' + e.message; }
+        showToast('Ошибка загрузки видео', true);
+      }
+    }
+
+    async function clearSaleVideo() {
+      if (!confirm('Удалить видео? Hero вернётся к красному фону.')) return;
+      try {
+        await fetch(`${SB_URL}/rest/v1/site_settings?id=eq.main`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SB_KEY,
+            'Authorization': `Bearer ${SB_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ sale_hero_video: null })
+        });
+        const preview = document.getElementById('sale-video-preview');
+        const drop    = document.getElementById('sale-video-drop');
+        const player  = document.getElementById('sale-video-player');
+        if (preview) preview.style.display = 'none';
+        if (drop)    drop.style.display = '';
+        if (player)  player.src = '';
+        showToast('Видео удалено');
+      } catch(e) { showToast('Ошибка удаления', true); }
+    }
   </script>
 </body>
 </html>
