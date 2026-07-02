@@ -74,6 +74,8 @@ const SITE_CONFIG = {
       });
       window.FEATURED_ARTICLES = Array.isArray(data[0].featured_articles)
         ? data[0].featured_articles : [];
+      window.FEATURED_ARTICLES_LOADED = true;
+      window.dispatchEvent(new Event('featured-articles-loaded'));
     }
 
     // Загружаем активные акции из таблицы promotions
