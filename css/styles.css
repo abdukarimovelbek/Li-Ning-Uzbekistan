@@ -3042,7 +3042,7 @@ body.menu-open { overflow: hidden; }
   }
   .hero-slide {
     height: 68vh !important;
-    min-height: 420px !important;
+    min-height: 600px !important;
     padding-top: 0;
     padding-bottom: 72px; /* запас под нижний таб-бар */     
   }
