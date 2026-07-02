@@ -1680,17 +1680,37 @@
   /* ─── ИТОГИ ─── */
   function coRenderTotals() {
     const items = coGetCart();
-    const sub      = items.reduce((a, it) => a + it.price * it.qty, 0);
-    const promoActive = typeof isPromoActive === 'function' && isPromoActive('1=3');
-    const discount    = promoActive ? (window.Cart?.calcPromo13?.(items) || 0) : 0;
-    const tot         = sub - discount + (items.length > 0 ? coDelP : 0);
-    const cnt         = items.reduce((a, it) => a + it.qty, 0);
-    const discountRow = discount > 0
-        ? `<div class="co-otr" style="color:#e63946">
-              <span class="co-otl">Скидка 1=3 🎁</span>
-              <span class="co-otv">−${coFP(discount)}</span>
-          </div>`
-        : '';
+    const sub   = items.reduce((a, it) => a + it.price * it.qty, 0);
+    const cnt   = items.reduce((a, it) => a + it.qty, 0);
+
+    let tot, discountRow = '';
+
+    if (typeof isPromoActive === 'function' && isPromoActive('1=3')) {
+      const discount = window.Cart?.calcPromo13?.(items) || 0;
+      tot = sub - discount + (items.length > 0 ? coDelP : 0);
+      if (discount > 0) {
+        discountRow = `<div class="co-otr" style="color:#e63946">
+          <span class="co-otl">Скидка 1=3 🎁</span>
+          <span class="co-otv">−${coFP(discount)}</span>
+        </div>`;
+      }
+    } else {
+      // Считаем скидки -50% и -70% на отдельные товары
+      const discounted = items.reduce((a, it) => {
+        let price = it.price;
+        if (isPromoActive('-50%') && it.badge === '-50%') price = it.price * 0.5;
+        else if (isPromoActive('-70%') && it.badge === '-70%') price = it.price * 0.3;
+        return a + price * it.qty;
+      }, 0);
+      const discountAmt = sub - discounted;
+      tot = discounted + (items.length > 0 ? coDelP : 0);
+      if (discountAmt > 0) {
+        discountRow = `<div class="co-otr" style="color:#e63946">
+          <span class="co-otl">Скидка на товары 🏷️</span>
+          <span class="co-otv">−${coFP(discountAmt)}</span>
+        </div>`;
+      }
+    }
     const html = `
       <div class="co-otr"><span class="co-otl">Товары (${cnt} шт.)</span><span class="co-otv">${coFP(sub)}</span></div>
       ${discountRow}
@@ -1707,8 +1727,7 @@
   function coUpdateStrip() {
     const items    = coGetCart();
     const sub      = items.reduce((a, it) => a + it.price * it.qty, 0);
-    const discount = window.Cart?.calcPromo13?.(items) || 0;
-    const tot      = sub - discount + (items.length > 0 ? coDelP : 0);
+    const tot = (window.Cart?.getTotal?.() ?? sub) + (items.length > 0 ? coDelP : 0);
     const cnt      = items.reduce((a, it) => a + it.qty, 0);
     const t = document.getElementById('co-strip-total');
     const c = document.getElementById('co-strip-cnt');
@@ -1845,7 +1864,7 @@
       comment:        document.getElementById('comment')?.value.trim() || null,
       payment_method: selPay?.dataset.v || 'cash',
       items: items.map(it => ({ article: it.article || it.id, name: it.name, price: it.price, quantity: it.qty, size: it.size, image: it.image || null })),
-      total: items.reduce((s, it) => s + it.price * it.qty, 0) - (window.Cart?.calcPromo13?.(items) || 0) + (items.length > 0 ? coDelP : 0),
+      total: (window.Cart?.getTotal?.() ?? items.reduce((s, it) => s + it.price * it.qty, 0)) + (items.length > 0 ? coDelP : 0),
       status: 'new', source: 'website'
     };
 

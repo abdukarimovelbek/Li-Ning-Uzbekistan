@@ -559,27 +559,67 @@ const Cart = (() => {
   };
 
   const calcPromo13 = (cartItems) => {
-      if (!isPromoActive('1=3')) return 0;
-      const units = [];
-      cartItems.forEach(item => {
-          for (let q = 0; q < item.qty; q++) {
-              units.push(item.price);
-          }
-      });
-      let discount = 0;
-      for (let i = 0; i < units.length; i += 3) {
-          const group = units.slice(i, i + 3);
-          if (group.length === 3) {
-              const sorted = [...group].sort((a, b) => b - a);
-              discount += sorted[1] + sorted[2];
-          }
+    if (!isPromoActive('1=3')) return 0;
+
+    // Разворачиваем все товары в единицы с их ценой и badge
+    const units = [];
+    cartItems.forEach(item => {
+      for (let q = 0; q < item.qty; q++) {
+        units.push({ price: item.price, badge: item.badge || '' });
       }
-      return discount;
+    });
+
+    // Сортируем по цене убыванию
+    units.sort((a, b) => b.price - a.price);
+
+    const total = units.length;
+    const groups = Math.floor(total / 3); // количество полных групп
+    const remainder = total % 3;          // остаток вне акции
+
+    // Считаем сумму БЕЗ акции (что покупатель заплатил бы без 1=3)
+    // Платные: первые `groups` товаров (самые дорогие)
+    // Бесплатные: следующие `groups * 2` товаров
+    // Остаток: последние `remainder` товаров — по своей цене или -50%
+
+    let totalToPay = 0;
+
+    // Платные позиции (по 1 из каждой тройки, самые дорогие)
+    for (let i = 0; i < groups; i++) {
+      totalToPay += units[i].price;
+    }
+
+    // Остаток — товары вне акции 1=3
+    for (let i = total - remainder; i < total; i++) {
+      const unit = units[i];
+      if (isPromoActive('-50%') && unit.badge === '-50%') {
+        totalToPay += unit.price * 0.5;
+      } else if (isPromoActive('-70%') && unit.badge === '-70%') {
+        totalToPay += unit.price * 0.3;
+      } else {
+        totalToPay += unit.price;
+      }
+    }
+
+    // Скидка = то что было бы без акции МИНУС то что платит
+    const originalTotal = cartItems.reduce((s, it) => s + it.price * it.qty, 0);
+    return originalTotal - totalToPay;
   };
 
   const getTotal = () => {
-      const base = items.reduce((s, i) => s + i.price * i.qty, 0);
-      return base - calcPromo13(items);
+    if (isPromoActive('1=3')) {
+        const base = items.reduce((s, i) => s + i.price * i.qty, 0);
+        return base - calcPromo13(items);
+    }
+    // Только -50% без 1=3
+    return items.reduce((s, item) => {
+      let price = item.price;
+      if (isPromoActive('-50%') && item.badge === '-50%') {
+        price = item.price * 0.5;
+      } else if (isPromoActive('-70%') && item.badge === '-70%') {
+        price = item.price * 0.3;
+      }
+      return s + price * item.qty;
+    }, 0);
   };
 
   const getItems = () => items;
@@ -616,9 +656,10 @@ const Cart = (() => {
       </div>
     `).join('');
       const discount    = calcPromo13(items);
-      const totalUnits  = items.reduce((s, i) => s + i.qty, 0);
-      const remainder   = totalUnits % 3;
-      const need        = remainder > 0 ? 3 - remainder : 0;
+      const totalUnits = items.reduce((s, i) => s + i.qty, 0);
+      const groups = Math.floor(totalUnits / 3);
+      const remainder = totalUnits % 3;
+      const need = remainder > 0 ? 3 - remainder : 0;
 
       if (discount > 0) {
           body.innerHTML += `
