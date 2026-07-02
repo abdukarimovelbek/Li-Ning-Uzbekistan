@@ -20,214 +20,28 @@
   <style>
     .sale-hero {
       position: relative;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      overflow: visible;
-      background: transparent;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
       margin-top: calc(-1 * var(--nav-h));
     }
-
-    /* Видео фон */
     .sale-hero-video {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
+      display: none;
       opacity: 0;
       transition: opacity 1.2s ease;
-      z-index: 0;
-    }
-    .sale-hero-video.loaded { opacity: 1; }
-
-    /* Слои поверх видео */
-    .sale-hero-overlay {
-      position: absolute;
-      inset: 0;
       z-index: 1;
-      background: linear-gradient(
-        160deg,
-        rgba(196,30,58,0.55) 0%,
-        rgba(0,0,0,0.7) 50%,
-        rgba(0,0,0,0.85) 100%
-      );
     }
-    .sale-hero-grain {
+    .sale-hero-video.visible { opacity: 1; }
+    .sale-hero-fallback {
       position: absolute;
       inset: 0;
-      z-index: 2;
-      opacity: .06;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-size: 180px;
-      pointer-events: none;
-    }
-    .sale-hero-lines {
-      position: absolute;
-      inset: 0;
-      z-index: 2;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(255,255,255,.015) 2px,
-        rgba(255,255,255,.015) 4px
-      );
-      pointer-events: none;
-    }
-    .sale-hero-glow {
-      position: absolute;
-      left: 50%;
-      top: 40%;
-      transform: translate(-50%, -50%);
-      width: min(800px, 120vw);
-      height: min(800px, 120vw);
-      z-index: 2;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(196,30,58,.35) 0%, transparent 65%);
-      animation: saleGlowPulse 4s ease-in-out infinite alternate;
-      pointer-events: none;
-    }
-    @keyframes saleGlowPulse {
-      from { opacity: .6; transform: translate(-50%,-50%) scale(.9); }
-      to   { opacity: 1;  transform: translate(-50%,-50%) scale(1.1); }
-    }
-
-    /* Большой текст SALE на фоне */
-    .sale-hero-bg {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 38vw;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(255,255,255,.04);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      user-select: none;
-      line-height: .8;
-    }
-
-    /* Контент */
-    .sale-hero-content {
-      position: relative;
-      z-index: 10;
-      padding: 6rem 2rem 5rem;
-    }
-    .sale-hero-eyebrow {
-      font-family: 'Oswald', sans-serif;
-      font-size: .72rem;
-      letter-spacing: .35em;
-      text-transform: uppercase;
-      color: var(--red);
-      margin-bottom: 1.2rem;
-      opacity: 0;
-      transform: translateY(12px);
-      animation: saleFadeUp .8s .3s forwards;
-    }
-    .sale-hero h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(5rem, 14vw, 12rem);
-      color: #fff;
-      letter-spacing: 4px;
-      line-height: .85;
-      opacity: 0;
-      transform: translateY(16px);
-      animation: saleHeadIn 1s .5s cubic-bezier(.22,1,.36,1) forwards;
-    }
-    .sale-hero h1 em {
-      font-style: normal;
-      color: var(--red);
-      display: block;
-    }
-    .sale-hero p {
-      color: rgba(255,255,255,.65);
-      font-size: 1rem;
-      margin-top: 1.2rem;
-      letter-spacing: .04em;
-      opacity: 0;
-      transform: translateY(10px);
-      animation: saleFadeUp .8s .85s forwards;
-    }
-    @keyframes saleFadeUp {
-      to { opacity: 1; transform: none; }
-    }
-    @keyframes saleHeadIn {
-      to { opacity: 1; transform: none; }
-    }
-
-    /* Countdown */
-    .sale-countdown {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 2.5rem;
-      opacity: 0;
-      animation: saleFadeUp .8s 1.1s forwards;
-    }
-    .countdown-item { text-align: center; }
-    .countdown-num {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.5rem, 6vw, 4rem);
-      color: #fff;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      backdrop-filter: blur(8px);
-      padding: .5rem 1.4rem;
-      display: block;
-      min-width: 90px;
-      border-radius: 4px;
-      letter-spacing: 2px;
-    }
-    .countdown-lab {
-      font-size: .6rem;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.45);
-      margin-top: .4rem;
-    }
-
-    /* Скролл-индикатор */
-    .sale-hero-scroll {
-      position: absolute;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: .4rem;
-      opacity: 0;
-      animation: saleFadeUp .8s 1.6s forwards;
-    }
-    .sale-hero-scroll span {
-      font-size: .6rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.35);
-    }
-    .sale-scroll-line {
-      width: 1px;
-      height: 40px;
-      background: linear-gradient(180deg, rgba(255,255,255,.4), transparent);
-      animation: saleScrollLine 1.5s ease-in-out infinite;
-    }
-    @keyframes saleScrollLine {
-      0%   { transform: scaleY(0); transform-origin: top; }
-      50%  { transform: scaleY(1); transform-origin: top; }
-      51%  { transform: scaleY(1); transform-origin: bottom; }
-      100% { transform: scaleY(0); transform-origin: bottom; }
-    }
-
-    @media (max-width: 768px) {
-      .sale-hero { min-height: 85vh; }
-      .sale-hero h1 { font-size: clamp(4rem, 18vw, 7rem); }
-      .countdown-num { min-width: 68px; padding: .4rem .8rem; }
+      background: #C41E3A;
+      z-index: 0;
     }
   </style>
 </head>
@@ -299,9 +113,9 @@
 
   <!-- Sale Hero -->
   <div class="sale-hero" id="sale-hero">
-    <video id="sale-hero-video" autoplay muted loop playsinline
-          style="display:none;position:fixed;inset:0;width:100vw;height:100vh;object-fit:cover;z-index:0"></video>
-    <div class="sale-hero-bg" id="sale-hero-bg" style="display:none"></div>
+    <div class="sale-hero-fallback" id="sale-hero-fallback"></div>
+    <video id="sale-hero-video-desktop" class="sale-hero-video" autoplay muted loop playsinline></video>
+    <video id="sale-hero-video-mobile"  class="sale-hero-video" autoplay muted loop playsinline></video>
   </div>
 
   <section class="section">
@@ -328,18 +142,31 @@
   (async () => {
     try {
       const res = await fetch(
-        `${SB_URL}/rest/v1/site_settings?id=eq.main&select=sale_hero_video`,
+        `${SB_URL}/rest/v1/site_settings?id=eq.main&select=sale_hero_video,sale_hero_video_mobile`,
         { headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` } }
       );
       const data = await res.json();
-      const videoUrl = data?.[0]?.sale_hero_video;
-      if (videoUrl) {
-        const video = document.getElementById('sale-hero-video');
-        const bg    = document.getElementById('sale-hero-bg');
-        video.src = videoUrl;
-        video.style.display = 'block';
-        video.oncanplay = () => { video.style.opacity = '0.6'; };
-        if (bg) bg.style.opacity = '0';
+      const row = data?.[0];
+      const isMobile = window.innerWidth <= 768;
+
+      const desktopUrl = row?.sale_hero_video;
+      const mobileUrl  = row?.sale_hero_video_mobile;
+
+      // Выбираем нужное видео: на мобайле — мобайл (если есть), иначе десктоп
+      const activeUrl = isMobile && mobileUrl ? mobileUrl : desktopUrl;
+
+      if (activeUrl) {
+        const videoEl = isMobile && mobileUrl
+          ? document.getElementById('sale-hero-video-mobile')
+          : document.getElementById('sale-hero-video-desktop');
+
+        videoEl.src = activeUrl;
+        videoEl.style.display = 'block';
+        videoEl.addEventListener('canplay', () => {
+          videoEl.classList.add('visible');
+          document.getElementById('sale-hero-fallback').style.display = 'none';
+        }, { once: true });
+        videoEl.load();
       }
     } catch(e) {}
   })();

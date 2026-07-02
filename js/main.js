@@ -461,7 +461,7 @@ const Auth = (() => {
     const btn = document.getElementById('auth-btn');
     if (!btn) return;
     btn.addEventListener('click', () => {
-      if (!SITE_CONFIG.auth_enabled) {
+      if (!SITE_CONFIG.auth_enabled || !SITE_CONFIG.cart_enabled) {
         showFeatureDisabledModal('auth');
         return;
       }
