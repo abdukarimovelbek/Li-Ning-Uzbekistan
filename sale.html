@@ -26,6 +26,12 @@
       flex-shrink: 0;
       z-index: 1;
     }
+    @media (max-width: 768px) {
+      .sale-hero {
+        height: 100svh;
+        margin-top: calc(-1 * var(--nav-h));
+      }
+    }
     .sale-hero-video {
       position: absolute;
       inset: 0;
