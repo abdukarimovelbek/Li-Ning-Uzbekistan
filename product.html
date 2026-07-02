@@ -808,7 +808,7 @@ function showSizeAlert() {
       return `<div class="store-row">
         <div class="store-row-info">
           <div class="store-row-name">${s.name}</div>
-          <div class="store-row-addr">${s.address} · <a href="tel:${s.phone.replace(/\s/g,'')}" style="color:inherit;text-decoration:none">${s.phone}</a></div>
+          <div class="store-row-addr">${s.address}${s.phone ? ` · <a href="tel:${s.phone.replace(/\s/g,'')}" style="color:inherit;text-decoration:none">${s.phone}</a>` : ''}</div>
         </div>
         ${qty != null ? badge(qty) : '<span class="store-badge gray">—</span>'}
       </div>`;
