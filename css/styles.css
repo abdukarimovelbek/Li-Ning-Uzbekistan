@@ -3041,11 +3041,10 @@ body.menu-open { overflow: hidden; }
     border-color: rgba(255,255,255,.2);
   }
   .hero-slide {
-    height: auto;
-    min-height: unset;
-    padding-top: var(--nav-h);
-    padding-bottom: 72px; /* запас под нижний таб-бар */
-    aspect-ratio: unset;     
+    height: 68vh !important;
+    min-height: 420px !important;
+    padding-top: 0;
+    padding-bottom: 72px; /* запас под нижний таб-бар */     
   }
   .hero-slide.active {
     align-items: flex-end;
