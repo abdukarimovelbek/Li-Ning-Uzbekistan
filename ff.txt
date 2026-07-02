@@ -1,10 +1,10 @@
 <<<<<<< HEAD
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 348 348">
   <rect width="348" height="348" fill="white"/>
-  <image href="./logo.jpg" x="0" y="90" width="348" height="168"/>
+  <image href="./logo.png" x="0" y="90" width="348" height="168"/>
 =======
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 348 348">
   <rect width="348" height="348" fill="white"/>
-  <image href="./logo.jpg" x="0" y="90" width="348" height="168"/>
+  <image href="./logo.png" x="0" y="90" width="348" height="168"/>
 >>>>>>> 5ad30caeb0153f2e7f04a5f48feb2681acde99c0
 </svg>

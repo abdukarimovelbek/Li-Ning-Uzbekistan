@@ -1433,7 +1433,7 @@ function buildSkeletons(n = 8) {
     <div class="product-card skeleton-card">
       <div class="product-img-wrap">
         <div style="width:100%;height:100%;background:#ebebeb;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center">
-          <img src="logo.jpg" alt="" style="width:72px;height:36px;object-fit:contain;filter:grayscale(1) opacity(.15);position:relative;z-index:1">
+          <img src="logo.png" alt="" style="width:72px;height:36px;object-fit:contain;filter:grayscale(1) opacity(.15);position:relative;z-index:1">
           <div style="${shimmerStyle};z-index:2"></div>
         </div>
       </div>
@@ -2629,7 +2629,7 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
   ].join(';');
   ov.innerHTML = [
     '<div style="position:relative;width:160px;height:80px;overflow:hidden">',
-      '<img src="logo.jpg" alt="Li-Ning" style="',
+      '<img src="logo.png" alt="Li-Ning" style="',
         'width:160px;height:80px;object-fit:contain;',
         'filter:grayscale(1) opacity(.18);',
         'display:block',
@@ -2677,16 +2677,16 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
     }, 200);
   }
 
-  // Если пришли с другой страницы — скрываем оверлей
-  if(sessionStorage.getItem('ln_wipe_in')){
-    sessionStorage.removeItem('ln_wipe_in');
-    ov.style.opacity = '1';
-    ov.style.pointerEvents = 'all';
-    pb.style.width = '85%';
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){
-      hideOverlay();
-    }); });
-  }
+// Сброс оверлея при навигации назад/вперёд (bfcache)
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) {
+      var ov = document.getElementById('ln-transition-overlay');
+      var pb = document.getElementById('ln-page-progress');
+      if (ov) { ov.style.opacity = '0'; ov.style.pointerEvents = 'none'; }
+      if (pb) { pb.style.width = '0%'; pb.style.opacity = '1'; }
+      sessionStorage.removeItem('ln_wipe_in');
+    }
+  });
 
   function leave(href){
     sessionStorage.setItem('ln_wipe_in','1');
