@@ -21,9 +21,8 @@
     .sale-hero {
       position: relative;
       width: 100%;
-      height: 100vh;
+      height: calc(100vh - var(--nav-h));
       overflow: hidden;
-      margin-top: calc(-1 * var(--nav-h));
       flex-shrink: 0;
       z-index: 1;
     }
@@ -34,7 +33,7 @@
       height: 100%;
       object-fit: contain;
       object-position: center top;
-      background: #C41E3A;
+      background: #FF1800;
       display: none;
       opacity: 0;
       transition: opacity 1.2s ease;
@@ -113,7 +112,7 @@
   <!-- ════════ /LOADER ════════ -->
 
   <!-- NAVBAR -->
-  <div id="navbar-placeholder" data-transparent="true"></div>
+  <div id="navbar-placeholder"></div>
 
   <!-- Sale Hero -->
   <div class="sale-hero" id="sale-hero">
