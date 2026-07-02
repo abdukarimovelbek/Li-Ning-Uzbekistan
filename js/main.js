@@ -1422,10 +1422,20 @@ window.updateGenderCounts = updateGenderCounts;
 
 /* ─── SKELETON & FADE-IN ────────────────────── */
 function buildSkeletons(n = 8) {
+  const shimmerStyle = [
+    'position:absolute;inset:0',
+    'background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.7) 50%,transparent 70%)',
+    'background-size:300% 100%',
+    'animation:lnShimmer 1.4s ease-in-out infinite'
+  ].join(';');
+
   return Array.from({length: n}, () => `
     <div class="product-card skeleton-card">
       <div class="product-img-wrap">
-        <div class="skeleton-block" style="width:100%;height:100%"></div>
+        <div style="width:100%;height:100%;background:#ebebeb;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center">
+          <img src="logo.jpg" alt="" style="width:72px;height:36px;object-fit:contain;filter:grayscale(1) opacity(.15);position:relative;z-index:1">
+          <div style="${shimmerStyle};z-index:2"></div>
+        </div>
       </div>
       <div class="product-info" style="padding:1rem 1.2rem">
         <div class="skeleton-block" style="height:11px;width:50%;margin-bottom:.6rem"></div>
@@ -2572,9 +2582,8 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
   document.documentElement.classList.add('ln-mo');
 
-  // прогресс-бар
-  var bar=document.createElement('div'); bar.className='ln-prog'; document.body.appendChild(bar);
-  function prog(){ var h=document.documentElement.scrollHeight-innerHeight; bar.style.width=(h>0?(scrollY/h*100):0)+'%'; }
+  // прогресс-бар скролла отключён
+  function prog(){}
 
   // ЧТО анимируем (настраивай список под себя; product-card НЕ трогаем — у него свой card-animate)
   var SEL='.section-label,.section-title,.section-head,.see-all,.reviews-summary,.review-card,.store-card,.wishlist-header,.breadcrumb';
@@ -2598,42 +2607,103 @@ window.showFeatureDisabledModal = showFeatureDisabledModal;
   addEventListener('load', onScroll);
 })();
 
-// PAGE WIPE
+// PAGE TRANSITION — светлый экран с логотипом и shimmer
 (function(){
   if(matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-  var w=document.createElement('div'); w.className='ln-wipe';
-  w.innerHTML='<span></span><span></span><span></span><span></span><span></span><div class="ln-wipe-logo"><img src="logo.jpg" alt=""></div>';
-  document.body.appendChild(w);
-  var panels=[].slice.call(w.querySelectorAll('span')), logo=w.querySelector('.ln-wipe-logo');
 
-  // приехали на страницу через wipe → раскрываем шторку
+  // Прогресс-бар
+  var pb = document.createElement('div');
+  pb.id = 'ln-page-progress';
+  pb.style.cssText = 'position:fixed;top:0;left:0;width:0%;height:3px;background:#FF1800;z-index:999999;pointer-events:none;opacity:1;border-radius:0 2px 2px 0;box-shadow:0 0 8px rgba(255,24,0,.5)';
+  document.body.appendChild(pb);
+
+  // Оверлей перехода
+  var ov = document.createElement('div');
+  ov.id = 'ln-transition-overlay';
+  ov.style.cssText = [
+    'position:fixed;inset:0;z-index:99998',
+    'background:#f5f5f3',
+    'display:flex;align-items:center;justify-content:center',
+    'opacity:0;pointer-events:none',
+    'transition:opacity .25s ease'
+  ].join(';');
+  ov.innerHTML = [
+    '<div style="position:relative;width:160px;height:80px;overflow:hidden">',
+      '<img src="logo.jpg" alt="Li-Ning" style="',
+        'width:160px;height:80px;object-fit:contain;',
+        'filter:grayscale(1) opacity(.18);',
+        'display:block',
+      '">',
+      '<div id="ln-shimmer" style="',
+        'position:absolute;inset:0;',
+        'background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.85) 50%,transparent 70%);',
+        'background-size:300% 100%;',
+        'animation:lnShimmer 1.4s ease-in-out infinite',
+      '"></div>',
+    '</div>'
+  ].join('');
+  document.body.appendChild(ov);
+
+  // CSS для shimmer
+  var st = document.createElement('style');
+  st.textContent = '@keyframes lnShimmer{0%{background-position:200% 0}100%{background-position:-100% 0}}';
+  document.head.appendChild(st);
+
+  function showOverlay(){
+    ov.style.pointerEvents = 'all';
+    ov.style.opacity = '1';
+    pb.style.transition = 'none';
+    pb.style.width = '0%';
+    pb.style.opacity = '1';
+    requestAnimationFrame(function(){
+      pb.style.transition = 'width .5s cubic-bezier(.4,0,.2,1)';
+      pb.style.width = '85%';
+    });
+  }
+
+  function hideOverlay(){
+    pb.style.transition = 'width .2s ease';
+    pb.style.width = '100%';
+    setTimeout(function(){
+      ov.style.opacity = '0';
+      ov.style.pointerEvents = 'none';
+      pb.style.transition = 'opacity .3s';
+      pb.style.opacity = '0';
+      setTimeout(function(){
+        pb.style.width = '0%';
+        pb.style.opacity = '1';
+        pb.style.transition = 'none';
+      }, 300);
+    }, 200);
+  }
+
+  // Если пришли с другой страницы — скрываем оверлей
   if(sessionStorage.getItem('ln_wipe_in')){
     sessionStorage.removeItem('ln_wipe_in');
-    panels.forEach(function(s){ s.style.transition='none'; s.style.transformOrigin='top'; s.style.transform='scaleY(1)'; });
-    logo.style.opacity='1';
+    ov.style.opacity = '1';
+    ov.style.pointerEvents = 'all';
+    pb.style.width = '85%';
     requestAnimationFrame(function(){ requestAnimationFrame(function(){
-      logo.style.transition='opacity .3s'; logo.style.opacity='0';
-      panels.forEach(function(s,i){ s.style.transition='transform .5s cubic-bezier(.76,0,.24,1) '+(i*0.05)+'s'; s.style.transform='scaleY(0)'; });
-    });});
+      hideOverlay();
+    }); });
   }
 
   function leave(href){
     sessionStorage.setItem('ln_wipe_in','1');
-    panels.forEach(function(s,i){ s.style.transformOrigin='bottom'; s.style.transition='transform .42s cubic-bezier(.76,0,.24,1) '+(i*0.05)+'s'; s.style.transform='scaleY(1)'; });
-    logo.style.transition='opacity .3s ease .15s'; logo.style.opacity='1';
-    setTimeout(function(){ location.href=href; }, 560);
+    showOverlay();
+    setTimeout(function(){ location.href = href; }, 420);
   }
 
   document.addEventListener('click', function(e){
-    if(e.defaultPrevented || e.button!==0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-    if(e.target.closest('button,[data-no-wipe]')) return;  // клики по кнопкам (корзина/❤/размеры) — без шторки
-    var a=e.target.closest('a[href]'); if(!a) return;
-    if(a.target==='_blank' || a.hasAttribute('download')) return;
-    var href=a.getAttribute('href');
-    if(!href || href.charAt(0)==='#' || /^(javascript:|mailto:|tel:)/i.test(href)) return;
-    var url; try{ url=new URL(href, location.href); }catch(_){ return; }
-    if(url.origin!==location.origin) return;                        // внешние ссылки (Telegram/Instagram) — обычный переход
-    if(url.pathname===location.pathname && url.search===location.search) return; // та же страница
+    if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+    if(e.target.closest('button,[data-no-wipe]')) return;
+    var a = e.target.closest('a[href]'); if(!a) return;
+    if(a.target==='_blank'||a.hasAttribute('download')) return;
+    var href = a.getAttribute('href');
+    if(!href||href.charAt(0)==='#'||/^(javascript:|mailto:|tel:)/i.test(href)) return;
+    var url; try{ url=new URL(href,location.href); }catch(_){ return; }
+    if(url.origin!==location.origin) return;
+    if(url.pathname===location.pathname&&url.search===location.search) return;
     e.preventDefault(); leave(url.href);
   }, true);
 })();
