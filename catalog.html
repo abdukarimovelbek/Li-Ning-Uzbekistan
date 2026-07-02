@@ -306,8 +306,22 @@
   // Заголовок из URL
   const p=new URLSearchParams(location.search);
   const titles={'male':'МУЖЧИНЫ','female':'ЖЕНЩИНЫ','kids':'ДЕТИ'};
+  const collectionTitles={
+    'Basketball':'БАСКЕТБОЛ','Running':'БЕГ','Fitness':'ФИТНЕС',
+    'Lifestyle':'СТИЛЬ','Wade':'WADE','Outdoor':'OUTDOOR',
+    'Sportlife':'SPORT LIFE','Swimming':'ПЛАВАНИЕ'
+  };
   const t=document.getElementById('ch-mob-title');
-  if(t && p.get('gender')) t.textContent=titles[p.get('gender')]||'КАТАЛОГ';
+  const h1=document.getElementById('catalog-page-title');
+  if(p.get('collection')){
+    const colName = collectionTitles[p.get('collection')] || p.get('collection').toUpperCase();
+    if(t) t.textContent = colName;
+    if(h1) h1.textContent = colName;
+  } else if(p.get('gender')){
+    const gName = titles[p.get('gender')] || 'КАТАЛОГ';
+    if(t) t.textContent = gName;
+    if(h1) h1.textContent = gName;
+  }
 
   // Chips
   document.getElementById('chipsScrollMob')?.addEventListener('click',e=>{

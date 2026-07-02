@@ -1933,7 +1933,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (catalogGrid) {
     try {
       catalogGrid.innerHTML = buildSkeletons(8);
-      const products = sortWithFeatured(await fetchProducts());
+      const allProducts = await fetchProducts();
+        const urlParamsCheck = new URLSearchParams(window.location.search);
+        const urlCollCheck = urlParamsCheck.get('collection');
+        const products = urlCollCheck
+          ? sortWithFeatured(allProducts.filter(p => {
+              if (urlCollCheck === 'Sportlife') return ['Sportlife','Professional Sport','Extreme Sports'].includes(p.collection);
+              return p.collection === urlCollCheck;
+            }))
+          : sortWithFeatured(allProducts);
       if (products.length > 0) {
         catalogGrid.innerHTML = products.map(buildCard).join('');
         window.ProductCards?.init();
@@ -1982,6 +1990,9 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (pageTitle) pageTitle.textContent = urlCollection.toUpperCase();
         } else if (urlCat || urlGender) {
           applyCatalogFilters(urlCat, urlGender);
+          const visible = document.querySelectorAll('.product-card:not([style*="none"])').length;
+          const countEl = document.querySelector('.catalog-count strong');
+          if (countEl) countEl.textContent = visible;
         } else {
           const countEl = document.querySelector('.catalog-count strong');
           if (countEl) countEl.textContent = products.length;
