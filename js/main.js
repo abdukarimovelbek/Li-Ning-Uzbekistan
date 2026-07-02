@@ -2258,18 +2258,6 @@ const HeroSlider = (() => {
       dot.onclick = () => goToSlide(i);
       dotsContainer.appendChild(dot);
     });
-    
-    // Адаптивная высота слайдера на мобиле
-    if (window.innerWidth <= 768 && data[0]?.bg_image) {
-      const probe = new Image();
-      probe.onload = function() {
-        const ratio = this.naturalHeight / this.naturalWidth;
-        const h = Math.round(window.innerWidth * ratio);
-        container.style.height = h + 'px';
-        container.style.minHeight = h + 'px';
-      };
-      probe.src = data[0].bg_image;
-    }
 
     startTimer();
     lnReveal(container.querySelector('.hero-slide.active'));
