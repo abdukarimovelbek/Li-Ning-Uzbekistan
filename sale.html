@@ -133,10 +133,12 @@
 
     // Ждём топ-товары
     await new Promise(resolve => {
-      if (window.FEATURED_ARTICLES_LOADED) { resolve(); return; }
+      if (window.FEATURED_ARTICLES_LOADED && window.FEATURED_ARTICLES !== undefined) { resolve(); return; }
       window.addEventListener('featured-articles-loaded', resolve, { once: true });
-      setTimeout(resolve, 2000);
+      setTimeout(resolve, 3000);
     });
+    // Небольшая пауза чтобы FEATURED_ARTICLES точно был записан
+    await new Promise(r => setTimeout(r, 50));
 
     grid.innerHTML = buildSkeletons(8);
 
