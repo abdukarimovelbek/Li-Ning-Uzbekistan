@@ -94,8 +94,6 @@ const SITE_CONFIG = {
   } catch(e) {}
 })();
 
-
-
 const CACHE_KEY = 'lining_products_cache';
 const CACHE_TTL = 5 * 60 * 1000;
 
@@ -103,7 +101,15 @@ function getFeaturedOrder() {
   const featured = window.FEATURED_ARTICLES || [];
   if (!featured.length) return [];
   const stored = sessionStorage.getItem('lining_featured_order');
-  if (stored) { try { return JSON.parse(stored); } catch(e) {} }
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      // Сбрасываем кэш если список артикулов изменился
+      const sameSet = parsed.length === featured.length &&
+        featured.every(a => parsed.includes(a));
+      if (sameSet && parsed.length > 0) return parsed;
+    } catch(e) {}
+  }
   const arr = [...featured];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
