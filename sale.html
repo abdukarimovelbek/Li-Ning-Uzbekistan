@@ -294,20 +294,13 @@
   <!-- ════════ /LOADER ════════ -->
 
   <!-- NAVBAR -->
-  <div id="navbar-placeholder"></div>
+  <div id="navbar-placeholder" data-transparent="true"></div>
 
   <!-- Sale Hero -->
-  <div class="sale-hero" id="sale-hero">
+  <div class="sale-hero" id="sale-hero" style="padding:0;min-height:480px">
     <video id="sale-hero-video" autoplay muted loop playsinline
-      style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease;z-index:0"></video>
-    <div class="sale-hero-bg" id="sale-hero-bg">SALE</div>
-    <h1 style="position:relative;z-index:2">СКИДКИ<br>ДО 70%</h1>
-    <p style="position:relative;z-index:2">Летняя распродажа · Ограниченное количество товаров</p>
-    <div class="sale-countdown" style="position:relative;z-index:2">
-      <div class="countdown-item"><span class="countdown-num" id="cd-h">08</span><div class="countdown-lab">Часов</div></div>
-      <div class="countdown-item"><span class="countdown-num" id="cd-m">45</span><div class="countdown-lab">Минут</div></div>
-      <div class="countdown-item"><span class="countdown-num" id="cd-s">22</span><div class="countdown-lab">Секунд</div></div>
-    </div>
+           style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0"></video>
+    <div class="sale-hero-bg" id="sale-hero-bg" style="display:none"></div>
   </div>
 
   <section class="section">
@@ -330,22 +323,6 @@
 
   <script src="js/main.js"></script>
   <script>
-  // Countdown timer
-  function updateCountdown() {
-    const now = new Date();
-    const midnight = new Date(now);
-    midnight.setHours(23, 59, 59, 0);
-    const diff = Math.max(0, midnight - now);
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
-    document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
-    document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-
   // Загружаем hero видео из Supabase
   (async () => {
     try {
@@ -392,7 +369,7 @@
         return;
       }
 
-      grid.innerHTML = products.map(p => buildCard(p)).join('');
+      grid.innerHTML = sortWithFeatured(products).map(p => buildCard(p)).join('');
       window.ProductCards?.init();
       highlightWishlist();
     } catch(e) {
