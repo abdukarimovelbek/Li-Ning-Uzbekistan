@@ -3026,8 +3026,8 @@ body.menu-open { overflow: hidden; }
 
 @media (max-width: 768px) {
   .hero-slider { 
-    height: 68vh;
-    min-height: 420px;
+    height: auto;
+    min-height: unset;
     margin-top: calc(-1 * var(--nav-h));
   }
   .slider-arrows {
@@ -3041,10 +3041,11 @@ body.menu-open { overflow: hidden; }
     border-color: rgba(255,255,255,.2);
   }
   .hero-slide {
-    height: 68vh;
-    min-height: 420px;
-    padding-top: 0;           /* убираем отступ сверху — контент будет внизу */
-    padding-bottom: 72px;     /* запас под нижний таб-бар */
+    height: auto;
+    min-height: unset;
+    padding-top: var(--nav-h);
+    padding-bottom: 72px; /* запас под нижний таб-бар */
+    aspect-ratio: unset;     
   }
   .hero-slide.active {
     align-items: flex-end;
@@ -3056,9 +3057,8 @@ body.menu-open { overflow: hidden; }
     padding: 0 1.4rem 1.5rem;
   }
   .hero-slide-bg { 
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center center;
+    background-size: cover;
+    background-position: center top;
     background-color: #1a1a1a;
   }
 
