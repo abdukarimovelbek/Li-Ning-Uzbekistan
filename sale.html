@@ -18,16 +18,13 @@
     gtag('config', 'G-8K29V08VJM');
   </script>  
   <style>
-    .sale-hero-video {
-      position: absolute;
-      inset: 0;
+    .sale-hero {
+      position: relative;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-      display: none;
-      opacity: 0;
-      transition: opacity 1.2s ease;
+      height: 100vh;
+      overflow: hidden;
+      margin-top: calc(-1 * var(--nav-h));
+      flex-shrink: 0;
       z-index: 1;
     }
     .sale-hero-video {
@@ -35,7 +32,9 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      object-position: center top;
+      background: #C41E3A;
       display: none;
       opacity: 0;
       transition: opacity 1.2s ease;
